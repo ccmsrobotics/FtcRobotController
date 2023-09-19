@@ -48,7 +48,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="REV SPARKmini Simple Drive Example", group="Concept")
-@Disabled
+//@Disabled
 public class Spedservosprks extends LinearOpMode {
 
     // Declare OpMode members.
