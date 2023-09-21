@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="Robot: Teleop Tank", group="Robot")
-@Disabled
+//@Disabled
 public class tankdrive extends OpMode{
     /* Declare OpMode members. */
     public DcMotor  leftDrive   = null;
