@@ -93,6 +93,8 @@ public class encodrs extends LinearOpMode {
         // Initialize the drive system variables.
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        turn2 = hardwareMap.get(DcMotor.class, "turn2");
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -102,14 +104,17 @@ public class encodrs extends LinearOpMode {
 
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turn2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        turn2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Starting at",  "%7d :%7d",
                           leftDrive.getCurrentPosition(),
-                          rightDrive.getCurrentPosition());
+                          rightDrive.getCurrentPosition(),
+                            turn2.getCurrentPosition());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -121,7 +126,7 @@ public class encodrs extends LinearOpMode {
         encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
         encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
 
-        telemetry.addData("Path", "Complete");
+        telemetry.addData("Current", "spot");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
     }
