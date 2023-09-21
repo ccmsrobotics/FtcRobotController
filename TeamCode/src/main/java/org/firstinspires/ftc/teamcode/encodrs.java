@@ -68,6 +68,8 @@ public class encodrs extends LinearOpMode {
     private DcMotor         leftDrive   = null;
     private DcMotor         rightDrive  = null;
 
+    private DcMotor         turn2 = null;
+
 
     private ElapsedTime     runtime = new ElapsedTime();
 
