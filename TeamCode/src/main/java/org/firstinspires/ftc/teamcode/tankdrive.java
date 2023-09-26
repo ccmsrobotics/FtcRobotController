@@ -106,8 +106,8 @@ public class tankdrive extends OpMode{
         // Run wheels in tank mode (note: The joystick goes negative when pushed forward, so negate it)
         rightx = -gamepad1.right_stick_x;
         righty = -gamepad1.right_stick_y;
-        leftDrive.setPower(righty/1.2+rightx/1.4);
-        rightDrive.setPower(righty/1.2-rightx/1.4);
+        leftDrive.setPower((righty / 1.3) + java.lang.max(rightx / 1.6, 0));
+        rightDrive.setPower((righty / 1.3) + java.lang.min(-rightx / 1.6, 0));
         dash=gamepad1.left_bumper;
         if(dash) {
             leftDrive.setPower(1);
