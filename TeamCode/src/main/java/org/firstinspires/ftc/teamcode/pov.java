@@ -98,7 +98,8 @@ public class pov extends LinearOpMode {
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press Play.");    //
         telemetry.update();
-
+        telemetry.addData(">", "Have Fun!");    //
+        telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
