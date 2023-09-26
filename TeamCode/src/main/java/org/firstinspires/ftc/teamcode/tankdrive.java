@@ -29,12 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-//import com.qualcomm.robotcore.util.Range;
 
 /*
  * This OpMode executes a Tank Drive control TeleOp a direct drive robot
@@ -58,7 +55,6 @@ public class tankdrive extends OpMode{
 
     double clawOffset = 0;
 
-    public static final double MID_SERVO   =  0.5 ;
 
     /*
      * Code to run ONCE when the driver hits INIT
