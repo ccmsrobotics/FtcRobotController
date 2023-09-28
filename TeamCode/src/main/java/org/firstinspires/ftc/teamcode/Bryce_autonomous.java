@@ -98,8 +98,8 @@ public class Bryce_autonomous extends LinearOpMode {
         waitForStart();
 
 
-        encoderDrive(DRIVE_SPEED, 32, 32, 10);
-        encoderDrive(TURN_SPEED, -7.75, 7.75, 5);
+        encoderDrive(DRIVE_SPEED, 37.5, 37.5, 10);
+        encoderDrive(TURN_SPEED, -7.5, 7.5, 5);
         sleep(1000);
 
 
