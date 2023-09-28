@@ -101,6 +101,7 @@ public class Bryce_autonomous extends LinearOpMode {
         encoderDrive(DRIVE_SPEED, 37.5, 37.5, 10);
         encoderDrive(TURN_SPEED, -7.5, 7.5, 5);
         sleep(1000);
+        encoderDrive(TURN_SPEED, 15, -15, 5);
 
 
         telemetry.addData("Current", "spot");
