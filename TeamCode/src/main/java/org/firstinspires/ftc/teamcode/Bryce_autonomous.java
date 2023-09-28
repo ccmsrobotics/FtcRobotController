@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -50,7 +51,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear OpMode")
+@Autonomous(name="Bryce's Red Yaks Cut Eggplants", group="Linear OpMode")
 //@Disabled
 public class Bryce_autonomous extends LinearOpMode {
 
@@ -90,14 +91,15 @@ public class Bryce_autonomous extends LinearOpMode {
 
         telemetry.addData("Starting at",  "%7d :%7d",
                 leftDrive.getCurrentPosition(),
-                rightDrive.getCurrentPosition(),
+                rightDrive.getCurrentPosition());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
 
-        encoderDrive(DRIVE_SPEED, 50, 50, 10);
+        encoderDrive(DRIVE_SPEED, 30, 30, 10);
+        encoderDrive(TURN_SPEED, -24, 24, 5);
 
 
 
@@ -107,59 +109,54 @@ public class Bryce_autonomous extends LinearOpMode {
         sleep(1000);
 
             // Show the elapsed game time and wheel power
-        }
+    }
 
-    public void encoderDrive(double speed,
+        public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
-        int newLeftTarget;
-        int newRightTarget;
+            int newLeftTarget;
+            int newRightTarget;
 
-        // Ensure that the OpMode is still active
-        if (opModeIsActive()) {
+            // Ensure that the OpMode is still active
+            if (opModeIsActive()) {
 
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = rightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            leftDrive.setTargetPosition(newLeftTarget);
-            rightDrive.setTargetPosition(newRightTarget);
+                // Determine new target position, and pass to motor controller
+                newLeftTarget = leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+                newRightTarget = rightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+                leftDrive.setTargetPosition(newLeftTarget);
+                rightDrive.setTargetPosition(newRightTarget);
 
-            // Turn On RUN_TO_POSITION
-            leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                // Turn On RUN_TO_POSITION
+                leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
-            runtime.reset();
-            leftDrive.setPower(Math.abs(speed));
-            rightDrive.setPower(Math.abs(speed));
+                // reset the timeout time and start motion.
+                runtime.reset();
+                leftDrive.setPower(Math.abs(speed));
+                rightDrive.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (leftDrive.isBusy() && rightDrive.isBusy())) {
+                // keep looping while we are still active, and there is time left, and both motors are running.
+                // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+                // its target position, the motion will stop.  This is "safer" in the event that the robot will
+                // always end the motion as soon as possible.
+                // However, if you require that BOTH motors have finished their moves before the robot continues
+                // onto the next step, use (isBusy() || isBusy()) in the loop test.
+                while (opModeIsActive() && (runtime.seconds() < timeoutS) && (leftDrive.isBusy() && rightDrive.isBusy())) {
+                    // Display it for the driver.
+                    telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
+                    telemetry.addData("Currently at",  " at %7d :%7d", leftDrive.getCurrentPosition(), rightDrive.getCurrentPosition());
+                    telemetry.update();
+                }
 
-                // Display it for the driver.
-                telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d",
-                        leftDrive.getCurrentPosition(), rightDrive.getCurrentPosition());
-                telemetry.update();
+                // Stop all motion;
+                leftDrive.setPower(0);
+                rightDrive.setPower(0);
+
+                // Turn off RUN_TO_POSITION
+                leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                sleep(250);   // optional pause after each move.
             }
-
-            // Stop all motion;
-            leftDrive.setPower(0);
-            rightDrive.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            sleep(250);   // optional pause after each move.
         }
     }
-    }
-}
