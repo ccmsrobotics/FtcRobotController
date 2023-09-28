@@ -96,10 +96,9 @@ public class pov extends LinearOpMode {
         rightClaw.setPosition(MID_SERVO);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData(">", "Robot Ready.  Press Play.");    //
+        telemetry.addData(">", "Robot Ready.  Press Play. DO NOT BREAK THE ROBOT!");    //
         telemetry.update();
-        telemetry.addData(">", "Have Fun!");    //
-        telemetry.update();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
