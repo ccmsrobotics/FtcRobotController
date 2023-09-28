@@ -27,15 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.ArrayList;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -68,15 +66,15 @@ import java.util.ArrayList;
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 @Disabled
 public class BasicOmniOpMode_Linear extends LinearOpMode {
-
+    double Pi=3.1415926535879;
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    double[] robotDrive={};
-    int robotDriveLength=15;
+    double[] robotDrive={0,0,1,100,-Pi/2,1,200,0,0,300,-Pi,1,500,0,1,99999,0,0};
+    int robotDriveLength=5;
     @Override
     public void runOpMode() {
 
@@ -108,20 +106,23 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
+        double Time=0;
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            double max;
+            int joystickRot=0;
+            double speed=0;
             for(int i=0; i<robotDriveLength; i++) {
-                if(ElapsedTime>robotDrive[i*6]&&ElapsedTime<robotDrive[i*6+6]) {
-
+                if(Time>robotDrive[i*3]&&Time<robotDrive[i*3+3]) {
+                    joystickRot=(int)robotDrive[i*3+1];
+                    speed=(int)robotDrive[i*3+2];
                 }
             }
-            double max;
-
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial   = -java.lang.Math.cos(joystickRot)*speed;// Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw     =  java.lang.Math.sin(joystickRot)*speed;
+
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -153,12 +154,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             //      the setDirection() calls above.
             // Once the correct motors move in the correct direction re-comment this code.
 
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
+
 
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
@@ -171,5 +167,6 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
+            Time++;
         }
     }}
