@@ -77,7 +77,7 @@ public class pov extends LinearOpMode {
         // Define and Initialize Motors
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        leftArm    = hardwareMap.get(DcMotor.class, "left_arm");
+       // leftArm    = hardwareMap.get(DcMotor.class, "left_arm");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
