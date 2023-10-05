@@ -98,10 +98,12 @@ public class Bryce_autonomous extends LinearOpMode {
         waitForStart();
 
 
-        encoderDrive(DRIVE_SPEED, 37.5, 37.5, 10);
+        encoderDrive(DRIVE_SPEED, 36.75, 36.75, 10);
         encoderDrive(TURN_SPEED, -7.5, 7.5, 5);
         sleep(1000);
-        encoderDrive(TURN_SPEED, 15, -15, 5);
+        encoderDrive(TURN_SPEED, 13.575, -13.575, 5);
+        encoderDrive(DRIVE_SPEED, 41, 41, 10);
+        sleep(10000000);
 
 
         telemetry.addData("Current", "spot");
@@ -111,9 +113,7 @@ public class Bryce_autonomous extends LinearOpMode {
         // Show the elapsed game time and wheel power
     }
 
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
+    public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
 
