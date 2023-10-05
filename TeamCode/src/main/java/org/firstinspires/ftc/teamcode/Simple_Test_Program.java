@@ -51,7 +51,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 //The Anti-Bloon is watching you........
 @TeleOp(name="Simple_Test_Program", group="Iterative OpMode")
-@Disabled
+//@Disabled
 public class Simple_Test_Program extends OpMode
 {
     // Declare OpMode members.
@@ -99,22 +99,25 @@ public class Simple_Test_Program extends OpMode
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
         if(gamepad1.a){
-            testMotor.setPower(0.75);
+            testMotor.setPower(1);
         }
         else if(gamepad1.b){
-            testMotor.setPower(0.375);
+            testMotor.setPower(0.5);
         }
         if(gamepad1.x){
-            testMotor.setPower(-0.75);
+            testMotor.setPower(-1);
             if(gamepad1.a||gamepad1.b){
                 testMotor.setPower(0);
             }
         }
         else if(gamepad1.y){
-            testMotor.setPower(-0.375);
+            testMotor.setPower(-0.5);
             if(gamepad1.a||gamepad1.b){
                 testMotor.setPower(0);
             }
+        }
+        if(!(gamepad1.a&&gamepad1.b&&gamepad1.x&&gamepad1.y)){
+            testMotor.setPower(0);
         }
         // Choose to drive using either Tank Mode, or POV Mode
         // Comment out the method that's not used.  The default below is POV.

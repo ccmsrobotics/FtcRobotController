@@ -112,9 +112,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             for(int i=0; i<robotDriveLength; i++) {
-                if(ElapsedTime>robotDrive[i*6]&&ElapsedTime<robotDrive[i*6+6]) {
 
-                }
             }
             double max;
 
