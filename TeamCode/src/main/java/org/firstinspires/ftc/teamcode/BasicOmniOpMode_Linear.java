@@ -68,13 +68,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class BasicOmniOpMode_Linear extends LinearOpMode {
     double Pi=3.1415926535879;
     // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    double[] robotDrive={0,0,1,100,-Pi/2,1,200,0,0,300,-Pi,1,500,0,1,99999,0,0};
-    int robotDriveLength=5;
+    double[] robotDrive={0,0,1,100,-Pi/2,1,200,0,0,300,-Pi/2,1,500,0,1,99999,0,0};
     @Override
     public void runOpMode() {
 
@@ -112,7 +111,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             double max;
             int joystickRot=0;
             double speed=0;
-            for(int i=0; i<robotDriveLength; i++) {
+            for(int i=0; i<robotDrive.length; i++) {
                 if(Time>robotDrive[i*3]&&Time<robotDrive[i*3+3]) {
                     joystickRot=(int)robotDrive[i*3+1];
                     speed=(int)robotDrive[i*3+2];
