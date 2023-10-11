@@ -112,9 +112,9 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial   = -gamepad1.left_stick_y/1.5;  // Note: pushing stick forward gives negative value
+            double lateral =  gamepad1.left_stick_x/1.5;
+            double yaw     =  gamepad1.right_stick_x/2;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
