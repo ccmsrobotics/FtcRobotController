@@ -34,7 +34,6 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
@@ -44,7 +43,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * the sample regions over the first 3 stones.
  */
 @TeleOp
-public class SkystoneDeterminationDan extends LinearOpMode
+public class REDSKYSTONE extends LinearOpMode
 {
     //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
