@@ -174,7 +174,7 @@ public class AprilTagDemoPlusAprilShowers extends LinearOpMode
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
                         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
-                        double range = Math.sqrt(Math.pow(detection.pose.x, 2)+Math.pow(detection.pose.y, 2));
+                        double range = Math.sqrt(Math.pow(detection.pose.x*FEET_PER_METER*12, 2)+Math.pow(detection.pose.y*FEET_PER_METER*12, 2));
                         double  rangeError      = (range - DESIRED_DISTANCE);
                         double  headingError    = rot.secondAngle;
                         double  yawError        = rot.firstAngle;
