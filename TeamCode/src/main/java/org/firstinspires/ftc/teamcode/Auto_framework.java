@@ -37,6 +37,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.apriltag.AprilTagDetection;
+import java.util.ArrayList;
 
 /*
  * This sample demonstrates a basic (but battle-tested and essentially
@@ -48,7 +54,29 @@ public class Auto_framework extends LinearOpMode
 {
     //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
-    helmetLocationPipeline pipeline;
+   helmetLocationPipeline pipeline;
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    static final double FEET_PER_METER = 3.28084;
+
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.166;
+
+    int numFramesWithoutDetection = 0;
+
+    final float DECIMATION_HIGH = 3;
+    final float DECIMATION_LOW = 2;
+    final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
+    final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
+
 
     @Override
     public void runOpMode()
@@ -61,11 +89,14 @@ public class Auto_framework extends LinearOpMode
          */
 
         pipeline = new helmetLocationPipeline();
+        helmetLocationPipeline.helmetPosition myPosition;
 
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam.setPipeline(pipeline);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
         // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
         // out when the RC activity is in portrait. We do our actual image processing assuming
         // landscape orientation, though.
@@ -75,7 +106,7 @@ public class Auto_framework extends LinearOpMode
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640,360, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -90,8 +121,8 @@ public class Auto_framework extends LinearOpMode
         while (opModeIsActive())
         {
             //Find location of team element
-
-            telemetry.addData("Analysis", pipeline.getAnalysis());
+            myPosition  = pipeline.getAnalysis();
+            telemetry.addData("Analysis", myPosition);
             telemetry.update();
             //Drive to location
 
@@ -125,9 +156,9 @@ public class Auto_framework extends LinearOpMode
     public static class helmetLocationPipeline extends OpenCvPipeline
     {
         /*
-         * An enum to define the skystone position
+         * An enum to define the Helmet position
          */
-        public enum SkystonePosition
+        public enum helmetPosition
         {
             LEFT,
             CENTER,
@@ -143,11 +174,11 @@ public class Auto_framework extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(109,98);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,98);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(253,98);
-        static final int REGION_WIDTH = 20;
-        static final int REGION_HEIGHT = 20;
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40,140);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320,120);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553,140);
+        static final int REGION_WIDTH = 85;
+        static final int REGION_HEIGHT = 85;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -193,8 +224,9 @@ public class Auto_framework extends LinearOpMode
         Mat Cb = new Mat();
         int avg1, avg2, avg3;
 
+
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile SkystonePosition position = SkystonePosition.LEFT;
+        private volatile helmetPosition position = helmetPosition.LEFT;
 
         /*
          * This function takes the RGB frame, converts to YCrCb,
@@ -331,7 +363,7 @@ public class Auto_framework extends LinearOpMode
              */
             if(max == avg1) // Was it from region 1?
             {
-                position = SkystonePosition.LEFT; // Record our analysis
+                position = helmetPosition.LEFT; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -346,7 +378,7 @@ public class Auto_framework extends LinearOpMode
             }
             else if(max == avg2) // Was it from region 2?
             {
-                position = SkystonePosition.CENTER; // Record our analysis
+                position = helmetPosition.CENTER; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -361,7 +393,7 @@ public class Auto_framework extends LinearOpMode
             }
             else if(max == avg3) // Was it from region 3?
             {
-                position = SkystonePosition.RIGHT; // Record our analysis
+                position = helmetPosition.RIGHT; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -386,7 +418,7 @@ public class Auto_framework extends LinearOpMode
         /*
          * Call this from the OpMode thread to obtain the latest analysis
          */
-        public SkystonePosition getAnalysis()
+        public helmetPosition getAnalysis()
         {
             return position;
         }
