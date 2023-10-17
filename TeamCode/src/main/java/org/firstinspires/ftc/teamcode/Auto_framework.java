@@ -48,7 +48,7 @@ public class Auto_framework extends LinearOpMode
 {
     //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
-    SkystoneDeterminationPipeline pipeline;
+    helmetLocationPipeline pipeline;
 
     @Override
     public void runOpMode()
@@ -60,7 +60,7 @@ public class Auto_framework extends LinearOpMode
          * webcam counterpart, {@link WebcamExample} first.
          */
 
-        pipeline = new SkystoneDeterminationPipeline();
+        pipeline = new helmetLocationPipeline();
 
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
