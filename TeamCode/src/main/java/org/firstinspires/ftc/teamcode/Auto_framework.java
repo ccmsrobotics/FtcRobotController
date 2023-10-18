@@ -45,19 +45,15 @@ import org.openftc.apriltag.AprilTagDetection;
 import java.util.ArrayList;
 
 /*
- * This sample demonstrates a basic (but battle-tested and essentially
- * 100% accurate) method of detecting the skystone when lined up with
- * the sample regions over the first 3 stones.
+ * FTC Team 18975 autonomous code
  */
 @Autonomous
 public class Auto_framework extends LinearOpMode
 {
-    //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
-   helmetLocationPipeline pipeline;
+    helmetLocationPipeline helmetPipeline;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     static final double FEET_PER_METER = 3.28084;
-
     // Lens intrinsics
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
@@ -66,12 +62,9 @@ public class Auto_framework extends LinearOpMode
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
-
     // UNITS ARE METERS
     double tagsize = 0.166;
-
     int numFramesWithoutDetection = 0;
-
     final float DECIMATION_HIGH = 3;
     final float DECIMATION_LOW = 2;
     final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
@@ -81,25 +74,14 @@ public class Auto_framework extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        /**
-         * NOTE: Many comments have been omitted from this sample for the
-         * sake of conciseness. If you're just starting out with EasyOpenCv,
-         * you should take a look at {@link InternalCamera1Example} or its
-         * webcam counterpart, {@link WebcamExample} first.
-         */
-
-        pipeline = new helmetLocationPipeline();
+        //Initialize the Helmet location pipeline
+        helmetPipeline = new helmetLocationPipeline();
         helmetLocationPipeline.helmetPosition myPosition;
-
-
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        //Initialize camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(pipeline);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
+        webcam.setPipeline(helmetPipeline);
         webcam.setMillisecondsPermissionTimeout(5000);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -121,7 +103,7 @@ public class Auto_framework extends LinearOpMode
         while (opModeIsActive())
         {
             //Find location of team element
-            myPosition  = pipeline.getAnalysis();
+            myPosition  = helmetPipeline.getAnalysis();
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
             sleep(1000);
