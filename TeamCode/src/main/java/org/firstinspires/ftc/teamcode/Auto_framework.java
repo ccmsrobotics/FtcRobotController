@@ -21,6 +21,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -36,47 +37,58 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.apriltag.AprilTagDetection;
+import java.util.ArrayList;
 
 /*
- * This sample demonstrates a basic (but battle-tested and essentially
- * 100% accurate) method of detecting the skystone when lined up with
- * the sample regions over the first 3 stones.
+ * FTC Team 18975 autonomous code
  */
-@TeleOp
-public class REDSKYSTONE extends LinearOpMode
+@Autonomous
+public class Auto_framework extends LinearOpMode
 {
-    //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
-    SkystoneDeterminationPipeline pipeline;
+    helmetLocationPipeline helmetPipeline;
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    static final double FEET_PER_METER = 3.28084;
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+    // UNITS ARE METERS
+    double tagsize = 0.166;
+    int numFramesWithoutDetection = 0;
+    final float DECIMATION_HIGH = 3;
+    final float DECIMATION_LOW = 2;
+    final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
+    final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
+
 
     @Override
     public void runOpMode()
     {
-        /**
-         * NOTE: Many comments have been omitted from this sample for the
-         * sake of conciseness. If you're just starting out with EasyOpenCv,
-         * you should take a look at {@link InternalCamera1Example} or its
-         * webcam counterpart, {@link WebcamExample} first.
-         */
-
-      //  int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //  phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        pipeline = new SkystoneDeterminationPipeline();
-
+        //Initialize the Helmet location pipeline
+        helmetPipeline = new helmetLocationPipeline();
+        helmetLocationPipeline.helmetPosition myPosition;
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        //Initialize camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(pipeline);
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-        //webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+        webcam.setPipeline(helmetPipeline);
         webcam.setMillisecondsPermissionTimeout(5000);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640,360, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -87,25 +99,98 @@ public class REDSKYSTONE extends LinearOpMode
                  */
             }
         });
-
         waitForStart();
-
         while (opModeIsActive())
         {
-            telemetry.addData("Analysis", pipeline.getAnalysis());
+            //Find location of team element
+            myPosition  = helmetPipeline.getAnalysis();
+            telemetry.addData("Analysis", myPosition);
             telemetry.update();
+            sleep(1000);
+            webcam.setPipeline(aprilTagDetectionPipeline);
+            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+            if(detections != null)
+            {
+                telemetry.addData("FPS", webcam.getFps());
+                telemetry.addData("Overhead ms", webcam.getOverheadTimeMs());
+                telemetry.addData("Pipeline ms", webcam.getPipelineTimeMs());
+
+                // If we don't see any tags
+                if(detections.size() == 0)
+                {
+                    numFramesWithoutDetection++;
+
+                    // If we haven't seen a tag for a few frames, lower the decimation
+                    // so we can hopefully pick one up if we're e.g. far back
+                    if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
+                    {
+                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                    }
+                }
+                // We do see tags!
+                else
+                {
+                    numFramesWithoutDetection = 0;
+
+                    // If the target is within 1 meter, turn on high decimation to
+                    // increase the frame rate
+                    if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
+                    {
+                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                    }
+
+                    for(AprilTagDetection detection : detections)
+                    {
+                        Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+
+                        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
+                        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
+                    }
+                }
+
+                telemetry.update();
+            }
+            //Drive to location
+
+
+
+            //Drop Pixel
+
+            //navigate to center
+
+            //drive through center
+
+            //initialize Apriltag
+
+            //Check if we see apriltag
+
+            //drive to apriltag
+
+            //deposit
+
+            //Drive to parking location
+
+
+
 
             // Don't burn CPU cycles busy-looping in this sample
             sleep(50);
         }
     }
 
-    public static class SkystoneDeterminationPipeline extends OpenCvPipeline
+
+
+    public static class helmetLocationPipeline extends OpenCvPipeline
     {
         /*
-         * An enum to define the skystone position
+         * An enum to define the Helmet position
          */
-        public enum SkystonePosition
+        public enum helmetPosition
         {
             LEFT,
             CENTER,
@@ -121,11 +206,11 @@ public class REDSKYSTONE extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(109,98);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,98);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(253,98);
-        static final int REGION_WIDTH = 20;
-        static final int REGION_HEIGHT = 20;
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40,140);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320,120);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553,140);
+        static final int REGION_WIDTH = 85;
+        static final int REGION_HEIGHT = 85;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -171,8 +256,9 @@ public class REDSKYSTONE extends LinearOpMode
         Mat Cb = new Mat();
         int avg1, avg2, avg3;
 
+
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile SkystonePosition position = SkystonePosition.LEFT;
+        private volatile helmetPosition position = helmetPosition.LEFT;
 
         /*
          * This function takes the RGB frame, converts to YCrCb,
@@ -309,7 +395,7 @@ public class REDSKYSTONE extends LinearOpMode
              */
             if(max == avg1) // Was it from region 1?
             {
-                position = SkystonePosition.LEFT; // Record our analysis
+                position = helmetPosition.LEFT; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -324,7 +410,7 @@ public class REDSKYSTONE extends LinearOpMode
             }
             else if(max == avg2) // Was it from region 2?
             {
-                position = SkystonePosition.CENTER; // Record our analysis
+                position = helmetPosition.CENTER; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -339,7 +425,7 @@ public class REDSKYSTONE extends LinearOpMode
             }
             else if(max == avg3) // Was it from region 3?
             {
-                position = SkystonePosition.RIGHT; // Record our analysis
+                position = helmetPosition.RIGHT; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -364,7 +450,7 @@ public class REDSKYSTONE extends LinearOpMode
         /*
          * Call this from the OpMode thread to obtain the latest analysis
          */
-        public SkystonePosition getAnalysis()
+        public helmetPosition getAnalysis()
         {
             return position;
         }

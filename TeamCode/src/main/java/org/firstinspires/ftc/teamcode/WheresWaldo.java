@@ -43,7 +43,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * the sample regions over the first 3 stones.
  */
 @TeleOp
-public class BLUESKYSTONE extends LinearOpMode
+public class WheresWaldo extends LinearOpMode
 {
     //OpenCvInternalCamera phoneCam;
     OpenCvWebcam webcam;
@@ -76,7 +76,7 @@ public class BLUESKYSTONE extends LinearOpMode
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(640,360, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -121,11 +121,11 @@ public class BLUESKYSTONE extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(109,98);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,98);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(253,98);
-        static final int REGION_WIDTH = 20;
-        static final int REGION_HEIGHT = 20;
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40,140);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320,120);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553,140);
+        static final int REGION_WIDTH = 85;
+        static final int REGION_HEIGHT = 85;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -182,7 +182,7 @@ public class BLUESKYSTONE extends LinearOpMode
         {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             //Third variable controls color  0 is brightness, 1 is red, 2 is blue
-            Core.extractChannel(YCrCb, Cb, 2);
+            Core.extractChannel(YCrCb, Cb, 1);
         }
 
         @Override
