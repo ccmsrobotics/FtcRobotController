@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -74,6 +75,9 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private DcMotorSimple lift = null;
+    private DcMotorSimple intake = null;
+    private Servo dumpTruck = null;
 
     @Override
     public void runOpMode() {
@@ -84,6 +88,9 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        lift = hardwareMap.get(DcMotorSimple.class, "lift");
+        intake = hardwareMap.get(DcMotorSimple.class, "intake");
+        dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -96,7 +103,7 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
@@ -135,7 +142,13 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
                 leftBackPower   /= max;
                 rightBackPower  /= max;
             }
-
+            int servoPos = -1;
+            if(gamepad2.a){
+                servoPos = -1;
+            }
+            else if(gamepad2.b) {
+                servoPos = 1;
+            }
             // This is test code:
             //
             // Uncomment the following code to test your motor directions.
@@ -158,6 +171,10 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
+            lift.setPower(gamepad2.left_stick_y/-2);
+            intake.setPower(-1*Math.abs(gamepad2.right_stick_y));
+            dumpTruck.setPosition(servoPos*-1);
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
