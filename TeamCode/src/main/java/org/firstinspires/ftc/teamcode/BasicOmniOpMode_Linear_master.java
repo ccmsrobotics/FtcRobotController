@@ -171,8 +171,8 @@ public class BasicOmniOpMode_Linear_master extends LinearOpMode {
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-            lift.setPower(gamepad2.left_stick_y/-2);
-            intake.setPower(-1*Math.abs(gamepad2.right_stick_y));
+            lift.setPower(gamepad2.left_stick_y/2);
+            intake.setPower(-1*gamepad2.right_stick_y);
             dumpTruck.setPosition(servoPos*-1);
 
 
