@@ -69,6 +69,7 @@ public class Auto_framework extends LinearOpMode
     final float DECIMATION_LOW = 2;
     final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
+    int ID_TAG_OF_INTEREST = 18;
 
 
     @Override
@@ -106,7 +107,61 @@ public class Auto_framework extends LinearOpMode
             myPosition  = helmetPipeline.getAnalysis();
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
-            sleep(1000);
+            //sleep(1000);
+            if(myPosition== helmetLocationPipeline.helmetPosition.LEFT)
+            {
+                //set april tag ID needed for the backdrop unload
+                //ID_TAG_OF_INTEREST = 5;
+
+                //shift 12 inches left
+
+                //move forward 30 inches
+
+                //unload pixel
+
+                //move to center
+
+                //rotate to face wall
+
+                //move forward 48 inches
+
+                //transistion to april tag unload
+            }
+            else if (myPosition== helmetLocationPipeline.helmetPosition.CENTER)
+            {
+                //set april tag ID needed for the backdrop unload
+                //ID_TAG_OF_INTEREST = 5;
+                //move forward 48 inches
+
+                //unload pixel
+
+                //move to center
+
+                //rotate to face wall
+
+                //move forward 48 inches
+
+                //transistion to april tag unload
+            }
+            else
+            {
+                //set april tag ID needed for the backdrop unload
+                //ID_TAG_OF_INTEREST = 5;
+
+                //shift 12 inches right
+
+                //move forward 30 inches
+
+                //unload pixel
+
+                //move to center
+
+                //rotate to face wall
+
+                //move forward 48 inches
+
+                //transistion to april tag unload
+            }
             webcam.setPipeline(aprilTagDetectionPipeline);
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
             if(detections != null)
@@ -155,13 +210,6 @@ public class Auto_framework extends LinearOpMode
 
                 telemetry.update();
             }
-            //Drive to location
-
-
-
-            //Drop Pixel
-
-            //navigate to center
 
             //drive through center
 
