@@ -135,7 +135,7 @@ public class Auto_framework extends LinearOpMode {
                 ID_TAG_OF_INTEREST = 4;
 
                 //shift 12 inches left
-                moveRobot(0, 1, 0);
+                moveRobot(-1, -.3, 0);
                 runtime.reset();
                 while (opModeIsActive() && (runtime.seconds() < .4)) {
                     telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
@@ -143,8 +143,6 @@ public class Auto_framework extends LinearOpMode {
                 }
                 //stop robot
                 moveRobot(0, 0, 0);
-
-                //move forward 30 inches
 
                 //unload pixel
 
