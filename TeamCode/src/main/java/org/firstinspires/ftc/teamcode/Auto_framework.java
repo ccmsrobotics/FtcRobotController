@@ -135,45 +135,66 @@ public class Auto_framework extends LinearOpMode {
                 ID_TAG_OF_INTEREST = 4;
 
                 //shift 12 inches left
-                moveRobot(-1, -0.3, 0);
+
+                moveRobot(0, -0.5, 0);
                 //runtime.reset();
-                sleep(500);
+                sleep(300);
+                moveRobot(-1, 0, 0);
+                //runtime.reset();
+                sleep(850);
                 //stop robot
                 stopRobot();
-                sleep(5000);
+                sleep(2000);
                 //unload pixel
 
-                intake.setPower(-0.5);
-                sleep(1000);
+                intake.setPower(0.4);
+                sleep(700);
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
                 sleep(500);
                 stopRobot();
-                sleep(5000);
+                sleep(2000);
                 //rotate to face wall
-                moveRobot(0,0,0.3);
-                sleep(700);
+                moveRobot(0,0,-0.5);
+                sleep(800);
                 stopRobot();
-                sleep(5000);
+                sleep(2000);
                 //move forward 48 inches
-                moveRobot(1,0,0);
-                sleep(1000);
+                moveRobot(-1,0,0);
+                sleep(1500);
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
             } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload
                 ID_TAG_OF_INTEREST = 5;
-                //move forward 48 inches
-
+                moveRobot(-1, 0, 0);
+                //runtime.reset();
+                sleep(950);
+                //stop robot
+                stopRobot();
+                sleep(2000);
                 //unload pixel
 
+                intake.setPower(0.4);
+                sleep(700);
+                intake.setPower(0);
                 //move to center
-
+                moveRobot(-0.5, 0, 0);
+                sleep(400);
+                stopRobot();
+                sleep(2000);
                 //rotate to face wall
-
+                moveRobot(0,0,-0.5);
+                sleep(800);
+                stopRobot();
+                sleep(2000);
                 //move forward 48 inches
+                moveRobot(-1,0,0);
+                sleep(1500);
+                stopRobot();
+                sleep(50000);
 
                 //transistion to april tag unload
             } else {
