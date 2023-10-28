@@ -24,6 +24,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
@@ -48,8 +52,16 @@ import java.util.ArrayList;
  * FTC Team 18975 autonomous code
  */
 @Autonomous
-public class Auto_framework extends LinearOpMode
-{
+public class Auto_framework extends LinearOpMode {
+    // Declare OpMode members for each of the 4 motors.
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
+    private DcMotorSimple lift = null;
+    private DcMotorSimple intake = null;
+    private Servo dumpTruck = null;
     OpenCvWebcam webcam;
     helmetLocationPipeline helmetPipeline;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -73,8 +85,22 @@ public class Auto_framework extends LinearOpMode
 
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
+        // Initialize the hardware variables. Note that the strings used here must correspond
+        // to the names assigned during the robot configuration step on the DS or RC devices.
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        lift = hardwareMap.get(DcMotorSimple.class, "lift");
+        intake = hardwareMap.get(DcMotorSimple.class, "intake");
+        dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+
         //Initialize the Helmet location pipeline
         helmetPipeline = new helmetLocationPipeline();
         helmetLocationPipeline.helmetPosition myPosition;
@@ -84,36 +110,39 @@ public class Auto_framework extends LinearOpMode
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam.setPipeline(helmetPipeline);
         webcam.setMillisecondsPermissionTimeout(5000);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(640,360, OpenCvCameraRotation.UPRIGHT);
+            public void onOpened() {
+                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
                 /*
                  * This will be called if the camera could not be opened
                  */
             }
         });
         waitForStart();
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             //Find location of team element
-            myPosition  = helmetPipeline.getAnalysis();
+            myPosition = helmetPipeline.getAnalysis();
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
             //sleep(1000);
-            if(myPosition== helmetLocationPipeline.helmetPosition.LEFT)
-            {
+            if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload
-                //ID_TAG_OF_INTEREST = 5;
+                ID_TAG_OF_INTEREST = 4;
 
                 //shift 12 inches left
+                moveRobot(0, 1, 0);
+                runtime.reset();
+                while (opModeIsActive() && (runtime.seconds() < .4)) {
+                    telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+                    telemetry.update();
+                }
+                //stop robot
+                moveRobot(0, 0, 0);
 
                 //move forward 30 inches
 
@@ -126,11 +155,9 @@ public class Auto_framework extends LinearOpMode
                 //move forward 48 inches
 
                 //transistion to april tag unload
-            }
-            else if (myPosition== helmetLocationPipeline.helmetPosition.CENTER)
-            {
+            } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload
-                //ID_TAG_OF_INTEREST = 5;
+                ID_TAG_OF_INTEREST = 5;
                 //move forward 48 inches
 
                 //unload pixel
@@ -142,11 +169,9 @@ public class Auto_framework extends LinearOpMode
                 //move forward 48 inches
 
                 //transistion to april tag unload
-            }
-            else
-            {
+            } else {
                 //set april tag ID needed for the backdrop unload
-                //ID_TAG_OF_INTEREST = 5;
+                ID_TAG_OF_INTEREST = 6;
 
                 //shift 12 inches right
 
@@ -164,44 +189,38 @@ public class Auto_framework extends LinearOpMode
             }
             webcam.setPipeline(aprilTagDetectionPipeline);
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-            if(detections != null)
-            {
+            if (detections != null) {
                 telemetry.addData("FPS", webcam.getFps());
                 telemetry.addData("Overhead ms", webcam.getOverheadTimeMs());
                 telemetry.addData("Pipeline ms", webcam.getPipelineTimeMs());
 
                 // If we don't see any tags
-                if(detections.size() == 0)
-                {
+                if (detections.size() == 0) {
                     numFramesWithoutDetection++;
 
                     // If we haven't seen a tag for a few frames, lower the decimation
                     // so we can hopefully pick one up if we're e.g. far back
-                    if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
-                    {
+                    if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
                         aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
                     }
                 }
                 // We do see tags!
-                else
-                {
+                else {
                     numFramesWithoutDetection = 0;
 
                     // If the target is within 1 meter, turn on high decimation to
                     // increase the frame rate
-                    if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
-                    {
+                    if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
                         aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                     }
 
-                    for(AprilTagDetection detection : detections)
-                    {
+                    for (AprilTagDetection detection : detections) {
                         Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
                         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
                         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
@@ -224,22 +243,17 @@ public class Auto_framework extends LinearOpMode
             //Drive to parking location
 
 
-
-
             // Don't burn CPU cycles busy-looping in this sample
             sleep(50);
         }
     }
 
 
-
-    public static class helmetLocationPipeline extends OpenCvPipeline
-    {
+    public static class helmetLocationPipeline extends OpenCvPipeline {
         /*
          * An enum to define the Helmet position
          */
-        public enum helmetPosition
-        {
+        public enum helmetPosition {
             LEFT,
             CENTER,
             RIGHT
@@ -254,9 +268,9 @@ public class Auto_framework extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40,140);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320,120);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553,140);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40, 140);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320, 120);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553, 140);
         static final int REGION_WIDTH = 85;
         static final int REGION_HEIGHT = 85;
 
@@ -312,16 +326,14 @@ public class Auto_framework extends LinearOpMode
          * This function takes the RGB frame, converts to YCrCb,
          * and extracts the Cb channel to the 'Cb' variable
          */
-        void inputToCb(Mat input)
-        {
+        void inputToCb(Mat input) {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             //Third variable controls color  0 is brightness, 1 is red, 2 is blue
             Core.extractChannel(YCrCb, Cb, 1);
         }
 
         @Override
-        public void init(Mat firstFrame)
-        {
+        public void init(Mat firstFrame) {
             /*
              * We need to call this in order to make sure the 'Cb'
              * object is initialized, so that the submats we make
@@ -344,8 +356,7 @@ public class Auto_framework extends LinearOpMode
         }
 
         @Override
-        public Mat processFrame(Mat input)
-        {
+        public Mat processFrame(Mat input) {
             /*
              * Overview of what we're doing:
              *
@@ -441,7 +452,7 @@ public class Auto_framework extends LinearOpMode
              * Now that we found the max, we actually need to go and
              * figure out which sample region that value was from
              */
-            if(max == avg1) // Was it from region 1?
+            if (max == avg1) // Was it from region 1?
             {
                 position = helmetPosition.LEFT; // Record our analysis
 
@@ -455,8 +466,7 @@ public class Auto_framework extends LinearOpMode
                         region1_pointB, // Second point which defines the rectangle
                         GREEN, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
-            }
-            else if(max == avg2) // Was it from region 2?
+            } else if (max == avg2) // Was it from region 2?
             {
                 position = helmetPosition.CENTER; // Record our analysis
 
@@ -470,8 +480,7 @@ public class Auto_framework extends LinearOpMode
                         region2_pointB, // Second point which defines the rectangle
                         GREEN, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
-            }
-            else if(max == avg3) // Was it from region 3?
+            } else if (max == avg3) // Was it from region 3?
             {
                 position = helmetPosition.RIGHT; // Record our analysis
 
@@ -498,9 +507,36 @@ public class Auto_framework extends LinearOpMode
         /*
          * Call this from the OpMode thread to obtain the latest analysis
          */
-        public helmetPosition getAnalysis()
-        {
+        public helmetPosition getAnalysis() {
             return position;
         }
     }
+
+
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower = x - y - yaw;
+        double rightFrontPower = x + y + yaw;
+        double leftBackPower = x + y - yaw;
+        double rightBackPower = x - y + yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+    }
 }
+
