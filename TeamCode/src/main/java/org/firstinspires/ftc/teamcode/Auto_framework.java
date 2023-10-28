@@ -136,27 +136,24 @@ public class Auto_framework extends LinearOpMode {
 
                 //shift 12 inches left
                 moveRobot(-1, -0.3, 0);
-                runtime.reset();
-                while (opModeIsActive() && (runtime.seconds() < 0.4)) {
-                    telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-                    telemetry.update();
-                }
+                //runtime.reset();
+                sleep(500);
                 //stop robot
                 stopRobot();
-
+                sleep(5000);
                 //unload pixel
 
-                intake.setPower(-0.15);
-                sleep(500);
+                intake.setPower(-0.5);
+                sleep(1000);
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(200);
+                sleep(500);
                 stopRobot();
                 sleep(5000);
                 //rotate to face wall
                 moveRobot(0,0,0.3);
-                sleep(300);
+                sleep(700);
                 stopRobot();
                 sleep(5000);
                 //move forward 48 inches
