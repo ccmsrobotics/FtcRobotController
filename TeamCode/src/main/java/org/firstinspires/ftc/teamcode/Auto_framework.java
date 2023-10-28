@@ -135,23 +135,35 @@ public class Auto_framework extends LinearOpMode {
                 ID_TAG_OF_INTEREST = 4;
 
                 //shift 12 inches left
-                moveRobot(-1, -.3, 0);
+                moveRobot(-1, -0.3, 0);
                 runtime.reset();
-                while (opModeIsActive() && (runtime.seconds() < .4)) {
+                while (opModeIsActive() && (runtime.seconds() < 0.4)) {
                     telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
                     telemetry.update();
                 }
                 //stop robot
-                moveRobot(0, 0, 0);
+                stopRobot();
 
                 //unload pixel
 
+                intake.setPower(-0.15);
+                sleep(500);
+                intake.setPower(0);
                 //move to center
-
+                moveRobot(-0.5, 0, 0);
+                sleep(200);
+                stopRobot();
+                sleep(5000);
                 //rotate to face wall
-
+                moveRobot(0,0,0.3);
+                sleep(300);
+                stopRobot();
+                sleep(5000);
                 //move forward 48 inches
-
+                moveRobot(1,0,0);
+                sleep(1000);
+                stopRobot();
+                sleep(50000);
                 //transistion to april tag unload
             } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload
@@ -535,6 +547,12 @@ public class Auto_framework extends LinearOpMode {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+    }
+    public void stopRobot() {
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightBackDrive.setPower(0);
     }
 }
 
