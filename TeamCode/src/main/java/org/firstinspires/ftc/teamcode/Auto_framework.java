@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
@@ -65,6 +66,7 @@ public class Auto_framework extends LinearOpMode {
     OpenCvWebcam webcam;
     helmetLocationPipeline helmetPipeline;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    AprilTagDetection tagOfInterest = null;
     static final double FEET_PER_METER = 3.28084;
     // Lens intrinsics
     // UNITS ARE PIXELS
@@ -77,12 +79,25 @@ public class Auto_framework extends LinearOpMode {
     // UNITS ARE METERS
     double tagsize = 0.166;
     int numFramesWithoutDetection = 0;
+    int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
     final float DECIMATION_LOW = 2;
     final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
     int ID_TAG_OF_INTEREST = 18;
+    boolean readyToDeliver=false;
+    boolean pixel_delivered=false;
+    double drive = 0;
+    double turn = 0;
+    double strafe = 0;
 
+    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
     @Override
     public void runOpMode() {
@@ -99,6 +114,7 @@ public class Auto_framework extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
 
 
         //Initialize the Helmet location pipeline
@@ -216,57 +232,91 @@ public class Auto_framework extends LinearOpMode {
                 //transistion to april tag unload
             }
             webcam.setPipeline(aprilTagDetectionPipeline);
-            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-            if (detections != null) {
-                telemetry.addData("FPS", webcam.getFps());
-                telemetry.addData("Overhead ms", webcam.getOverheadTimeMs());
-                telemetry.addData("Pipeline ms", webcam.getPipelineTimeMs());
-
-                // If we don't see any tags
+            //This loop uses apriltag to drop to backdrop
+            while (!readyToDeliver) {
+                ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+               // If we don't see any tags
                 if (detections.size() == 0) {
-                    numFramesWithoutDetection++;
-
-                    // If we haven't seen a tag for a few frames, lower the decimation
-                    // so we can hopefully pick one up if we're e.g. far back
-                    if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                        numFramesWithoutDetection++;
+                        // If we haven't seen a tag for a few frames, lower the decimation
+                        // so we can hopefully pick one up if we're e.g. far back
+                        if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                            stopRobot();
+                        }
                     }
-                }
                 // We do see tags!
                 else {
-                    numFramesWithoutDetection = 0;
-
-                    // If the target is within 1 meter, turn on high decimation to
-                    // increase the frame rate
-                    if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                        boolean tagFound = false;
+                        //go through the detections and see if the desired tag is available
+                        for(AprilTagDetection tag : detections)
+                        {
+                            if(tag.id == ID_TAG_OF_INTEREST)
+                            {
+                                tagOfInterest = tag;
+                                tagFound = true;
+                                break;
+                            }
+                        }
+                        numFramesWithoutDetection = 0;
+                        if(tagFound){
+                            tagMissingFrames=0;
+                            if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+                                aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                            }
+                            Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+                            double  rangeError      = (tagOfInterest.pose.x - 18);
+                            double  headingError    =tagOfInterest.pose.y;
+                            double  yawError        = rot.firstAngle;
+                            telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
+                            telemetry.addLine(String.format("Translation X: %.2f feet",tagOfInterest.pose.x*FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y*FEET_PER_METER));
+                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                            //
+                            if(rangeError < 2 && headingError<2 && yawError<2 ){
+                                readyToDeliver=true;
+                                stopRobot();
+                                break; //end the While loop
+                            }
+                            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                            moveRobot(drive, turn, strafe);
+                        }
+                        else {
+                            tagMissingFrames++;
+                            if(tagMissingFrames>3){
+                                stopRobot();
+                            }
+                        }
                     }
-
-                    for (AprilTagDetection detection : detections) {
-                        Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-
-                        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
-                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
-                        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
-                    }
-                }
-
                 telemetry.update();
+                sleep(50);
             }
 
-            //drive through center
-
-            //initialize Apriltag
-
-            //Check if we see apriltag
-
-            //drive to apriltag
-
             //deposit
+            lift.setPower(.75);
+            sleep(200);
+            lift.setPower(0);
+            dumpTruck.setPosition(-1);
+            sleep(2000);
+            dumpTruck.setPosition(0);
+            //move to backstage
+            moveRobot(-.2,0,0);
+            sleep(400);
+            moveRobot(0,.5,0);
+            sleep(400);
+            moveRobot(.25,0,0);
+            sleep(400);
+            stopRobot();
+            lift.setPower(0);
+            intake.setPower(0);
+            //Loop until end of match
+            while(true){
+
+            }
+
+
 
             //Drive to parking location
 
@@ -571,6 +621,18 @@ public class Auto_framework extends LinearOpMode {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+    }
+    void tagToTelemetry(AprilTagDetection detection)
+    {
+        Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+
+        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
+        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
     }
 }
 
