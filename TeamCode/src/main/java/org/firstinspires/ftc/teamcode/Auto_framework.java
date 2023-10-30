@@ -316,13 +316,6 @@ public class Auto_framework extends LinearOpMode {
 
             }
 
-
-
-            //Drive to parking location
-
-
-            // Don't burn CPU cycles busy-looping in this sample
-            sleep(50);
         }
     }
 
