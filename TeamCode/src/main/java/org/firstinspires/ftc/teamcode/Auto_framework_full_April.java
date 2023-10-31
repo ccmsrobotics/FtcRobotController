@@ -23,7 +23,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,29 +30,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.openftc.apriltag.AprilTagDetection;
+
 import java.util.ArrayList;
 
 /*
  * FTC Team 18975 autonomous code
  */
-@Autonomous
-public class Auto_framework extends LinearOpMode {
+@Autonomous (name="Red-Human-Auto April Tag navigation")
+public class Auto_framework_full_April extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
@@ -145,154 +145,62 @@ public class Auto_framework extends LinearOpMode {
             myPosition = helmetPipeline.getAnalysis();
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
+            webcam.setPipeline(aprilTagDetectionPipeline);
             //sleep(1000);
             if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
-
-                //shift 12 inches left
-
-                moveRobot(0, -0.5, 0);
-                //runtime.reset();
-                sleep(300);
-                moveRobot(-1, 0, 0);
-                //runtime.reset();
-                sleep(850);
-                //stop robot
+                moveToApril(36, 24, 30, 7,"Left Spike unload");
                 stopRobot();
-                sleep(2000);
+                sleep(200);
                 //unload pixel
-
-                intake.setPower(0.4);
+                intake.setPower(0.2);
                 sleep(700);
                 intake.setPower(0);
-                //move to center
-                moveRobot(-0.5, 0, 0);
-                sleep(500);
-                stopRobot();
-                sleep(2000);
+                moveToApril(12,12,0, 7, "move to center");
+                moveToApril(60, 12, 0, 7, "Drive to Scoring Side");
                 //rotate to face wall
                 moveRobot(0,0,-0.5);
                 sleep(800);
                 stopRobot();
-                sleep(2000);
-                //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
-                stopRobot();
-                sleep(50000);
                 //transistion to april tag unload
             } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
-                moveRobot(-1, 0, 0);
-                //runtime.reset();
-                sleep(950);
-                //stop robot
+                moveToApril(36, 24, 30, 7,"Center Spike unload");
                 stopRobot();
-                sleep(2000);
+                sleep(200);
                 //unload pixel
-
-                intake.setPower(0.4);
+                intake.setPower(0.2);
                 sleep(700);
                 intake.setPower(0);
-                //move to center
-                moveRobot(-0.5, 0, 0);
-                sleep(400);
-                stopRobot();
-                sleep(2000);
+                moveToApril(12,12,0, 7, "move to center");
+                moveToApril(60, 12, 0, 7, "Drive to Scoring Side");
                 //rotate to face wall
                 moveRobot(0,0,-0.5);
                 sleep(800);
                 stopRobot();
-                sleep(2000);
-                //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
-                stopRobot();
-                sleep(50000);
-
-                //transistion to april tag unload
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 3, Red right is 6
                 ID_TAG_OF_INTEREST = 6;
-
-                //shift 12 inches right
-
-                //move forward 30 inches
-
+                moveToApril(40,24,30,7,"Right Spike center move");
+                moveToApril(36, 24, 30, 7,"Right Spike unload");
+                stopRobot();
+                sleep(200);
                 //unload pixel
-
-                //move to center
-
+                intake.setPower(0.2);
+                sleep(700);
+                intake.setPower(0);
+                moveToApril(12,12,0, 7, "move to center");
+                moveToApril(60, 12, 0, 7, "Drive to Scoring Side");
                 //rotate to face wall
-
-                //move forward 48 inches
-
-                //transistion to april tag unload
+                moveRobot(0,0,-0.5);
+                sleep(800);
+                stopRobot();
             }
-            webcam.setPipeline(aprilTagDetectionPipeline);
+
             //This loop uses apriltag to drop to backdrop
-            while (!readyToDeliver) {
-                ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-               // If we don't see any tags
-                if (detections.size() == 0) {
-                        numFramesWithoutDetection++;
-                        // If we haven't seen a tag for a few frames, lower the decimation
-                        // so we can hopefully pick one up if we're e.g. far back
-                        if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                            stopRobot();
-                        }
-                    }
-                // We do see tags!
-                else {
-                        boolean tagFound = false;
-                        //go through the detections and see if the desired tag is available
-                        for(AprilTagDetection tag : detections)
-                        {
-                            if(tag.id == ID_TAG_OF_INTEREST)
-                            {
-                                tagOfInterest = tag;
-                                tagFound = true;
-                                break;
-                            }
-                        }
-                        numFramesWithoutDetection = 0;
-                        if(tagFound){
-                            tagMissingFrames=0;
-                            if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                                aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
-                            }
-                            Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double  rangeError      = (tagOfInterest.pose.x - 18);
-                            double  headingError    =tagOfInterest.pose.y;
-                            double  yawError        = rot.firstAngle;
-                            telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                            telemetry.addLine(String.format("Translation X: %.2f feet",tagOfInterest.pose.x*FEET_PER_METER));
-                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y*FEET_PER_METER));
-                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                            //
-                            if(rangeError < 2 && headingError<2 && yawError<2 ){
-                                readyToDeliver=true;
-                                stopRobot();
-                                break; //end the While loop
-                            }
-                            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-                            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-                            moveRobot(drive, turn, strafe);
-                        }
-                        else {
-                            tagMissingFrames++;
-                            if(tagMissingFrames>3){
-                                stopRobot();
-                            }
-                        }
-                    }
-                telemetry.update();
-                sleep(50);
-            }
+            moveToApril(18,0,0,ID_TAG_OF_INTEREST,"Move to backdrop");
 
             //deposit
             lift.setPower(.75);
@@ -614,6 +522,71 @@ public class Auto_framework extends LinearOpMode {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+    }
+    public void moveToApril(double xTarget, double yTarget, double yawTarget, int tagTarget, String moveStage){
+        numFramesWithoutDetection=0;
+        tagMissingFrames=0;
+        while (!readyToDeliver) {
+            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+            // If we don't see any tags
+            if (detections.size() == 0) {
+                numFramesWithoutDetection++;
+                // If we haven't seen a tag for a few frames, lower the decimation
+                // so we can hopefully pick one up if we're e.g. far back
+                if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
+                    aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                    stopRobot();
+                }
+            }
+            // We do see tags!
+            else {
+                boolean tagFound = false;
+                //go through the detections and see if the desired tag is available
+                for(AprilTagDetection tag : detections)
+                {
+                    if(tag.id == tagTarget)
+                    {
+                        tagOfInterest = tag;
+                        tagFound = true;
+                        break;
+                    }
+                }
+                numFramesWithoutDetection = 0;
+                if(tagFound){
+                    tagMissingFrames=0;
+                    if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                    }
+                    Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+                    double  rangeError      = (tagOfInterest.pose.x - xTarget);
+                    double  headingError    =(tagOfInterest.pose.y-yTarget);
+                    double  yawError        = (rot.firstAngle-yawTarget);
+                    telemetry.addLine(moveStage);
+                    telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
+                    telemetry.addLine(String.format("Translation X: %.2f feet",tagOfInterest.pose.x*FEET_PER_METER));
+                    telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y*FEET_PER_METER));
+                    telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                    //
+                    if(rangeError < 2 && headingError<2 && yawError<2 ){
+                        readyToDeliver=true;
+                        stopRobot();
+                        break; //end the While loop
+                    }
+                    drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                    strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    moveRobot(drive, turn, strafe);
+                }
+                else {
+                    tagMissingFrames++;
+                    if(tagMissingFrames>3){
+                        stopRobot();
+                    }
+                }
+            }
+            telemetry.update();
+            sleep(50);
+        }
     }
     void tagToTelemetry(AprilTagDetection detection)
     {
