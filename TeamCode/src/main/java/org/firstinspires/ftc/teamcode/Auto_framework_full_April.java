@@ -77,7 +77,7 @@ public class Auto_framework_full_April extends LinearOpMode {
     double cx = 402.145;
     double cy = 221.506;
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 5;
     int numFramesWithoutDetection = 0;
     int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
