@@ -114,45 +114,45 @@ public class April_tag_data extends LinearOpMode {
             while (true) {
                 ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                 // If we don't see any tags
-                if (detections.size() == 0) {
-                    numFramesWithoutDetection++;
-                    // If we haven't seen a tag for a few frames, lower the decimation
-                    // so we can hopefully pick one up if we're e.g. far back
-                    if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                        telemetry.addLine("No tag Found");
-                    }
-                }
-                // We do see tags!
-                else {
-                    boolean tagFound = false;
-                    //go through the detections and see if the desired tag is available
-                    for(AprilTagDetection tag : detections)
-                    {
-                        if(tag.id == ID_TAG_OF_INTEREST)
-                        {
-                            tagOfInterest = tag;
-                            tagFound = true;
-                            break;
+                if (detections != null) {
+                    if (detections.size() == 0) {
+                        numFramesWithoutDetection++;
+                        // If we haven't seen a tag for a few frames, lower the decimation
+                        // so we can hopefully pick one up if we're e.g. far back
+                        if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                            telemetry.addLine("No tag Found");
                         }
                     }
-                    numFramesWithoutDetection = 0;
-                    if(tagFound){
-                        tagMissingFrames=0;
-                        if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                    // We do see tags!
+                    else {
+                        boolean tagFound = false;
+                        //go through the detections and see if the desired tag is available
+                        for (AprilTagDetection tag : detections) {
+                            if (tag.id == ID_TAG_OF_INTEREST) {
+                                tagOfInterest = tag;
+                                tagFound = true;
+                                break;
+                            }
                         }
-                        Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+                        numFramesWithoutDetection = 0;
+                        if (tagFound) {
+                            tagMissingFrames = 0;
+                            if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+                                aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                            }
+                            Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
-                        telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet",tagOfInterest.pose.x));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y));
-                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                            telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
+                            telemetry.addLine(String.format("Translation X: %.2f feet", tagOfInterest.pose.x));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y));
+                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+
+                        }
 
                     }
-
+                    telemetry.update();
                 }
-                telemetry.update();
                 sleep(50);
             }
 
