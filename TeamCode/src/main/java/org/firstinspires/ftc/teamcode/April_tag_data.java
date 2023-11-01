@@ -145,7 +145,7 @@ public class April_tag_data extends LinearOpMode {
 
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
                             telemetry.addLine(String.format("Translation X: %.2f feet", tagOfInterest.pose.x));
-                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.z));
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
 
                         }
