@@ -158,7 +158,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
-                moveToApril(.3, 0, 0, 10,"Left Spike unload");
+                moveToApril(webcam,.3, 0, 0, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
@@ -166,8 +166,8 @@ public class Auto_framework_full_April extends LinearOpMode {
                 sleep(700);
                 intake.setPower(0);
                 sleep(20000);
-                moveToApril(12,12,0, 10, "move to center");
-                moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
+                moveToApril(webcam,12,12,0, 10, "move to center");
+                moveToApril(webcam,60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
                 moveRobot(0,0,-0.5);
                 sleep(800);
@@ -176,7 +176,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
-                moveToApril(.6, 0.14, 5, 10,"Left Spike unload");
+                moveToApril(webcam,.6, 0.14, 5, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
@@ -184,8 +184,8 @@ public class Auto_framework_full_April extends LinearOpMode {
                 sleep(700);
                 intake.setPower(0);
                 sleep(20000);
-                moveToApril(12,12,0, 10, "move to center");
-                moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
+                moveToApril(webcam,12,12,0, 10, "move to center");
+                moveToApril(webcam,60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
                 moveRobot(0,0,-0.5);
                 sleep(800);
@@ -193,7 +193,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 3, Red right is 6
                 ID_TAG_OF_INTEREST = 6;
-                moveToApril(.08, .86, 0, 10,"Left Spike unload");
+                moveToApril(webcam,.08, .86, 0, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
@@ -201,8 +201,8 @@ public class Auto_framework_full_April extends LinearOpMode {
                 sleep(700);
                 intake.setPower(0);
                 sleep(20000);
-                moveToApril(12,12,0, 10, "move to center");
-                moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
+                moveToApril(webcam,12,12,0, 10, "move to center");
+                moveToApril(webcam,60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
                 moveRobot(0,0,-0.5);
                 sleep(800);
@@ -210,7 +210,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             }
 
             //This loop uses apriltag to drop to backdrop
-            moveToApril(18,0,0,ID_TAG_OF_INTEREST,"Move to backdrop");
+            moveToApril(webcam,18,0,0,ID_TAG_OF_INTEREST,"Move to backdrop");
 
             //deposit
             lift.setPower(.75);
@@ -533,7 +533,7 @@ public class Auto_framework_full_April extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
-    public void moveToApril(double xTarget, double yTarget, double yawTarget, int tagTarget, String moveStage){
+    public void moveToApril(OpenCvWebcam webcam, double xTarget, double yTarget, double yawTarget, int tagTarget, String moveStage){
         numFramesWithoutDetection=0;
         tagMissingFrames=0;
         while (!readyToDeliver) {
