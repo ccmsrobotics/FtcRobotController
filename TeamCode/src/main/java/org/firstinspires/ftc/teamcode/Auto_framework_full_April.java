@@ -129,7 +129,7 @@ public class Auto_framework_full_April extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
