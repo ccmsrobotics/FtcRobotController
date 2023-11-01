@@ -146,17 +146,26 @@ public class Auto_framework_full_April extends LinearOpMode {
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
             webcam.setPipeline(aprilTagDetectionPipeline);
+            moveRobot(-1, 0, 0);
+            //runtime.reset();
+            sleep(450);
+            //stop robot
+            stopRobot();
+            moveRobot(0,0,0.5);
+            sleep(700);
+            stopRobot();
             //sleep(1000);
             if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
-                moveToApril(36, 24, 30, 10,"Left Spike unload");
+                moveToApril(.3, 0, 0, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
                 intake.setPower(0.2);
                 sleep(700);
                 intake.setPower(0);
+                sleep(20000);
                 moveToApril(12,12,0, 10, "move to center");
                 moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
@@ -167,13 +176,14 @@ public class Auto_framework_full_April extends LinearOpMode {
             } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
-                moveToApril(36, 24, 30, 10,"Center Spike unload");
+                moveToApril(.6, 0.14, 5, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
                 intake.setPower(0.2);
                 sleep(700);
                 intake.setPower(0);
+                sleep(20000);
                 moveToApril(12,12,0, 10, "move to center");
                 moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
@@ -183,14 +193,14 @@ public class Auto_framework_full_April extends LinearOpMode {
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 3, Red right is 6
                 ID_TAG_OF_INTEREST = 6;
-                moveToApril(40,24,30,10,"Right Spike center move");
-                moveToApril(36, 24, 30, 10,"Right Spike unload");
+                moveToApril(.08, .86, 0, 10,"Left Spike unload");
                 stopRobot();
                 sleep(200);
                 //unload pixel
                 intake.setPower(0.2);
                 sleep(700);
                 intake.setPower(0);
+                sleep(20000);
                 moveToApril(12,12,0, 10, "move to center");
                 moveToApril(60, 12, 0, 10, "Drive to Scoring Side");
                 //rotate to face wall
@@ -567,7 +577,7 @@ public class Auto_framework_full_April extends LinearOpMode {
                         telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y * FEET_PER_METER));
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                         //
-                        if (rangeError < 2 && headingError < 2 && yawError < 2) {
+                        if (rangeError < 0.03 && headingError < 0.03 && yawError < 5) {
                             readyToDeliver = true;
                             stopRobot();
                             break; //end the While loop
