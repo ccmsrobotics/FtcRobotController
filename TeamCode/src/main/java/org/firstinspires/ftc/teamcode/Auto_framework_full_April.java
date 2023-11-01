@@ -135,7 +135,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             @Override
             public void onError(int errorCode) {
                 /*
-                 * This will be called if the camera could not be opened
+                 * This will be called if the camera could not be opened                // 2.5, -3.5, 4%
                  */
             }
         });
