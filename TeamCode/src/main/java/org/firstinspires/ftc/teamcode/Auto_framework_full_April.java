@@ -52,7 +52,7 @@ import java.util.ArrayList;
 /*
  * FTC Team 18975 autonomous code
  */
-@Autonomous (name="Red-Human-Auto April Tag navigation")
+@Autonomous (name="Red-Human-Auto April Tag navigation", group="Red")
 public class Auto_framework_full_April extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -587,18 +587,6 @@ public class Auto_framework_full_April extends LinearOpMode {
             telemetry.update();
             sleep(50);
         }
-    }
-    void tagToTelemetry(AprilTagDetection detection)
-    {
-        Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
     }
 }
 
