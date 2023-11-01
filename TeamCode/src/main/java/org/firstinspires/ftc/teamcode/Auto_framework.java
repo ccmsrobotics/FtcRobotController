@@ -342,8 +342,8 @@ public class Auto_framework extends LinearOpMode {
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40, 140);
         static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320, 120);
         static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553, 140);
-        static final int REGION_WIDTH = 85;
-        static final int REGION_HEIGHT = 85;
+        static final int REGION_WIDTH = 95;
+        static final int REGION_HEIGHT = 95;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
