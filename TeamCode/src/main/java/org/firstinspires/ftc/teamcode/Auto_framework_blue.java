@@ -23,7 +23,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,29 +30,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.openftc.apriltag.AprilTagDetection;
+
 import java.util.ArrayList;
 
 /*
  * FTC Team 18975 autonomous code
  */
 @Autonomous
-public class Auto_framework extends LinearOpMode {
+public class Auto_framework_blue extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
@@ -147,13 +147,13 @@ public class Auto_framework extends LinearOpMode {
             telemetry.update();
             webcam.setPipeline(aprilTagDetectionPipeline);
             //sleep(1000);
-            if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
+            if (myPosition == helmetLocationPipeline.helmetPosition.RIGHT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
-                ID_TAG_OF_INTEREST = 4;
+                ID_TAG_OF_INTEREST = 3;
 
                 //shift 12 inches left
 
-                moveRobot(0, -0.5, 0);
+                moveRobot(0, 0.5, 0);
                 //runtime.reset();
                 sleep(300);
                 moveRobot(-1, 0, 0);
@@ -173,7 +173,7 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(2000);
                 //rotate to face wall
-                moveRobot(0,0,-0.5);
+                moveRobot(0,0,0.5);
                 sleep(900);
                 stopRobot();
                 sleep(2000);
@@ -207,7 +207,7 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(2000);
                 //rotate to face wall
-                moveRobot(0,0,-0.5);
+                moveRobot(0,0,0.5);
                 sleep(900);
                 stopRobot();
                 sleep(2000);
@@ -409,7 +409,7 @@ public class Auto_framework extends LinearOpMode {
         void inputToCb(Mat input) {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             //Third variable controls color  0 is brightness, 1 is red, 2 is blue
-            Core.extractChannel(YCrCb, Cb, 1);
+            Core.extractChannel(YCrCb, Cb, 2);
         }
 
         @Override
