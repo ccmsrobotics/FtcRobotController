@@ -22,6 +22,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -52,7 +53,9 @@ import java.util.ArrayList;
 /*
  * FTC Team 18975 autonomous code
  */
+
 @Autonomous (name="Verify April 7", group="Verify")
+@Disabled
 public class April_tag_data extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     OpenCvWebcam webcam;

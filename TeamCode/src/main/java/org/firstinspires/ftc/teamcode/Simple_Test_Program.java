@@ -51,7 +51,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 //The Anti-Bloon is watching you........
 @TeleOp(name="Simple_Test_Program", group="Iterative OpMode")
-//@Disabled
+@Disabled
 public class Simple_Test_Program extends OpMode
 {
     // Declare OpMode members.

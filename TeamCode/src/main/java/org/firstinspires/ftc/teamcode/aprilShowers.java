@@ -80,7 +80,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Autonomous(name="AprilShowers", group = "Concept")
-//@Disabled
+@Disabled
 public class aprilShowers extends LinearOpMode {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 8.0; //  this is how close the camera should get to the target (inches)

@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @Autonomous(name="Bryce's Red Yaks Cut Eggplants", group="Linear OpMode")
-//@Disabled
+@Disabled
 public class Bryce_autonomous extends LinearOpMode {
 
     // Declare OpMode members.

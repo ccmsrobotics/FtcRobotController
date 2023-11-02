@@ -62,6 +62,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Robot: Coach Drive", group="Robot")
+@Disabled
 
 public class RobotAutoDrive_Coach extends LinearOpMode {
 
