@@ -183,7 +183,7 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(400);
+                sleep(800);
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
@@ -217,7 +217,7 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(400);
+                sleep(800);
                 stopRobot();
                 sleep(50000);
 

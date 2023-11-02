@@ -152,6 +152,10 @@ public class TwoController_UserOpmode extends LinearOpMode {
             if(liftPow>0){
                 liftPow = liftPow/2;
             }
+            double intakePow = -1*gamepad2.right_stick_y;
+            if(intakePow>0) {
+                intakePow /= 2;
+            }
             // This is test code:
             //
             // Uncomment the following code to test your motor directions.
@@ -175,7 +179,7 @@ public class TwoController_UserOpmode extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
             lift.setPower(liftPow);
-            intake.setPower(-1*gamepad2.right_stick_y);
+            intake.setPower(intakePow);
             dumpTruck.setPosition(servoPos*-1);
 
 

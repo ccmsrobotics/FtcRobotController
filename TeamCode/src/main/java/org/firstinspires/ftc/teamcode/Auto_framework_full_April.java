@@ -155,7 +155,7 @@ public class Auto_framework_full_April extends LinearOpMode {
             sleep(700);
             stopRobot();
             //sleep(1000);
-            if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
+            if (helmetPipeline.position == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
                 moveToApril(webcam,.3, 0, 0, 10,"Left Spike unload");
@@ -173,7 +173,7 @@ public class Auto_framework_full_April extends LinearOpMode {
                 sleep(800);
                 stopRobot();
                 //transistion to april tag unload
-            } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
+            } else if (helmetPipeline.position == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
                 moveToApril(webcam,.6, 0.14, 5, 10,"Left Spike unload");

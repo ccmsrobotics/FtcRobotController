@@ -68,7 +68,7 @@ public class April_tag_data extends LinearOpMode {
     double cx = 402.145;
     double cy = 221.506;
     // UNITS ARE METERS
-    double tagsize = 5;
+    double tagsize = .13;
     int numFramesWithoutDetection = 0;
     int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
@@ -107,6 +107,7 @@ public class April_tag_data extends LinearOpMode {
         });
         waitForStart();
         while (opModeIsActive()) {
+            sleep(2000);
             webcam.setPipeline(aprilTagDetectionPipeline);
             ID_TAG_OF_INTEREST = 7;
             numFramesWithoutDetection=0;
@@ -145,6 +146,7 @@ public class April_tag_data extends LinearOpMode {
 
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
                             telemetry.addLine(String.format("Translation X: %.2f feet", tagOfInterest.pose.x));
+                            telemetry.addLine(String.format("Translation Z: %.2f feet", tagOfInterest.pose.y));
                             telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.z));
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
 

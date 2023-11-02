@@ -129,7 +129,7 @@ public class Auto_framework_blue extends LinearOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -142,12 +142,15 @@ public class Auto_framework_blue extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             //Find location of team element
-            myPosition = helmetPipeline.getAnalysis();
-            telemetry.addData("Analysis", myPosition);
-            telemetry.update();
-            webcam.setPipeline(aprilTagDetectionPipeline);
-            //sleep(1000);
-            if (myPosition == helmetLocationPipeline.helmetPosition.RIGHT) {
+                sleep(1000);
+                myPosition = helmetPipeline.getAnalysis();
+                sleep(200);
+                myPosition = helmetPipeline.getAnalysis();
+                telemetry.addData("Analysis", helmetPipeline.position);
+                telemetry.update();
+                sleep(100);
+ //sleep(1000);
+            if (helmetPipeline.position == helmetLocationPipeline.helmetPosition.RIGHT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 3;
 
@@ -183,11 +186,11 @@ public class Auto_framework_blue extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(400);
+                sleep(800);
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
-            } else if (myPosition == helmetLocationPipeline.helmetPosition.CENTER) {
+            } else if (helmetPipeline.position == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
                 moveRobot(-1, 0, 0);
@@ -217,7 +220,7 @@ public class Auto_framework_blue extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(400);
+                sleep(800);
                 stopRobot();
                 sleep(50000);
 
@@ -245,7 +248,8 @@ public class Auto_framework_blue extends LinearOpMode {
             while (!readyToDeliver) {
                 ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                // If we don't see any tags
-                if (detections.size() == 0) {
+                if (detections != null) {
+                    if (detections.size() == 0) {
                         numFramesWithoutDetection++;
                         // If we haven't seen a tag for a few frames, lower the decimation
                         // so we can hopefully pick one up if we're e.g. far back
@@ -254,52 +258,50 @@ public class Auto_framework_blue extends LinearOpMode {
                             stopRobot();
                         }
                     }
-                // We do see tags!
-                else {
+                    // We do see tags!
+                    else {
                         boolean tagFound = false;
                         //go through the detections and see if the desired tag is available
-                        for(AprilTagDetection tag : detections)
-                        {
-                            if(tag.id == ID_TAG_OF_INTEREST)
-                            {
+                        for (AprilTagDetection tag : detections) {
+                            if (tag.id == ID_TAG_OF_INTEREST) {
                                 tagOfInterest = tag;
                                 tagFound = true;
                                 break;
                             }
                         }
                         numFramesWithoutDetection = 0;
-                        if(tagFound){
-                            tagMissingFrames=0;
+                        if (tagFound) {
+                            tagMissingFrames = 0;
                             if (tagOfInterest.pose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
                                 aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                             }
                             Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double  rangeError      = (tagOfInterest.pose.x - 18);
-                            double  headingError    =tagOfInterest.pose.y;
-                            double  yawError        = rot.firstAngle;
+                            double rangeError = (tagOfInterest.pose.x - 18);
+                            double headingError = tagOfInterest.pose.y;
+                            double yawError = rot.firstAngle;
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                            telemetry.addLine(String.format("Translation X: %.2f feet",tagOfInterest.pose.x*FEET_PER_METER));
-                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y*FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation X: %.2f feet", tagOfInterest.pose.x * FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", tagOfInterest.pose.y * FEET_PER_METER));
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                             //
-                            if(rangeError < 2 && headingError<2 && yawError<2 ){
-                                readyToDeliver=true;
+                            if (rangeError < 2 && headingError < 2 && yawError < 2) {
+                                readyToDeliver = true;
                                 stopRobot();
                                 break; //end the While loop
                             }
-                            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                            drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                            turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                             moveRobot(drive, turn, strafe);
-                        }
-                        else {
+                        } else {
                             tagMissingFrames++;
-                            if(tagMissingFrames>3){
+                            if (tagMissingFrames > 3) {
                                 stopRobot();
                             }
                         }
                     }
-                telemetry.update();
+                    telemetry.update();
+                }
                 sleep(50);
             }
 
