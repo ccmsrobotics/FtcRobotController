@@ -109,6 +109,7 @@ public class April_tag_data extends LinearOpMode {
         while (opModeIsActive()) {
             sleep(2000);
             webcam.setPipeline(aprilTagDetectionPipeline);
+            sleep(2000);
             ID_TAG_OF_INTEREST = 7;
             numFramesWithoutDetection=0;
             tagMissingFrames=0;
