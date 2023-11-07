@@ -139,16 +139,29 @@ public class Auto_framework_blue extends LinearOpMode {
                  */
             }
         });
+
+        while (!isStarted()) {
+            myPosition = helmetPipeline.getAnalysis();
+        }
+
         waitForStart();
         while (opModeIsActive()) {
             //Find location of team element
-                sleep(1000);
-                myPosition = helmetPipeline.getAnalysis();
-                sleep(200);
-                myPosition = helmetPipeline.getAnalysis();
-                telemetry.addData("Analysis", helmetPipeline.position);
-                telemetry.update();
-                sleep(100);
+            lift.setPower(-0.35);
+            sleep(500);
+            lift.setPower(0);
+            dumpTruck.setPosition(1);
+            sleep(1500);
+            lift.setPower(.35);
+            sleep(1500);
+            lift.setPower(0);
+            sleep(1000);
+            myPosition = helmetPipeline.getAnalysis();
+            sleep(200);
+            myPosition = helmetPipeline.getAnalysis();
+            telemetry.addData("Analysis", helmetPipeline.position);
+            telemetry.update();
+            sleep(100);
  //sleep(1000);
             if (helmetPipeline.position == helmetLocationPipeline.helmetPosition.RIGHT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
@@ -158,17 +171,17 @@ public class Auto_framework_blue extends LinearOpMode {
 
                 moveRobot(0, 0.5, 0);
                 //runtime.reset();
-                sleep(300);
+                sleep(450);
                 moveRobot(-1, 0, 0);
                 //runtime.reset();
-                sleep(700);
+                sleep(550);
                 //stop robot
                 stopRobot();
-                sleep(200);
+                sleep(400);
                 //unload pixel
 
                 intake.setPower(0.4);
-                sleep(700);
+                sleep(1400);
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
@@ -177,7 +190,7 @@ public class Auto_framework_blue extends LinearOpMode {
                 sleep(200);
                 //rotate to face wall
                 moveRobot(0,0,0.5);
-                sleep(900);
+                sleep(500);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
@@ -187,6 +200,9 @@ public class Auto_framework_blue extends LinearOpMode {
                 sleep(400);
                 moveRobot(-0.5,0,0);
                 sleep(800);
+                stopRobot();
+                moveRobot(0,-0.2,0);
+                sleep(5000);
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
@@ -211,7 +227,7 @@ public class Auto_framework_blue extends LinearOpMode {
                 sleep(200);
                 //rotate to face wall
                 moveRobot(0,0,0.5);
-                sleep(900);
+                sleep(400);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
@@ -222,12 +238,17 @@ public class Auto_framework_blue extends LinearOpMode {
                 moveRobot(-0.5,0,0);
                 sleep(800);
                 stopRobot();
+                moveRobot(0,-0.2,0);
+                sleep(5000);
+                stopRobot();
                 sleep(50000);
 
                 //transistion to april tag unload
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
                 ID_TAG_OF_INTEREST = 1;
+                moveRobot(0,0.5,0);
+                sleep(200);
                 moveRobot(-1, 0, 0);
                 sleep(700);
                 //stop robot
@@ -236,36 +257,39 @@ public class Auto_framework_blue extends LinearOpMode {
                 moveRobot(0,0,-.5);
                 sleep(500);
                 moveRobot(.5,0,0);
-                sleep(250);
+                sleep(350);
                 stopRobot();
                 //unload pixel
 
-                intake.setPower(0.4);
+                intake.setPower(0.35);
                 sleep(700);
                 intake.setPower(0);
                 moveRobot(-.5,0,0);
-                sleep(250);
-                moveRobot(0,0,.5);
                 sleep(500);
+                moveRobot(0,0,.5);
+                sleep(1000);
                 stopRobot();
 
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(400);
+                sleep(500);
                 stopRobot();
                 sleep(200);
                 //rotate to face wall
-                moveRobot(0,0,0.5);
-                sleep(900);
-                stopRobot();
-                sleep(200);
+                //moveRobot(0,0,0.5);
+                //sleep(200);
+                ///stopRobot();
+                //sleep(200);
                 //move forward 48 inches
                 moveRobot(-1,0,0);
                 sleep(1500);
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(800);
+                sleep(400);
+                stopRobot();
+                moveRobot(0,-0.2,0);
+                sleep(5000);
                 stopRobot();
                 sleep(50000);
 
@@ -385,10 +409,10 @@ public class Auto_framework_blue extends LinearOpMode {
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40, 140);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0, 140);
         static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(320, 120);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(553, 140);
-        static final int REGION_WIDTH = 95;
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(643, 160);
+        static final int REGION_WIDTH = 135;
         static final int REGION_HEIGHT = 95;
 
         /*
