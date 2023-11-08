@@ -48,6 +48,13 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
+import com.qualcomm.robotcore.hardware.IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 /*
  * FTC Team 18975 autonomous code
@@ -97,7 +104,7 @@ public class Test_April_Auto_framework extends LinearOpMode {
     final double MAX_AUTO_SPEED = 0.25;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.25;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.15;   //  Clip the turn speed to this max value (adjust for your robot)
-
+    IMU imu;
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. Note that the strings used here must correspond
@@ -109,12 +116,18 @@ public class Test_April_Auto_framework extends LinearOpMode {
         lift = hardwareMap.get(DcMotorSimple.class, "lift");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
+        imu = hardwareMap.get(IMU.class, "imu");
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
 
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         //Initialize camera
@@ -530,6 +543,11 @@ public class Test_April_Auto_framework extends LinearOpMode {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+    }
+    public void turnIMU(AngleUnit targetAngle) {
+        while() {
+
+        }
     }
     void tagToTelemetry(AprilTagDetection detection)
     {
