@@ -73,7 +73,11 @@ public class Test_April_Auto_framework extends LinearOpMode {
     OpenCvWebcam webcam;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
-    static final double FEET_PER_METER = 3.28084;
+    static final double INCHES_PER_METER = 39.37;
+    private double  headingError  = 0;
+    private double  targetHeading = 0;
+    private double  turnSpeed     = 0;
+    static final double     HEADING_THRESHOLD       = 1.0 ;
     // Lens intrinsics
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
@@ -101,7 +105,7 @@ public class Test_April_Auto_framework extends LinearOpMode {
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.25;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.4;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.25;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.15;   //  Clip the turn speed to this max value (adjust for your robot)
     IMU imu;
@@ -191,8 +195,8 @@ public class Test_April_Auto_framework extends LinearOpMode {
                                 aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                             }
                             Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double rangeError = (tagOfInterest.pose.z*36 - 18);
-                            double headingError = tagOfInterest.pose.x*36;
+                            double rangeError = (tagOfInterest.pose.z*INCHES_PER_METER - 18);
+                            double headingError = tagOfInterest.pose.x*INCHES_PER_METER;
                             double yawError = rot.firstAngle;
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
                             telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 36));
@@ -544,19 +548,53 @@ public class Test_April_Auto_framework extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
-    public void turnIMU(AngleUnit targetAngle) {
-        while() {
 
+    public double getHeading() {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.DEGREES);
+    }
+    public void turnToHeading(double maxTurnSpeed, double heading) {
+
+        // Run getSteeringCorrection() once to pre-calculate the current error
+        getSteeringCorrection(heading, SPEED_GAIN);
+
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, TURN_GAIN);
+
+            // Clip the speed to the maximum permitted value.
+            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+
+            // Pivot in place by applying the turning correction
+            moveRobot(0, 0, turnSpeed);
         }
+
+        // Stop all motion;
+        moveRobot(0, 0);
+    }
+    public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
+        targetHeading = desiredHeading;  // Save for telemetry
+
+        // Determine the heading current error
+        headingError = targetHeading - getHeading();
+
+        // Normalize the error to be within +/- 180 degrees
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+
+        // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
+        return Range.clip(headingError * proportionalGain, -1, 1);
     }
     void tagToTelemetry(AprilTagDetection detection)
     {
         Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*INCHES_PER_METER));
+        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*INCHES_PER_METER));
+        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*INCHES_PER_METER));
         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", rot.secondAngle));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", rot.thirdAngle));
