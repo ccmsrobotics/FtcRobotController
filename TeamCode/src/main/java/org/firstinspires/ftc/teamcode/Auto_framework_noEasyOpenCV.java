@@ -29,13 +29,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -49,6 +54,7 @@ import android.graphics.Paint;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /*
  * FTC Team 18975 autonomous code
@@ -56,7 +62,6 @@ import java.util.ArrayList;
 @Autonomous
 public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -66,18 +71,14 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     private Servo dumpTruck = null;
 
     // Used to manage the video source.
-    private AprilTagProcessor aprilTag;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
+    private VisionPortal visionPortal;               // Used to manage the video source.
+    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    private AprilTagDetection desiredTag = null;
+
     AprilTagDetection tagOfInterest = null;
     static final double FEET_PER_METER = 3.28084;
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+
     // UNITS ARE METERS
     double tagsize = 0.166;
     int numFramesWithoutDetection = 0;
@@ -102,6 +103,8 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
+    final double DESIRED_DISTANCE = 12.0;
+
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. Note that the strings used here must correspond
@@ -123,27 +126,11 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
         //Initialize the Helmet location pipeline
         helmetPipeline = new helmetLocationPipeline();
         helmetLocationPipeline.helmetPosition myPosition;
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-        //Initialize camera
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(helmetPipeline);
-        webcam.setMillisecondsPermissionTimeout(5000);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
-            }
+        initAprilTag();
 
-            @Override
-            public void onError(int errorCode) {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
+
         while (!isStarted()) {
-            myPosition = helmetPipeline.getAnalysis();
+            myPosition = helmetPipeline.getSelection();
         }
         waitForStart();
         while (opModeIsActive()) {
@@ -156,14 +143,14 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
             lift.setPower(.35);
             sleep(1500);
             lift.setPower(0);
-            myPosition = helmetPipeline.getAnalysis();
+            myPosition = helmetPipeline.getSelection();
             sleep(200);
-            myPosition = helmetPipeline.getAnalysis();
-            telemetry.addData("Analysis", helmetPipeline.position);
+            myPosition = helmetPipeline.getSelection();
+            telemetry.addData("Analysis", myPosition);
             telemetry.update();
             //webcam.setPipeline(aprilTagDetectionPipeline);
             sleep(100);
-            if (helmetPipeline.position == Auto_framework_noEasyOpenCV.helmetLocationPipeline.helmetPosition.LEFT) {
+            if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
 
@@ -206,7 +193,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
-            } else if (helmetPipeline.position == Auto_framework_noEasyOpenCV.helmetLocationPipeline.helmetPosition.CENTER) {
+            } else if (helmetPipeline.getSelection() == helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 2;
                 moveRobot(-1, 0, 0);
@@ -297,7 +284,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
 
                 //transistion to april tag unload
             }
-            webcam.setPipeline(aprilTagDetectionPipeline);
+
             lift.setPower(.75);
             sleep(200);
             lift.setPower(0);
@@ -524,5 +511,67 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+
+    private void initAprilTag() {
+        // Create the AprilTag processor by using a builder.
+        aprilTag = new AprilTagProcessor.Builder().build();
+
+        // Adjust Image Decimation to trade-off detection-range for detection-rate.
+        // eg: Some typical detection data using a Logitech C920 WebCam
+        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
+        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
+        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
+        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
+        // Note: Decimation can be changed on-the-fly to adapt during a match.
+        aprilTag.setDecimation(2);
+
+        // Create the vision portal by using a builder.
+        if (USE_WEBCAM) {
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(aprilTag)
+                    .build();
+        } else {
+            visionPortal = new VisionPortal.Builder()
+                    .setCamera(BuiltinCameraDirection.BACK)
+                    .addProcessor(aprilTag)
+                    .build();
+        }
+    }
+
+    private void    setManualExposure(int exposureMS, int gain) {
+        // Wait for the camera to be open, then use the controls
+
+        if (visionPortal == null) {
+            return;
+        }
+
+        // Make sure camera is streaming before we try to set the exposure controls
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        // Set camera controls unless we are stopping.
+        if (!isStopRequested())
+        {
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            sleep(20);
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            gainControl.setGain(gain);
+            sleep(20);
+        }
+    }
+
 }
 
