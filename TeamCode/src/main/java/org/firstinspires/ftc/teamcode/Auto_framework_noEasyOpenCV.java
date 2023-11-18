@@ -21,10 +21,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -54,6 +56,7 @@ import android.graphics.Paint;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -75,12 +78,13 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;
+    private helmetLocationPipeline helmetPipeline;
 
     AprilTagDetection tagOfInterest = null;
     static final double FEET_PER_METER = 3.28084;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.051;
     int numFramesWithoutDetection = 0;
     int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
@@ -88,12 +92,12 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
     int ID_TAG_OF_INTEREST = 18;
-    private helmetLocationPipeline helmetPipeline;
     boolean readyToDeliver=false;
     boolean pixel_delivered=false;
     double drive = 0;
     double turn = 0;
     double strafe = 0;
+    IMU imu;
 
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
@@ -120,15 +124,33 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        helmetLocationPipeline.helmetPosition myPosition;
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
 
 
         //Initialize the Helmet location pipeline
         helmetPipeline = new helmetLocationPipeline();
-        helmetLocationPipeline.helmetPosition myPosition;
-        initAprilTag();
+        aprilTag = new AprilTagProcessor.Builder().build();
+        aprilTag.setDecimation(2);
 
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessors(helmetPipeline, aprilTag)
+                .build();
 
+        visionPortal.setProcessorEnabled(aprilTag, false);
+        visionPortal.setProcessorEnabled(helmetPipeline, true);
         while (!isStarted()) {
             myPosition = helmetPipeline.getSelection();
         }
@@ -148,25 +170,22 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
             myPosition = helmetPipeline.getSelection();
             telemetry.addData("Analysis", myPosition);
             telemetry.update();
-            //webcam.setPipeline(aprilTagDetectionPipeline);
+            visionPortal.setProcessorEnabled(helmetPipeline, false);
+            visionPortal.setProcessorEnabled(aprilTag, true);
             sleep(100);
             if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
 
                 //shift 12 inches left
-
                 moveRobot(0, -0.5, 0);
-                //runtime.reset();
                 sleep(450);
                 moveRobot(-1, 0, 0);
-                //runtime.reset();
                 sleep(550);
                 //stop robot
                 stopRobot();
                 sleep(400);
                 //unload pixel
-
                 intake.setPower(0.4);
                 sleep(1400);
                 intake.setPower(0);
@@ -285,22 +304,22 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                 //transistion to april tag unload
             }
 
-            lift.setPower(.75);
-            sleep(200);
+            lift.setPower(-.75);
+            sleep(300);
             lift.setPower(0);
             sleep(100);
             //This loop uses apriltag to drop to backdrop
             while (!readyToDeliver) {
-                ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+                List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                // If we don't see any tags
-                if (detections != null) {
-                    if (detections.size() == 0) {
+                if (currentDetections != null) {
+                    if (currentDetections.size() == 0) {
                         numFramesWithoutDetection++;
                         telemetry.addLine("No tag Found");
                         // If we haven't seen a tag for a few frames, lower the decimation
                         // so we can hopefully pick one up if we're e.g. far back
                         if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                            aprilTag.setDecimation(DECIMATION_LOW);
                             stopRobot();
                         }
                     }
@@ -309,28 +328,41 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                         boolean tagFound = false;
                         telemetry.addLine("Tag(s) Found");
                         //go through the detections and see if the desired tag is available
-                        for (AprilTagDetection tag : detections) {
-                            if (tag.id == ID_TAG_OF_INTEREST) {
-                                tagOfInterest = tag;
-                                tagFound = true;
-                                break;
+                        for (AprilTagDetection detection : currentDetections) {
+                            // Look to see if we have size info on this tag.
+                            if (detection.metadata != null) {
+                                //  Check to see if we want to track towards this tag.
+                                if ( detection.id == ID_TAG_OF_INTEREST) {
+                                    // Yes, we want to use this tag.
+                                    tagFound = true;
+                                    desiredTag = detection;
+                                    break;  // don't look any further.
+                                } else {
+                                    // This tag is in the library, but we do not want to track it right now.
+                                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                                }
+                            } else {
+                                // This tag is NOT in the library, so we don't have enough information to track to it.
+                                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                             }
                         }
                         numFramesWithoutDetection = 0;
                         if (tagFound) {
                             tagMissingFrames = 0;
-                            if (tagOfInterest.pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                                aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                            if (desiredTag.ftcPose.x < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+                                aprilTag.setDecimation(DECIMATION_HIGH);
                             }
-                            Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double rangeError = (tagOfInterest.pose.z*36 - 18);
-                            double headingError = tagOfInterest.pose.x*36;
-                            double yawError = rot.firstAngle;
-                            telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                            telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 36));
-                            telemetry.addLine(String.format("Translation Y: %.2f inches", tagOfInterest.pose.x * 36));
-                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                            //
+                            telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                            telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+                            telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+                            telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+                            double rangeError = (desiredTag.ftcPose.range - 18);
+                            double headingError = desiredTag.ftcPose.bearing;
+                            double yawError = desiredTag.ftcPose.yaw;
+                            telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                            telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+                            telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+                            telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
                             if (rangeError < 2 && headingError < 2 && yawError < 5) {
                                 readyToDeliver = true;
                                 stopRobot();
@@ -340,6 +372,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                             turn = Range.clip(-headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                             moveRobot(drive, turn, strafe);
+                            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                         } else {
                             tagMissingFrames++;
                             if (tagMissingFrames > 3) {
@@ -349,7 +382,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                     }
                     telemetry.update();
                 }
-                sleep(50);
+                sleep(10);
             }
 
             //deposit
@@ -382,27 +415,21 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
 
 
     public class helmetLocationPipeline implements VisionProcessor {
-
-
         public enum helmetPosition {
             NONE,
             LEFT,
             CENTER,
             RIGHT
         }
-
         public Rect rectLeft = new Rect(0, 140, 135, 95);
         public Rect rectMiddle = new Rect(320, 120, 135, 95);
         public Rect rectRight = new Rect(643, 160, 135, 95);
         helmetPosition selection = helmetPosition.NONE;
-
         Mat submat = new Mat();
         Mat hsvMat = new Mat();
-
         @Override
         public void init(int width, int height, CameraCalibration calibration) {
         }
-
         @Override
         public Object processFrame(Mat frame, long captureTimeNanos) {
             Imgproc.cvtColor(frame, hsvMat, Imgproc.COLOR_RGB2HSV);
@@ -510,33 +537,6 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
-    }
-
-    private void initAprilTag() {
-        // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // eg: Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
-
-        // Create the vision portal by using a builder.
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessor(aprilTag)
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-        }
     }
 
     private void    setManualExposure(int exposureMS, int gain) {
