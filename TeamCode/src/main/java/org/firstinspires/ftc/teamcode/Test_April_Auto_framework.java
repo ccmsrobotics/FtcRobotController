@@ -103,7 +103,7 @@ public class Test_April_Auto_framework extends LinearOpMode {
 
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.4;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.25;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -137,6 +137,8 @@ public class Test_April_Auto_framework extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         imu.resetYaw();
 
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -167,6 +169,12 @@ public class Test_April_Auto_framework extends LinearOpMode {
             sleep(200);
             lift.setPower(0);
             sleep(100);
+            turnToHeading(0.5,90);
+            sleep(1000);
+            turnToHeading(0.5,180);
+            sleep(1000);
+            turnToHeading(0.5,270);
+            sleep(50000);
             //This loop uses apriltag to drop to backdrop
             while (!readyToDeliver) {
                 ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
@@ -574,11 +582,14 @@ public class Test_April_Auto_framework extends LinearOpMode {
             turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
 
             // Pivot in place by applying the turning correction
-            moveRobot(0, 0, turnSpeed);
+            moveRobot(0, 0, turnSpeed*1.2);
+            telemetry.addLine(String.format("Turn speed",turnSpeed));
+            telemetry.addLine(String.format("Rotation",getHeading()));
+            telemetry.update();
         }
 
         // Stop all motion;
-        moveRobot(0, 0);
+        moveRobot(0, 0,0);
     }
     public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
         targetHeading = desiredHeading;  // Save for telemetry

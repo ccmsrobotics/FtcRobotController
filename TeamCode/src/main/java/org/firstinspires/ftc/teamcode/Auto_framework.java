@@ -21,16 +21,19 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -68,6 +71,11 @@ public class Auto_framework extends LinearOpMode {
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     AprilTagDetection tagOfInterest = null;
     static final double FEET_PER_METER = 3.28084;
+
+    private double  headingError  = 0;
+    private double  targetHeading = 0;
+    private double  turnSpeed     = 0;
+    static final double     HEADING_THRESHOLD       = 1.0 ;
     // Lens intrinsics
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
@@ -90,6 +98,7 @@ public class Auto_framework extends LinearOpMode {
     double drive = 0;
     double turn = 0;
     double strafe = 0;
+    IMU imu;
 
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
@@ -97,7 +106,7 @@ public class Auto_framework extends LinearOpMode {
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.2;   //  Clip the turn speed to this max value (adjust for your robot)
 
     @Override
     public void runOpMode() {
@@ -110,11 +119,27 @@ public class Auto_framework extends LinearOpMode {
         lift = hardwareMap.get(DcMotorSimple.class, "lift");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
+        imu = hardwareMap.get(IMU.class, "imu");
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
+        // Now initialize the IMU with this mounting orientation
+        // This sample expects the IMU to be in a REV Hub and named "imu".
+        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
 
         //Initialize the Helmet location pipeline
@@ -168,10 +193,10 @@ public class Auto_framework extends LinearOpMode {
 
                 moveRobot(0, -0.5, 0);
                 //runtime.reset();
-                sleep(450);
+                sleep(400);
                 moveRobot(-1, 0, 0);
                 //runtime.reset();
-                sleep(550);
+                sleep(1000);
                 //stop robot
                 stopRobot();
                 sleep(400);
@@ -182,12 +207,12 @@ public class Auto_framework extends LinearOpMode {
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(500);
+                sleep(800);
                 stopRobot();
                 sleep(200);
                 //rotate to face wall
-                moveRobot(0,0,-0.7);
-                sleep(500);
+                //moveRobot(0,0,-0.7);
+                turnToHeading(0.5,270);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
@@ -686,6 +711,49 @@ public class Auto_framework extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+
+    public double getHeading() {
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        return orientation.getYaw(AngleUnit.DEGREES);
+    }
+    public void turnToHeading(double maxTurnSpeed, double heading) {
+
+        // Run getSteeringCorrection() once to pre-calculate the current error
+        getSteeringCorrection(heading, SPEED_GAIN);
+
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, TURN_GAIN);
+
+            // Clip the speed to the maximum permitted value.
+            turnSpeed = Range.clip(turnSpeed, -maxTurnSpeed, maxTurnSpeed);
+
+            // Pivot in place by applying the turning correction
+            moveRobot(0, 0, turnSpeed);
+            telemetry.addLine(String.format("Turn speed",turnSpeed));
+            telemetry.addLine(String.format("Rotation",getHeading()));
+            telemetry.update();
+        }
+
+        // Stop all motion;
+        moveRobot(0, 0,0);
+    }
+    public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
+        targetHeading = desiredHeading;  // Save for telemetry
+
+        // Determine the heading current error
+        headingError = targetHeading - getHeading();
+
+        // Normalize the error to be within +/- 180 degrees
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+
+        // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
+        return Range.clip(headingError * proportionalGain, -1, 1);
+    }
+
     void tagToTelemetry(AprilTagDetection detection)
     {
         Orientation rot = Orientation.getOrientation(detection.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);

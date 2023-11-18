@@ -28,10 +28,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
@@ -53,7 +51,7 @@ import org.opencv.imgproc.Imgproc;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-
+import com.qualcomm.robotcore.hardware.IMU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +70,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
     private DcMotorSimple lift = null;
     private DcMotorSimple intake = null;
     private Servo dumpTruck = null;
+
 
     // Used to manage the video source.
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
@@ -120,11 +119,13 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
         lift = hardwareMap.get(DcMotorSimple.class, "lift");
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
+
+        imu = hardwareMap.get(IMU.class, "imu");
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        helmetLocationPipeline.helmetPosition myPosition;
+        helmetPosition myPosition;
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -173,7 +174,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
             visionPortal.setProcessorEnabled(helmetPipeline, false);
             visionPortal.setProcessorEnabled(aprilTag, true);
             sleep(100);
-            if (myPosition == helmetLocationPipeline.helmetPosition.LEFT) {
+            if (myPosition == helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
 
@@ -212,7 +213,7 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
                 stopRobot();
                 sleep(50000);
                 //transistion to april tag unload
-            } else if (helmetPipeline.getSelection() == helmetLocationPipeline.helmetPosition.CENTER) {
+            } else if (helmetPipeline.getSelection() == helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 2;
                 moveRobot(-1, 0, 0);
@@ -412,18 +413,18 @@ public class Auto_framework_noEasyOpenCV extends LinearOpMode {
 
         }
     }
-
+    public enum helmetPosition {
+        NONE,
+        LEFT,
+        CENTER,
+        RIGHT
+    }
 
     public class helmetLocationPipeline implements VisionProcessor {
-        public enum helmetPosition {
-            NONE,
-            LEFT,
-            CENTER,
-            RIGHT
-        }
+
         public Rect rectLeft = new Rect(0, 140, 135, 95);
         public Rect rectMiddle = new Rect(320, 120, 135, 95);
-        public Rect rectRight = new Rect(643, 160, 135, 95);
+        public Rect rectRight = new Rect(525, 160, 100, 95);
         helmetPosition selection = helmetPosition.NONE;
         Mat submat = new Mat();
         Mat hsvMat = new Mat();
