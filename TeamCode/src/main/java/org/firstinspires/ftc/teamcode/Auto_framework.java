@@ -124,6 +124,8 @@ public class Auto_framework extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -132,6 +134,8 @@ public class Auto_framework extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -188,9 +192,7 @@ public class Auto_framework extends LinearOpMode {
             if (helmetPipeline.position == Auto_framework.helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
-
                 //shift 12 inches left
-
                 moveRobot(0, -0.5, 0);
                 //runtime.reset();
                 sleep(400);
@@ -201,13 +203,12 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 //unload pixel
-
                 intake.setPower(0.4);
                 sleep(1400);
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(800);
+                sleep(900);
                 stopRobot();
                 sleep(200);
                 //rotate to face wall
@@ -221,7 +222,7 @@ public class Auto_framework extends LinearOpMode {
                 stopRobot();
                 sleep(400);
                 moveRobot(-0.5,0,0);
-                sleep(800);
+                sleep(1300);
                 stopRobot();
                 moveRobot(0,0.2,0);
                 sleep(5000);
@@ -231,9 +232,9 @@ public class Auto_framework extends LinearOpMode {
             } else if (helmetPipeline.position == Auto_framework.helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 2;
-                moveRobot(-1, 0, 0);
+                moveRobot(-0.8, 0, 0);
                 //runtime.reset();
-                sleep(775);
+                sleep(1600);
                 //stop robot
                 stopRobot();
                 sleep(200);
@@ -732,8 +733,8 @@ public class Auto_framework extends LinearOpMode {
 
             // Pivot in place by applying the turning correction
             moveRobot(0, 0, turnSpeed);
-            telemetry.addLine(String.format("Turn speed",turnSpeed));
-            telemetry.addLine(String.format("Rotation",getHeading()));
+            telemetry.addLine(String.format("Turn speed: %.2f",turnSpeed));
+            telemetry.addLine(String.format("Rotation: %.2f",getHeading()));
             telemetry.update();
         }
 
