@@ -180,7 +180,7 @@ public class Auto_framework extends LinearOpMode {
             dumpTruck.setPosition(1);
             sleep(1500);
             lift.setPower(.35);
-            sleep(1500);
+            sleep(1000);
             lift.setPower(0);
             myPosition = helmetPipeline.getAnalysis();
             sleep(200);
@@ -193,17 +193,19 @@ public class Auto_framework extends LinearOpMode {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
                 //shift 12 inches left
-                moveRobot(0, -0.5, 0);
+                moveRobot(-0.3,0,0);
+                sleep(300);
+                moveRobot(0, -0.35, 0);
                 //runtime.reset();
-                sleep(400);
-                moveRobot(-1, 0, 0);
+                sleep(800);
+                moveRobot(-.6, 0, 0);
                 //runtime.reset();
-                sleep(1000);
+                sleep(1600);
                 //stop robot
                 stopRobot();
                 sleep(400);
                 //unload pixel
-                intake.setPower(0.4);
+                intake.setPower(0.3);
                 sleep(1400);
                 intake.setPower(0);
                 //move to center
@@ -213,63 +215,61 @@ public class Auto_framework extends LinearOpMode {
                 sleep(200);
                 //rotate to face wall
                 //moveRobot(0,0,-0.7);
-                turnToHeading(0.5,270);
+                moveRobot(0,0,-0.4);
+                sleep(1000);
                 stopRobot();
-                sleep(200);
                 //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
+                moveRobot(-.8,0,0);
+                sleep(2250);
                 stopRobot();
                 sleep(400);
-                moveRobot(-0.5,0,0);
-                sleep(1300);
+
+                moveRobot(0,0.5,0);
+                sleep(1450);
                 stopRobot();
-                moveRobot(0,0.2,0);
-                sleep(5000);
-                stopRobot();
-                sleep(50000);
+                sleep(500);
                 //transistion to april tag unload
             } else if (helmetPipeline.position == Auto_framework.helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
-                ID_TAG_OF_INTEREST = 2;
+                ID_TAG_OF_INTEREST = 5;
                 moveRobot(-0.8, 0, 0);
                 //runtime.reset();
-                sleep(1600);
+                sleep(1500);
                 //stop robot
                 stopRobot();
                 sleep(200);
                 //unload pixel
 
-                intake.setPower(0.4);
+                intake.setPower(0.3);
                 sleep(700);
                 intake.setPower(0);
                 //move to center
-                //moveRobot(-0.5, 0, 0);
-                //sleep(400);
+                moveRobot(-0.5, 0, 0);
+                sleep(400);
                 //stopRobot();
                 sleep(200);
                 //rotate to face wall
                 moveRobot(0,0,-0.7);
-                sleep(425);
+                sleep(640);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
+                moveRobot(-.8,0,0);
+                sleep(2250);
                 stopRobot();
-                sleep(400);
-                moveRobot(-0.5,0,0);
-                sleep(800);
+                //sleep(400);
+                //moveRobot(-0.5,0,0);
+                sleep(500);
                 stopRobot();
-                moveRobot(0,0.2,0);
-                sleep(5000);
+                moveRobot(0,0.75,0);
+                sleep(1150);
                 stopRobot();
-                sleep(50000);
+                sleep(50);
 
                 //transistion to april tag unload
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
-                ID_TAG_OF_INTEREST = 1;
+                ID_TAG_OF_INTEREST = 6;
                 moveRobot(0,-0.5,0);
                 sleep(200);
                 moveRobot(-1, 0, 0);
@@ -321,8 +321,8 @@ public class Auto_framework extends LinearOpMode {
                 //transistion to april tag unload
             }
             webcam.setPipeline(aprilTagDetectionPipeline);
-            lift.setPower(.75);
-            sleep(200);
+            lift.setPower(-.75);
+            sleep(800);
             lift.setPower(0);
             sleep(100);
             //This loop uses apriltag to drop to backdrop
@@ -349,6 +349,7 @@ public class Auto_framework extends LinearOpMode {
                             if (tag.id == ID_TAG_OF_INTEREST) {
                                 tagOfInterest = tag;
                                 tagFound = true;
+                                //telemetry.addLine("Tag is correct",tag.id);
                                 break;
                             }
                         }
@@ -359,23 +360,26 @@ public class Auto_framework extends LinearOpMode {
                                 aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                             }
                             Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double rangeError = (tagOfInterest.pose.z*36 - 18);
+                            double rangeError = (tagOfInterest.pose.z*36 - 24);
                             double headingError = tagOfInterest.pose.x*36;
                             double yawError = rot.firstAngle;
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
                             telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 36));
                             telemetry.addLine(String.format("Translation Y: %.2f inches", tagOfInterest.pose.x * 36));
+                            telemetry.addLine(String.format("Translation Z: %.2f inches", tagOfInterest.pose.y * 36));
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
+                            telemetry.addLine(String.format("Rotation Second: %.2f degrees", rot.secondAngle));
+                            telemetry.addLine(String.format("Rotation Third: %.2f degrees", rot.thirdAngle));
                             //
-                            if (rangeError < 2 && headingError < 2 && yawError < 5) {
+                            if (rangeError < 2 && headingError < 6 && yawError < 5) {
                                 readyToDeliver = true;
                                 stopRobot();
                                 break; //end the While loop
                             }
                             drive = Range.clip(-rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                            turn = Range.clip(-headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-                            moveRobot(drive, turn, strafe);
+                            strafe = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                            turn = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                            moveRobot(drive, strafe, turn);
                         } else {
                             tagMissingFrames++;
                             if (tagMissingFrames > 3) {
@@ -389,7 +393,11 @@ public class Auto_framework extends LinearOpMode {
             }
 
             //deposit
-
+            moveRobot(-0.15, 0, 0);
+            //runtime.reset();
+            sleep(750);
+            //stop robot
+            stopRobot();
             dumpTruck.setPosition(-1);
             sleep(1000);
             //jiggle the unload
@@ -397,21 +405,20 @@ public class Auto_framework extends LinearOpMode {
             sleep(500);
             dumpTruck.setPosition(-1);
             sleep(500);
-            dumpTruck.setPosition(0);
+            dumpTruck.setPosition(1);
             //move to backstage
-            moveRobot(-.2,0,0);
+            moveRobot(.2,0,0);
             sleep(400);
-            moveRobot(0,.5,0);
-            sleep(400);
-            moveRobot(.25,0,0);
-            sleep(400);
+            moveRobot(0,-.5,0);
+            sleep(1400);
+            moveRobot(-.25,0,0);
+            sleep(1500);
             stopRobot();
             lift.setPower(0);
             intake.setPower(0);
-            //Loop until end of match
-            while(true){
+            sleep(50000);
 
-            }
+            //Loop until end of match
 
         }
     }
