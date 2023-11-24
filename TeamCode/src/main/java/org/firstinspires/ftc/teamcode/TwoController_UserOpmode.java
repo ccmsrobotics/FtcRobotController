@@ -78,6 +78,8 @@ public class TwoController_UserOpmode extends LinearOpMode {
     private DcMotorSimple intake = null;
     private Servo dumpTruck = null;
     private Servo droneLaunch = null;
+    private DcMotorSimple one = null;
+    private DcMotorSimple two = null;
 
     @Override
     public void runOpMode() {
@@ -91,7 +93,8 @@ public class TwoController_UserOpmode extends LinearOpMode {
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
         droneLaunch = hardwareMap.get(Servo.class, "drone_launch");
-
+        one = hardwareMap.get(DcMotorSimple.class, "one");
+        two = hardwareMap.get(DcMotorSimple.class, "two");
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
@@ -106,6 +109,7 @@ public class TwoController_UserOpmode extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        two.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -175,6 +179,16 @@ public class TwoController_UserOpmode extends LinearOpMode {
                 rightBackPower/=2;
                 rightFrontPower/=2;
             }
+            double lift2power;
+            if(gamepad2.dpad_down){
+                lift2power = 1;
+            }
+            else if(gamepad2.dpad_up){
+                lift2power = -1;
+            }
+            else{
+                lift2power = 0;
+            }
             // This is test code:
             //
             // Uncomment the following code to test your motor directions.
@@ -201,6 +215,8 @@ public class TwoController_UserOpmode extends LinearOpMode {
             intake.setPower(intakePow);
             dumpTruck.setPosition(servoPos*-1);
             droneLaunch.setPosition(launch);
+            one.setPower(lift2power);
+            two.setPower(lift2power);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
