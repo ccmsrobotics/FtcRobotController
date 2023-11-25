@@ -368,13 +368,21 @@ public class Auto_framework extends LinearOpMode {
                                 aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                             }
                             Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            double rangeError = (tagOfInterest.pose.z*36 - 24);
-                            double headingError = tagOfInterest.pose.x*36;
+                            /*
+                            double rangeError = (tagOfInterest.pose.z*39.37 - 24);
+                            double headingError = tagOfInterest.pose.x*39.37;
                             double yawError = rot.firstAngle;
+                            */
+                            //new error code
+                            //https://github.com/FIRST-Tech-Challenge/ftcdocs/blob/main/docs/source/apriltag/vision_portal/apriltag_intro/apriltag-intro.rst
+                            double  rangeError      = (Math.hypot(tagOfInterest.pose.x,tagOfInterest.pose.z)*39.37 - 12);
+                            double  headingError    = AngleUnit.DEGREES.fromUnit(AngleUnit.RADIANS,Math.atan2(-tagOfInterest.pose.x, tagOfInterest.pose.z));
+                            double  yawError        = -rot.firstAngle;
+                            //end new error code
                             telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                            telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 36));
-                            telemetry.addLine(String.format("Translation Y: %.2f inches", tagOfInterest.pose.x * 36));
-                            telemetry.addLine(String.format("Translation Z: %.2f inches", tagOfInterest.pose.y * 36));
+                            telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 39.37));
+                            telemetry.addLine(String.format("Translation Y: %.2f inches", tagOfInterest.pose.x * 39.37));
+                            telemetry.addLine(String.format("Translation Z: %.2f inches", tagOfInterest.pose.y * 39.37));
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                             telemetry.addLine(String.format("Rotation Second: %.2f degrees", rot.secondAngle));
                             telemetry.addLine(String.format("Rotation Third: %.2f degrees", rot.thirdAngle));
@@ -384,9 +392,16 @@ public class Auto_framework extends LinearOpMode {
                                 stopRobot();
                                 break; //end the While loop
                             }
+                            /* Tested (but wrong formulas)
                             drive = Range.clip(-rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                             strafe = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                             turn = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                            */
+                            //Original formulas
+                            drive  = Range.clip(-rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                            strafe = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
                             moveRobot(drive, strafe, turn);
                         } else {
                             tagMissingFrames++;
