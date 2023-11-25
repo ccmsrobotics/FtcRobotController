@@ -78,14 +78,22 @@ public class Auto_framework extends LinearOpMode {
     static final double     HEADING_THRESHOLD       = 1.0 ;
     // Lens intrinsics
     // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
+/*    // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
     double fx = 578.272;
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
+  */
+    //C720 webcam at 800x448
+    double fx = 872.04;
+    double fy = 872.04;
+    double cx = 308.741;
+    double cy = 178.678;
+
+
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.0508;
     int numFramesWithoutDetection = 0;
     int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
