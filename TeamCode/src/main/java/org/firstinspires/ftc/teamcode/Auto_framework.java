@@ -114,7 +114,7 @@ public class Auto_framework extends LinearOpMode {
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.2;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
     @Override
     public void runOpMode() {
@@ -253,7 +253,7 @@ public class Auto_framework extends LinearOpMode {
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(400);
+                sleep(250);
                 //stopRobot();
                 sleep(200);
                 //rotate to face wall
@@ -334,7 +334,7 @@ public class Auto_framework extends LinearOpMode {
             lift.setPower(0);
             sleep(100);
             //This loop uses apriltag to drop to backdrop
-            while (!readyToDeliver) {
+            while (!readyToDeliver && opModeIsActive()) {
                 ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
                // If we don't see any tags
                 if (detections != null) {
@@ -386,8 +386,13 @@ public class Auto_framework extends LinearOpMode {
                             telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
                             telemetry.addLine(String.format("Rotation Second: %.2f degrees", rot.secondAngle));
                             telemetry.addLine(String.format("Rotation Third: %.2f degrees", rot.thirdAngle));
+                            telemetry.addLine(String.format("Range Error %.2f", rangeError));
+                            telemetry.addLine(String.format("Heading Error: %.2f degrees", headingError));
+                            telemetry.addLine(String.format("yawError: %.2f degrees", yawError));
+
+
                             //
-                            if (rangeError < 2 && headingError < 6 && yawError < 5) {
+                            if (rangeError < 2 && headingError < 2 && yawError < 2) {
                                 readyToDeliver = true;
                                 stopRobot();
                                 break; //end the While loop
@@ -412,13 +417,13 @@ public class Auto_framework extends LinearOpMode {
                     }
                     telemetry.update();
                 }
-                sleep(50);
+                sleep(20);
             }
 
             //deposit
-            moveRobot(-0.15, 0, 0);
+            moveRobot(-0.2, 0, 0);
             //runtime.reset();
-            sleep(750);
+            sleep(950);
             //stop robot
             stopRobot();
             dumpTruck.setPosition(-1);
