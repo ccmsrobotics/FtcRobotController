@@ -24,7 +24,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -33,6 +32,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -40,23 +43,20 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.openftc.apriltag.AprilTagDetection;
+
 import java.util.ArrayList;
 
 /*
  * FTC Team 18975 autonomous code
  */
 @Autonomous
-public class Auto_framework extends LinearOpMode {
+public class Auto_Red_Unload extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
@@ -197,7 +197,7 @@ public class Auto_framework extends LinearOpMode {
             telemetry.update();
             //webcam.setPipeline(aprilTagDetectionPipeline);
             sleep(100);
-            if (helmetPipeline.position == Auto_framework.helmetLocationPipeline.helmetPosition.LEFT) {
+            if (helmetPipeline.position == Auto_Red_Unload.helmetLocationPipeline.helmetPosition.LEFT) {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 4;
                 //shift 12 inches left
@@ -235,9 +235,9 @@ public class Auto_framework extends LinearOpMode {
                 moveRobot(0,0.5,0);
                 sleep(1450);
                 stopRobot();
-                sleep(500);
+                sleep(50000);
                 //transistion to april tag unload
-            } else if (helmetPipeline.position == Auto_framework.helmetLocationPipeline.helmetPosition.CENTER) {
+            } else if (helmetPipeline.position == Auto_Red_Unload.helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 5;
                 moveRobot(-0.8, 0, 0);
@@ -263,68 +263,45 @@ public class Auto_framework extends LinearOpMode {
                 sleep(200);
                 //move forward 48 inches
                 moveRobot(-.8,0,0);
-                sleep(2250);
+                sleep(350);
                 stopRobot();
                 //sleep(400);
                 //moveRobot(-0.5,0,0);
                 sleep(500);
                 stopRobot();
                 moveRobot(0,0.75,0);
-                sleep(1150);
+                sleep(450);
                 stopRobot();
                 sleep(50);
 
                 //transistion to april tag unload
             } else {
-                //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
+                //set april tag ID needed for the backdrop unload Blue right is 3, Red right is 6
                 ID_TAG_OF_INTEREST = 6;
-                moveRobot(0,-0.5,0);
-                sleep(200);
-                moveRobot(-1, 0, 0);
-                sleep(450);
+                moveRobot(-0.3,0,0);
+                sleep(300);
+                moveRobot(0, 0.35, 0);
+                sleep(800);
+                moveRobot(-.6, 0, 0);
+                sleep(1600);
                 //stop robot
                 stopRobot();
-                sleep(200);
-                moveRobot(0,0,.65);
-                sleep(500);
-                moveRobot(.5,0,0);
-                sleep(350);
-                stopRobot();
+                sleep(400);
                 //unload pixel
-
-                intake.setPower(0.35);
+                intake.setPower(0.3);
                 sleep(700);
                 intake.setPower(0);
-                moveRobot(-.5,0,0);
-                sleep(500);
-                moveRobot(0,1,0);
-                sleep(725);
-                moveRobot(0,0,-.7);
-                sleep(1100);
-                stopRobot();
-
-                //move to center
-                moveRobot(-0.5, 0, 0);
-                sleep(500);
+                //move towards backdrop so we don't hit the pixel when we rotate
+                moveRobot(0, 0.35, 0);
+                sleep(400);
                 stopRobot();
                 sleep(200);
                 //rotate to face wall
-                //moveRobot(0,0,0.5);
-                //sleep(200);
-                ///stopRobot();
-                //sleep(200);
-                //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
+                //moveRobot(0,0,-0.7);
+                moveRobot(0,0,-0.4);
+                sleep(1000);
                 stopRobot();
-                sleep(400);
-                moveRobot(-0.5,0,0);
-                sleep(400);
-                stopRobot();
-                moveRobot(0,0.2,0);
-                sleep(5000);
-                stopRobot();
-                sleep(50000);
+                sleep(50);
 
                 //transistion to april tag unload
             }
@@ -437,7 +414,7 @@ public class Auto_framework extends LinearOpMode {
             //move to backstage
             moveRobot(.2,0,0);
             sleep(400);
-            moveRobot(0,-.5,0);
+            moveRobot(0,.5,0);
             sleep(1400);
             moveRobot(-.25,0,0);
             sleep(1500);
