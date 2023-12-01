@@ -315,7 +315,7 @@ public class Auto_Red_Load extends LinearOpMode {
                 stopRobot();
                 sleep(200);
                 moveRobot(0,0,-0.4);
-                sleep(1000);
+                sleep(1100);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
