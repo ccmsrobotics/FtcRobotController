@@ -111,7 +111,7 @@ public class TwoController_UserOpmode extends LinearOpMode {
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         two.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        double launch = 0;
+        double launch = 0.5;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -119,7 +119,6 @@ public class TwoController_UserOpmode extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
@@ -161,13 +160,10 @@ public class TwoController_UserOpmode extends LinearOpMode {
                 servoPos = 1;
             }
             if(gamepad2.y) {
-                launch = -1;
+                launch = 0;
             }
             if(gamepad2.x){
                 launch= 1;
-            }
-            else {
-                launch = 0.4;
             }
             double liftPow = gamepad2.left_stick_y;
             if(liftPow>0){

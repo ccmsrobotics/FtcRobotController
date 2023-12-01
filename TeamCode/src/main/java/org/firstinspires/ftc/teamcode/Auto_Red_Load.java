@@ -204,7 +204,6 @@ public class Auto_Red_Load extends LinearOpMode {
                 moveRobot(-0.3,0,0);
                 sleep(300);
                 moveRobot(0, -0.35, 0);
-                //runtime.reset();
                 sleep(800);
                 moveRobot(-.6, 0, 0);
                 //runtime.reset();
@@ -246,19 +245,29 @@ public class Auto_Red_Load extends LinearOpMode {
                 //stop robot
                 stopRobot();
                 sleep(200);
+                moveRobot(0, 0, 0.4);
+                //runtime.reset();
+                sleep(500);
+                moveRobot(.4, 0, 0);
+                //runtime.reset();
+                sleep(400);
+                //stop robot
+                stopRobot();
+                sleep(200);
+
                 //unload pixel
 
                 intake.setPower(0.3);
                 sleep(700);
                 intake.setPower(0);
                 //move to center
-                moveRobot(-0.5, 0, 0);
-                sleep(250);
+                moveRobot(-0.4, 0, 0);
+                sleep(400);
                 //stopRobot();
                 sleep(200);
                 //rotate to face wall
-                moveRobot(0,0,-0.7);
-                sleep(640);
+                moveRobot(0,0,-0.4);
+                sleep(1000);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
@@ -278,10 +287,8 @@ public class Auto_Red_Load extends LinearOpMode {
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
                 ID_TAG_OF_INTEREST = 6;
-                moveRobot(0,-0.5,0);
-                sleep(200);
-                moveRobot(-1, 0, 0);
-                sleep(450);
+                moveRobot(-0.8, 0, 0);
+                sleep(1225);
                 //stop robot
                 stopRobot();
                 sleep(200);
@@ -297,34 +304,32 @@ public class Auto_Red_Load extends LinearOpMode {
                 intake.setPower(0);
                 moveRobot(-.5,0,0);
                 sleep(500);
-                moveRobot(0,1,0);
-                sleep(725);
-                moveRobot(0,0,-.7);
-                sleep(1100);
                 stopRobot();
-
-                //move to center
-                moveRobot(-0.5, 0, 0);
+                sleep(200);
+                moveRobot(0,0,-.65);
                 sleep(500);
                 stopRobot();
                 sleep(200);
-                //rotate to face wall
-                //moveRobot(0,0,0.5);
-                //sleep(200);
-                ///stopRobot();
-                //sleep(200);
+                moveRobot(-.5,0,0);
+                sleep(500);
+                stopRobot();
+                sleep(200);
+                moveRobot(0,0,-0.4);
+                sleep(1000);
+                stopRobot();
+                sleep(200);
                 //move forward 48 inches
-                moveRobot(-1,0,0);
-                sleep(1500);
+                moveRobot(-.8,0,0);
+                sleep(2250);
                 stopRobot();
-                sleep(400);
-                moveRobot(-0.5,0,0);
-                sleep(400);
+                //sleep(400);
+                //moveRobot(-0.5,0,0);
+                sleep(500);
                 stopRobot();
-                moveRobot(0,0.2,0);
-                sleep(5000);
+                moveRobot(0,0.75,0);
+                sleep(1150);
                 stopRobot();
-                sleep(50000);
+                sleep(50);
 
                 //transistion to april tag unload
             }
@@ -423,7 +428,7 @@ public class Auto_Red_Load extends LinearOpMode {
             //deposit
             moveRobot(-0.2, 0, 0);
             //runtime.reset();
-            sleep(950);
+            sleep(1950);
             //stop robot
             stopRobot();
             dumpTruck.setPosition(-1);

@@ -209,7 +209,7 @@ public class Auto_Blue_Load extends LinearOpMode {
                 ID_TAG_OF_INTEREST = 2;
                 moveRobot(-0.8, 0, 0);
                 //runtime.reset();
-                sleep(1500);
+                sleep(1550);
                 //stop robot
                 stopRobot();
                 sleep(200);
@@ -377,7 +377,7 @@ public class Auto_Blue_Load extends LinearOpMode {
             //deposit
             moveRobot(-0.2, 0, 0);
             //runtime.reset();
-            sleep(950);
+            sleep(1950);
             //stop robot
             stopRobot();
             dumpTruck.setPosition(-1);
@@ -394,7 +394,7 @@ public class Auto_Blue_Load extends LinearOpMode {
             moveRobot(0,.5,0);
             sleep(1400);
             moveRobot(-.25,0,0);
-            sleep(1500);
+            sleep(400);
             stopRobot();
             lift.setPower(0);
             intake.setPower(0);

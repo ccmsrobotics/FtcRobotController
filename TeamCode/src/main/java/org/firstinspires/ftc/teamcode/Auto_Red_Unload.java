@@ -252,13 +252,13 @@ public class Auto_Red_Unload extends LinearOpMode {
                 sleep(700);
                 intake.setPower(0);
                 //move to center
-                moveRobot(-0.5, 0, 0);
-                sleep(250);
+                moveRobot(-0.25, -.5, 0);
+                sleep(550);
                 //stopRobot();
                 sleep(200);
                 //rotate to face wall
                 moveRobot(0,0,-0.7);
-                sleep(640);
+                sleep(780);
                 stopRobot();
                 sleep(200);
                 //move forward 48 inches
@@ -398,9 +398,9 @@ public class Auto_Red_Unload extends LinearOpMode {
             }
 
             //deposit
-            moveRobot(-0.2, 0, 0);
+            moveRobot(-0.4, 0, 0);
             //runtime.reset();
-            sleep(950);
+            sleep(1500);
             //stop robot
             stopRobot();
             dumpTruck.setPosition(-1);

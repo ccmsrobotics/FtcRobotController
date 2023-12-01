@@ -367,9 +367,9 @@ public class Auto_Blue_Unload extends LinearOpMode {
             }
 
             //deposit
-            moveRobot(-0.2, 0, 0);
+            moveRobot(-0.4, 0, 0);
             //runtime.reset();
-            sleep(950);
+            sleep(1500);
             //stop robot
             stopRobot();
             dumpTruck.setPosition(-1);
