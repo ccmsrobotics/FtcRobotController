@@ -201,15 +201,56 @@ public class Auto_Blue_Load extends LinearOpMode {
                 //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
                 ID_TAG_OF_INTEREST = 1;
 
+                moveRobot(-0.8, 0, 0);
+                sleep(1225);
+                //stop robot
                 stopRobot();
-                sleep(50000);
+                sleep(200);
+                moveRobot(0,0,-.65);
+                sleep(500);
+                moveRobot(.5,0,0);
+                sleep(350);
+                stopRobot();
+                //unload pixel
+
+                intake.setPower(0.35);
+                sleep(700);
+                intake.setPower(0);
+                moveRobot(-.5,0,0);
+                sleep(500);
+                stopRobot();
+                sleep(200);
+                moveRobot(0,0,.65);
+                sleep(500);
+                stopRobot();
+                sleep(200);
+                moveRobot(-.5,0,0);
+                sleep(620);
+                stopRobot();
+                sleep(200);
+                moveRobot(0,0,0.4);
+                sleep(1020);
+                stopRobot();
+                sleep(200);
+                //move forward 48 inches
+                moveRobot(-.8,0,0);
+                sleep(2250);
+                stopRobot();
+                //sleep(400);
+                //moveRobot(-0.5,0,0);
+                sleep(500);
+                stopRobot();
+                moveRobot(0,-0.75,0);
+                sleep(1300);
+                stopRobot();
+                sleep(50);
                 //transistion to april tag unload
             } else if (helmetPipeline.position == Auto_Blue_Load.helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 2;
                 moveRobot(-0.8, 0, 0);
                 //runtime.reset();
-                sleep(1550);
+                sleep(1450);
                 //stop robot
                 stopRobot();
                 sleep(200);
@@ -250,7 +291,7 @@ public class Auto_Blue_Load extends LinearOpMode {
                 sleep(300);
                 moveRobot(0, 0.35, 0);
                 //runtime.reset();
-                sleep(800);
+                sleep(1000);
                 moveRobot(-.6, 0, 0);
                 //runtime.reset();
                 sleep(1600);
@@ -263,13 +304,13 @@ public class Auto_Blue_Load extends LinearOpMode {
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(900);
+                sleep(600);
                 stopRobot();
                 sleep(200);
                 //rotate to face wall
                 //moveRobot(0,0,-0.7);
                 moveRobot(0,0,0.4);
-                sleep(1000);
+                sleep(900);
                 stopRobot();
                 //move forward 48 inches
                 moveRobot(-.8,0,0);
@@ -278,7 +319,7 @@ public class Auto_Blue_Load extends LinearOpMode {
                 sleep(400);
 
                 moveRobot(0,-0.5,0);
-                sleep(1450);
+                sleep(1250);
                 stopRobot();
                 sleep(500);
             }

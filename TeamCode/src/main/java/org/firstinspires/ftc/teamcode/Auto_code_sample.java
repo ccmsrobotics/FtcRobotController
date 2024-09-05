@@ -56,7 +56,7 @@ import java.util.ArrayList;
  * FTC Team 18975 autonomous code
  */
 @Autonomous
-public class Auto_Red_Load extends LinearOpMode {
+public class Auto_code_sample extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
@@ -78,13 +78,6 @@ public class Auto_Red_Load extends LinearOpMode {
     static final double     HEADING_THRESHOLD       = 1.0 ;
     // Lens intrinsics
     // UNITS ARE PIXELS
-/*    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
-  */
     //C720 webcam at 800x448
     double fx = 872.04;
     double fy = 872.04;
@@ -107,12 +100,13 @@ public class Auto_Red_Load extends LinearOpMode {
     double turn = 0;
     double strafe = 0;
     IMU imu;
-
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+//you are awesome mr mow me and ethan prank u the max speed stuff is changed
+    //speed gain is 0.02
+    final double SPEED_GAIN  =  1  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+//max speed has been changed its original is 0.5
+    final double MAX_AUTO_SPEED = 1;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
@@ -155,7 +149,7 @@ public class Auto_Red_Load extends LinearOpMode {
 
 
         //Initialize the Helmet location pipeline
-        helmetPipeline = new helmetLocationPipeline();
+        /*helmetPipeline = new helmetLocationPipeline();
         helmetLocationPipeline.helmetPosition myPosition;
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         //Initialize camera
@@ -173,33 +167,35 @@ public class Auto_Red_Load extends LinearOpMode {
             public void onError(int errorCode) {
                 /*
                  * This will be called if the camera could not be opened
-                 */
+
             }
         });
         while (!isStarted()) {
             myPosition = helmetPipeline.getAnalysis();
         }
+        */
+
         waitForStart();
         while (opModeIsActive()) {
-            //Find location of team element
-            lift.setPower(-0.35);
-            sleep(500);
-            lift.setPower(0);
-            dumpTruck.setPosition(1);
-            sleep(1500);
-            lift.setPower(.35);
-            sleep(1000);
-            lift.setPower(0);
-            myPosition = helmetPipeline.getAnalysis();
-            sleep(200);
-            myPosition = helmetPipeline.getAnalysis();
-            telemetry.addData("Analysis", helmetPipeline.position);
-            telemetry.update();
+            //Find location of team elemen
             //webcam.setPipeline(aprilTagDetectionPipeline);
             sleep(100);
-            if (helmetPipeline.position == Auto_Red_Load.helmetLocationPipeline.helmetPosition.LEFT) {
-                //set april tag ID needed for the backdrop unload  Blue left is 1, Red left is 4
-                ID_TAG_OF_INTEREST = 4;
+
+            moveAndStop(.5,0,0,2800,100);
+            moveAndStop(0,.5,0,1800,100);
+            moveAndStop(.5,0,0,1000,150);
+            moveAndStop(0,0,0.5,876,100);
+            moveAndStop(0.5,0,0,800,100);
+            moveAndStop(0,0.5,0.5,206,000);
+            moveAndStop(0,0,-0.5,206,000);
+            moveAndStop(0,0,0.5,206,000);
+            moveAndStop(0,0,-0.5,206,000);
+            moveAndStop(0,0,0.5,206,000);
+            moveAndStop(0,0,-0.5,206,000);
+            moveAndStop(0,0,0.5,206,000);
+            moveAndStop(0,0,-0.5,206,000);
+
+            sleep(50000);
                 //shift 12 inches left
                 moveRobot(-0.3,0,0);
                 sleep(300);
@@ -236,9 +232,7 @@ public class Auto_Red_Load extends LinearOpMode {
                 stopRobot();
                 sleep(500);
                 //transistion to april tag unload
-            } else if (helmetPipeline.position == Auto_Red_Load.helmetLocationPipeline.helmetPosition.CENTER) {
-                //set april tag ID needed for the backdrop unload  Blue center is 2, Red center is 5
-                ID_TAG_OF_INTEREST = 5;
+
                 moveRobot(-0.8, 0, 0);
                 //runtime.reset();
                 sleep(1450);
@@ -281,7 +275,6 @@ public class Auto_Red_Load extends LinearOpMode {
                 sleep(50);
 
                 //transistion to april tag unload
-            } else {
                 //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
                 ID_TAG_OF_INTEREST = 6;
                 moveRobot(-0.8, 0, 0);
@@ -310,143 +303,7 @@ public class Auto_Red_Load extends LinearOpMode {
                 moveRobot(-.5,0,0);
                 sleep(650);
                 stopRobot();
-                sleep(200);
-                moveRobot(0,0,-0.4);
-                sleep(1075);
-                stopRobot();
-                sleep(200);
-                //move forward 48 inches
-                moveRobot(-.8,0,0);
-                sleep(2250);
-                stopRobot();
-                //sleep(400);
-                //moveRobot(-0.5,0,0);
-                sleep(500);
-                stopRobot();
-                moveRobot(0,0.75,0);
-                sleep(1250);
-                stopRobot();
-                sleep(50);
 
-                //transistion to april tag unload
-            }
-            webcam.setPipeline(aprilTagDetectionPipeline);
-            lift.setPower(-.75);
-            sleep(800);
-            lift.setPower(0);
-            sleep(100);
-            //This loop uses apriltag to drop to backdrop
-            while (!readyToDeliver && opModeIsActive()) {
-                ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-               // If we don't see any tags
-                if (detections != null) {
-                    if (detections.size() == 0) {
-                        numFramesWithoutDetection++;
-                        telemetry.addLine("No tag Found");
-                        // If we haven't seen a tag for a few frames, lower the decimation
-                        // so we can hopefully pick one up if we're e.g. far back
-                        if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                            stopRobot();
-                        }
-                    }
-                    // We do see tags!
-                    else {
-                        boolean tagFound = false;
-                        telemetry.addLine("Tag(s) Found");
-                        //go through the detections and see if the desired tag is available
-                        for (AprilTagDetection tag : detections) {
-                            if (tag.id == ID_TAG_OF_INTEREST) {
-                                tagOfInterest = tag;
-                                tagFound = true;
-                                //telemetry.addLine("Tag is correct",tag.id);
-                                break;
-                            }
-                        }
-                        numFramesWithoutDetection = 0;
-                        if (tagFound) {
-                            tagMissingFrames = 0;
-                            if (tagOfInterest.pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                                aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
-                            }
-                            Orientation rot = Orientation.getOrientation(tagOfInterest.pose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
-                            /*
-                            double rangeError = (tagOfInterest.pose.z*39.37 - 24);
-                            double headingError = tagOfInterest.pose.x*39.37;
-                            double yawError = rot.firstAngle;
-                            */
-                            //new error code
-                            //https://github.com/FIRST-Tech-Challenge/ftcdocs/blob/main/docs/source/apriltag/vision_portal/apriltag_intro/apriltag-intro.rst
-                            double  rangeError      = (Math.hypot(tagOfInterest.pose.x,tagOfInterest.pose.z)*39.37 - 18);
-                            double  headingError    = AngleUnit.DEGREES.fromUnit(AngleUnit.RADIANS,Math.atan2(-tagOfInterest.pose.x, tagOfInterest.pose.z));
-                            double  yawError        = -rot.firstAngle;
-                            //end new error code
-                            telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
-                            telemetry.addLine(String.format("Translation X: %.2f inches", tagOfInterest.pose.z * 39.37));
-                            telemetry.addLine(String.format("Translation Y: %.2f inches", tagOfInterest.pose.x * 39.37));
-                            telemetry.addLine(String.format("Translation Z: %.2f inches", tagOfInterest.pose.y * 39.37));
-                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", rot.firstAngle));
-                            telemetry.addLine(String.format("Rotation Second: %.2f degrees", rot.secondAngle));
-                            telemetry.addLine(String.format("Rotation Third: %.2f degrees", rot.thirdAngle));
-                            telemetry.addLine(String.format("Range Error %.2f", rangeError));
-                            telemetry.addLine(String.format("Heading Error: %.2f degrees", headingError));
-                            telemetry.addLine(String.format("yawError: %.2f degrees", yawError));
-
-
-                            //
-                            if (rangeError < 2 && headingError < 1 && yawError < 2) {
-                                readyToDeliver = true;
-                                stopRobot();
-                                break; //end the While loop
-                            }
-                            /* Tested (but wrong formulas)
-                            drive = Range.clip(-rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                            strafe = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                            turn = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-                            */
-                            //Original formulas
-                            drive  = Range.clip(-rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-                            strafe = Range.clip(yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-                            moveRobot(drive, strafe, turn);
-                        } else {
-                            tagMissingFrames++;
-                            if (tagMissingFrames > 3) {
-                                stopRobot();
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-                sleep(20);
-            }
-
-            //deposit
-            moveRobot(-0.2, 0, 0);
-            //runtime.reset();
-            sleep(1950);
-            //stop robot
-            stopRobot();
-            dumpTruck.setPosition(-1);
-            sleep(1000);
-            //jiggle the unload
-            dumpTruck.setPosition(-.8);
-            sleep(500);
-            dumpTruck.setPosition(-1);
-            sleep(500);
-            dumpTruck.setPosition(1);
-            //move to backstage
-            moveRobot(.2,0,0);
-            sleep(400);
-            moveRobot(0,-.5,0);
-            sleep(1000);
-            stopRobot();
-            //moveRobot(-.25,0,0);
-            sleep(1500);
-            stopRobot();
-            lift.setPower(0);
-            intake.setPower(0);
             sleep(50000);
 
             //Loop until end of match
@@ -718,6 +575,13 @@ public class Auto_Red_Load extends LinearOpMode {
         }
     }
 
+    public void moveAndStop(double x, double y, double yaw, long moveTime, long stopTime)
+    {
+        moveRobot(x,y,yaw);
+        sleep(moveTime);
+        moveRobot(0,0,0);
+        sleep(stopTime);
+    }
 
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.

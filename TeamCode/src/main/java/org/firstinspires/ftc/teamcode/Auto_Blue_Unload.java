@@ -203,7 +203,7 @@ public class Auto_Blue_Unload extends LinearOpMode {
                 //shift 12 inches left
                 moveRobot(-0.3,0,0);
                 sleep(300);
-                moveRobot(0, 0.35, 0);
+                moveRobot(0, -0.35, 0);
                 //runtime.reset();
                 sleep(800);
                 moveRobot(-.6, 0, 0);
@@ -227,13 +227,20 @@ public class Auto_Blue_Unload extends LinearOpMode {
                 sleep(1000);
                 stopRobot();
                 sleep(500);
+                moveRobot(-0.5,0,0);
+                sleep(500);
+                stopRobot();
+                sleep(200);
+                moveRobot(0,-0.8,0);
+                sleep(600);
+                stopRobot();
                 //transistion to april tag unload
             } else if (helmetPipeline.position == Auto_Blue_Unload.helmetLocationPipeline.helmetPosition.CENTER) {
                 //set april tag ID needed for the backdrop unload  Blue center is 2, Red left is 5
                 ID_TAG_OF_INTEREST = 2;
                 moveRobot(-0.8, 0, 0);
                 //runtime.reset();
-                sleep(1500);
+                sleep(1450);
                 //stop robot
                 stopRobot();
                 sleep(200);
@@ -244,7 +251,7 @@ public class Auto_Blue_Unload extends LinearOpMode {
                 intake.setPower(0);
                 //move to center
                 moveRobot(-0.5, 0, 0);
-                sleep(250);
+                sleep(400);
                 //stopRobot();
                 sleep(200);
                 //rotate to face wall
@@ -254,7 +261,7 @@ public class Auto_Blue_Unload extends LinearOpMode {
                 sleep(200);
                 //move forward 48 inches
                 moveRobot(-.8,0,0);
-                sleep(350);
+                sleep(500);
                 stopRobot();
                 //sleep(400);
                 //moveRobot(-0.5,0,0);
@@ -269,8 +276,34 @@ public class Auto_Blue_Unload extends LinearOpMode {
             } else {
                 //set april tag ID needed for the backdrop unload Blue right is 1, Red right is 4
                 ID_TAG_OF_INTEREST = 3;
+                moveRobot(-0.8, 0, 0);
+                sleep(1225);
+                //stop robot
+                stopRobot();
+                sleep(200);
+                moveRobot(0,0,.65);
+                sleep(500);
+                moveRobot(.5,0,0);
+                sleep(350);
+                stopRobot();
+                //unload pixel
 
-                sleep(50000);
+                intake.setPower(0.35);
+                sleep(700);
+                intake.setPower(0);
+                moveRobot(-.5,0,0);
+                sleep(500);
+                stopRobot();
+                sleep(200);
+                moveRobot(0,0,.65);
+                sleep(400);
+                stopRobot();
+                sleep(200);
+                //moveRobot(0,0,0.4);
+                //sleep(1000);
+                stopRobot();
+                sleep(200);
+
 
                 //transistion to april tag unload
             }

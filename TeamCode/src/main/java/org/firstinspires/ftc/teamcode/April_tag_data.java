@@ -55,7 +55,7 @@ import java.util.ArrayList;
  */
 
 @Autonomous (name="Verify April 7", group="Verify")
-@Disabled
+//@Disabled
 public class April_tag_data extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     OpenCvWebcam webcam;
@@ -66,12 +66,12 @@ public class April_tag_data extends LinearOpMode {
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    double fx = 872.04;
+    double fy = 872.04;
+    double cx = 308.741;
+    double cy = 178.678;
     // UNITS ARE METERS
-    double tagsize = .13;
+    double tagsize = .0506;
     int numFramesWithoutDetection = 0;
     int tagMissingFrames = 0;
     final float DECIMATION_HIGH = 3;
