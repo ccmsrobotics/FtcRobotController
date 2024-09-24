@@ -63,10 +63,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-
-@TeleOp(name="Two Controller User OpMode Kentwood", group="Linear OpMode")
-@Disabled
-public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+//FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY FOR PARTY
+@TeleOp(name="Two Controller User OpMode", group="Linear OpMode")
+//@Disabled
+public class TwoController_UserOpmode_FORPARTY extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -78,6 +86,8 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
     private DcMotorSimple intake = null;
     private Servo dumpTruck = null;
     private Servo droneLaunch = null;
+    private DcMotorSimple one = null;
+    private DcMotorSimple two = null;
 
     @Override
     public void runOpMode() {
@@ -91,7 +101,8 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
         intake = hardwareMap.get(DcMotorSimple.class, "intake");
         dumpTruck = hardwareMap.get(Servo.class, "dump_truck");
         droneLaunch = hardwareMap.get(Servo.class, "drone_launch");
-
+        one = hardwareMap.get(DcMotorSimple.class, "one");
+        two = hardwareMap.get(DcMotorSimple.class, "two");
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
@@ -106,6 +117,9 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        two.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        double launch = 0.5;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -113,16 +127,20 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y/1.5;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x/1.5;
-            double yaw     =  gamepad1.right_stick_x/2;
-
+            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral =  gamepad1.left_stick_x;
+            double yaw     =  gamepad1.right_stick_x;
+            if(gamepad1.right_trigger>0){
+                lateral=gamepad1.right_trigger;
+            }
+            if(gamepad1.left_trigger>0){
+                lateral=gamepad1.left_trigger/-1;
+            }
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower  = axial + lateral + yaw;
@@ -132,18 +150,8 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
-            }
             int servoPos = -1;
-            double launch = -1;
             if(gamepad2.a){
                 servoPos = -1;
             }
@@ -151,10 +159,10 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
                 servoPos = 1;
             }
             if(gamepad2.y) {
-                launch = -1;
+                launch = 0;
             }
-            else {
-                launch = 0.4;
+            if(gamepad2.x){
+                launch= 1;
             }
             double liftPow = gamepad2.left_stick_y;
             if(liftPow>0){
@@ -165,10 +173,20 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
                 intakePow /= 2;
             }
             if(gamepad1.a){
-                leftFrontPower/=2;
-                leftBackPower/=2;
-                rightBackPower/=2;
-                rightFrontPower/=2;
+                leftFrontPower/=0.5;
+                leftBackPower/=0.5;
+                rightBackPower/=0.5;
+                rightFrontPower/=0.5;
+            }
+            double lift2power;
+            if(gamepad2.dpad_down){
+                lift2power = 1;
+            }
+            else if(gamepad2.dpad_up){
+                lift2power = -1;
+            }
+            else{
+                lift2power = 0;
             }
             // This is test code:
             //
@@ -186,7 +204,16 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
             rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
+            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            max = Math.max(max, Math.abs(leftBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));
 
+            if (max > 1.0) {
+                leftFrontPower  /= max;
+                rightFrontPower /= max;
+                leftBackPower   /= max;
+                rightBackPower  /= max;
+            }
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
@@ -196,11 +223,13 @@ public class TwoController_UserOpmode_Kentwood extends LinearOpMode {
             intake.setPower(intakePow);
             dumpTruck.setPosition(servoPos*-1);
             droneLaunch.setPosition(launch);
+            one.setPower(lift2power);
+            two.setPower(lift2power);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower/2, rightFrontPower/2);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower/2, rightBackPower/2);
             telemetry.update();
         }
     }}
