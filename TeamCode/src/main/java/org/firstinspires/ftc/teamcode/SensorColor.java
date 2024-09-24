@@ -203,6 +203,18 @@ public class SensorColor extends LinearOpMode {
               .addData("Value", "%.3f", hsvValues[2]);
       telemetry.addData("Alpha", "%.3f", colors.alpha);
 
+      if(((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM)<2) {
+        if (hsvValues[0] > 180)
+          telemetry.addLine("Blue!");
+        else if (hsvValues[0] > 60)
+          telemetry.addLine("Yellow");
+        else
+          telemetry.addLine("Red!");
+      }
+      {
+
+
+      }
       /* If this color sensor also has a distance sensor, display the measured distance.
        * Note that the reported distance is only useful at very close range, and is impacted by
        * ambient light and surface reflectivity. */
