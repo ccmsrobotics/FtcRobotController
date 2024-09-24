@@ -190,7 +190,7 @@ public class SensorColor extends LinearOpMode {
 
       // Update the hsvValues array by passing it to Color.colorToHSV()
       Color.colorToHSV(colors.toColor(), hsvValues);
-
+      // conense this??
       telemetry.addLine()
               .addData("Red", "%.3f", colors.red)
               .addData("Green", "%.3f", colors.green)
