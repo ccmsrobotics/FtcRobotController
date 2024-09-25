@@ -207,7 +207,7 @@ public class SensorColor extends LinearOpMode {
         if (hsvValues[0] > 180)
           telemetry.addLine("Blue!");
         else if (hsvValues[0] > 60)
-          telemetry.addLine("Yellow");
+          telemetry.addLine("Yellow!");
         else
           telemetry.addLine("Red!");
       }
