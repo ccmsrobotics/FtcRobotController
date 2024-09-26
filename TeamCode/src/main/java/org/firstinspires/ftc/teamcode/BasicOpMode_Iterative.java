@@ -61,7 +61,6 @@ public class BasicOpMode_Iterative extends OpMode
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private Servo grabber = null;
-    private DcMotorSimple lift = null;
     /*
      * Code to run ONCE when the driver hits INIT
      */
