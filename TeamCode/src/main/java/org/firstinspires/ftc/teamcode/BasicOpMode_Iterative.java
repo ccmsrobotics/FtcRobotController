@@ -52,14 +52,16 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="click me, Henry", group="Iterative OpMode")
+@TeleOp(name="i wuv cheese", group="Iterative OpMode")
 //@Disabled
 public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor topleftDrive = null;
+    private DcMotor toprightDrive = null;
+    private DcMotor backleftDrive = null;
+    private DcMotor backrightDrive = null;
     private Servo grabber = null;
     /*
      * Code to run ONCE when the driver hits INIT
@@ -71,14 +73,19 @@ public class BasicOpMode_Iterative extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        topleftDrive  = hardwareMap.get(DcMotor.class, "top_left_drive");
+        toprightDrive = hardwareMap.get(DcMotor.class, "top_right_drive");
+        backleftDrive  = hardwareMap.get(DcMotor.class, "back_left_drive");
+        backrightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
         grabber = hardwareMap.get(Servo.class, "grabservo");
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        topleftDrive.setDirection(DcMotor.Direction.REVERSE);
+        toprightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backleftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backrightDrive.setDirection(DcMotor.Direction.FORWARD);
         grabber.setPosition(0.52);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -111,6 +118,7 @@ public class BasicOpMode_Iterative extends OpMode
         // Choose to drive using either Tank Mode, or POV Mode
         // Comment out the method that's not used.  The default below is POV.
 
+        /*
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double drive = -gamepad1.left_stick_y;
@@ -124,13 +132,54 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
+        topleftDrive.setPower(leftPower);
+        toprightDrive.setPower(rightPower);
+        backleftDrive.setPower(leftPower);
+        backleftDrive.setPower(rightPower);
+        */
+
+        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+        double max;
+        double axial   = -gamepad1.left_stick_y/1.5;  // Note: pushing stick forward gives negative value
+        double lateral =  gamepad1.left_stick_x/1.5;
+        double yaw     =  gamepad1.right_stick_x/2;
+        if(gamepad1.right_trigger>0){
+            lateral=gamepad1.right_trigger/1.5;
+        }
+        if(gamepad1.left_trigger>0){
+            lateral=gamepad1.left_trigger/-1.5;
+        }
+        // Combine the joystick requests for each axis-motion to determine each wheel's power.
+        // Set up a variable for each drive wheel to save the power level for telemetry.
+        double leftFrontPower  = axial + lateral + yaw;
+        double rightFrontPower = axial - lateral - yaw;
+        double leftBackPower   = axial - lateral + yaw;
+        double rightBackPower  = axial + lateral - yaw;
+
+        // Normalize the values so no wheel power exceeds 100%
+        // This ensures that the robot maintains the desired motion.
+        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower  /= max;
+            rightFrontPower /= max;
+            leftBackPower   /= max;
+            rightBackPower  /= max;
+        }
+
+        // Send calculated power to wheels
+        topleftDrive.setPower(leftFrontPower);
+        toprightDrive.setPower(rightFrontPower);
+        backleftDrive.setPower(leftBackPower);
+        backleftDrive.setPower(rightBackPower);
+
         if (gamepad1.a) {
-        grabber.setPosition(0.25);
+            grabber.setPosition(0.25);
         }
         else if(gamepad1.b){
-                grabber.setPosition(0.28);
+            grabber.setPosition(0.28);
         }
         else {
             grabber.setPosition(0.52);
