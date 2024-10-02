@@ -62,7 +62,7 @@ public class BasicOpMode_Iterative extends OpMode
     private DcMotor toprightDrive = null;
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
-    private Servo grabber = null;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -78,7 +78,6 @@ public class BasicOpMode_Iterative extends OpMode
         backleftDrive  = hardwareMap.get(DcMotor.class, "back_left_drive");
         backrightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
-        grabber = hardwareMap.get(Servo.class, "grabservo");
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -86,7 +85,6 @@ public class BasicOpMode_Iterative extends OpMode
         toprightDrive.setDirection(DcMotor.Direction.FORWARD);
         backleftDrive.setDirection(DcMotor.Direction.REVERSE);
         backrightDrive.setDirection(DcMotor.Direction.FORWARD);
-        grabber.setPosition(0.52);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -175,7 +173,7 @@ public class BasicOpMode_Iterative extends OpMode
         backleftDrive.setPower(leftBackPower);
         backleftDrive.setPower(rightBackPower);
 
-        if (gamepad1.a) {
+       /* if (gamepad1.a) {
             grabber.setPosition(0.25);
         }
         else if(gamepad1.b){
@@ -183,10 +181,10 @@ public class BasicOpMode_Iterative extends OpMode
         }
         else {
             grabber.setPosition(0.52);
-        }
+        }*/
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
     }
 
     /*
