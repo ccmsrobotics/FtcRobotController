@@ -82,10 +82,10 @@ public class BasicOpMode_Iterative extends OpMode
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        topleftDrive.setDirection(DcMotor.Direction.REVERSE);
+        topleftDrive.setDirection(DcMotor.Direction.FORWARD);
         toprightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backleftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backrightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backleftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backrightDrive.setDirection(DcMotor.Direction.REVERSE);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -168,11 +168,18 @@ public class BasicOpMode_Iterative extends OpMode
             rightBackPower  /= max;
         }
 
+          /*
+            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
+            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
+            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
+            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+            */
+
         // Send calculated power to wheels
         topleftDrive.setPower(leftFrontPower);
         toprightDrive.setPower(rightFrontPower);
         backleftDrive.setPower(leftBackPower);
-        backleftDrive.setPower(rightBackPower);
+        backrightDrive.setPower(rightBackPower);
 
        /* if (gamepad1.a) {
             grabber.setPosition(0.25);
