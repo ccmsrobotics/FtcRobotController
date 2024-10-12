@@ -27,14 +27,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.graphics.Color;
+import android.view.View;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+//hoi
+//Henry is a bot
+//Ephan Is A Stinky Robotman
+//henry is a gamer during robotics
+//henry is still a bot
+//bekett is slow in cross country
+//codes name is Servo Omni
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -64,22 +80,41 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
-@Disabled
-public class BasicOmniOpMode_Linear extends LinearOpMode {
+@TeleOp(name="Servo Omni", group="Linear OpMode")
+//@Disabled
+public class servo_omnidrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor left_drive = null;
-    private DcMotor right_drive = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
+    private Servo grabber = null;
+    private boolean grab_mode = false;
+    NormalizedColorSensor colorSensor;
+    private DcMotor armLift = null;
+    private DcMotor armExtend = null;
+    View relativeLayout;
 
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        left_drive  = hardwareMap.get(DcMotor.class, "left_drive");
-        right_drive = hardwareMap.get(DcMotor.class, "right_drive");
+        //left_drive  = hardwareMap.get(DcMotor.class, "left_drive");
+        //right_drive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        grabber = hardwareMap.get(Servo.class,"grabber");
+        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
+        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        float gain = 2;
+        final float[] hsvValues = new float[3];
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -91,34 +126,55 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        left_drive.setDirection(DcMotor.Direction.REVERSE);
-        right_drive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        // Wait for the game to start (driver presses START)
+
+        // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+        grabber.setPosition(0.3);
         waitForStart();
+        colorSensor.setGain(gain);
         runtime.reset();
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            //ARM STUFF
+            double armLiftSpeed = gamepad2.left_stick_y*-0.5;
+            armLift.setPower(armLiftSpeed);
+            if(armLiftSpeed==0){
+                armLift.setPower(0.25);
+            }
+            if(armLiftSpeed<0) {
+                armLift.setPower(0.1);
+            }
+            //ARM EXTEND
+            double armExtendSpeed = gamepad2.right_stick_y*0.3;
+            armExtend.setPower(armExtendSpeed);
+
+
+
+
 
             double max;
-
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral = gamepad1.left_stick_x;
-            double yaw = gamepad1.right_stick_x;
-
+            double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = -gamepad1.left_stick_x;
+            double yaw = -gamepad1.right_stick_x;
+            if(gamepad2.a)
+            {
+                grab_mode = true;
+            }
+            NormalizedRGBA colors = colorSensor.getNormalizedColors();
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
+            double leftFrontPower = axial + lateral + yaw;
             double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftBackPower = axial - lateral + yaw;
+            double rightBackPower = axial + lateral - yaw;
 
-            double leftPower=leftFrontPower;
-            double rightPower=rightFrontPower;
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -126,10 +182,10 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
 
             // This is test code:
@@ -142,16 +198,64 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             //      the setDirection() calls above.
             // Once the correct motors move in the correct direction re-comment this code.
 
-
+            /*
+            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
+            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
+            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
+            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+*/
 
             // Send calculated power to wheels
-            left_drive.setPower(leftPower);
-            right_drive.setPower(rightPower);
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            Color.colorToHSV(colors.toColor(), hsvValues);
+            //what if we simplified this so it only said RED, BLUE, or YELLOW? HI
+            telemetry.addLine()
+                    .addData("Red", "%.3f", colors.red)
+                    .addData("Green", "%.3f", colors.green)
+                    .addData("Blue", "%.3f", colors.blue);
+            telemetry.addLine()
+                    .addData("Hue", "%.3f", hsvValues[0])
+                    .addData("Saturation", "%.3f", hsvValues[1])
+                    .addData("Value", "%.3f", hsvValues[2]);
+            telemetry.addData("Alpha", "%.3f", colors.alpha);
+            if(grab_mode==true) {
+                telemetry.addLine("Grab Mode On");
+                if (gamepad2.b)
+                {
+                    grab_mode = false;
+                }
+                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
+                    if (hsvValues[0] > 180) {
+                        telemetry.addLine("Blue!");
+                    } else if (hsvValues[0] > 60) {
+                        telemetry.addLine("Yellow!");
+                        grabber.setPosition(0.55);
+                        grab_mode=false;
+                    } else {
+                        telemetry.addLine("Red!");
+                    }
+                } else {
+                    telemetry.addLine("Out of Range!");
+                    grabber.setPosition(0.3);
+                }
+            }
+            else {
+                telemetry.addLine("Grab Mode Off");
+                if (gamepad2.b)
+                {
+                    grabber.setPosition(0.3);
+                }
+            }
             telemetry.update();
+            }
         }
-    }}
+    }
+
