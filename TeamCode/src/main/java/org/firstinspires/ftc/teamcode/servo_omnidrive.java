@@ -40,7 +40,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -50,6 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //henry is a gamer during robotics
 //henry is still a bot
 //bekett is slow in cross country
+//Efan and Henwy are da best
 //codes name is Servo Omni
 
 /*
@@ -96,7 +96,8 @@ public class servo_omnidrive extends LinearOpMode {
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
     View relativeLayout;
-
+    private double armLiftPower;
+    private double armExtendPower;
     @Override
     public void runOpMode() {
 
@@ -130,32 +131,112 @@ public class servo_omnidrive extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-
-
+        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        int armLiftLocation;
+        int armExtendLocation;
         grabber.setPosition(0.3);
+
         waitForStart();
         colorSensor.setGain(gain);
         runtime.reset();
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            //ARM STUFF
+            //ARM LIFT
+            armLiftLocation=armLift.getCurrentPosition();
+            armExtendLocation = armExtend.getCurrentPosition()
             double armLiftSpeed = gamepad2.left_stick_y*-0.5;
             armLift.setPower(armLiftSpeed);
-            if(armLiftSpeed==0){
-                armLift.setPower(0.25);
+            if (armLiftLocation < 200)
+            {
+                armLiftPower = gamepad2.left_stick_y*0.4 + 0.6;
+            } else if (armLiftLocation <400) {
+                armLiftPower = gamepad2.left_stick_y*0.4 + 0.4;
             }
-            if(armLiftSpeed<0) {
-                armLift.setPower(0.1);
+            else if (armLiftLocation < 600) {
+                armLiftPower = gamepad2.left_stick_y*0.4 + 0.2;
             }
+            else
+            {
+                armLiftPower = gamepad2.left_stick_y*0.15;
+            }
+            */
             //ARM EXTEND
-            double armExtendSpeed = gamepad2.right_stick_y*0.3;
+            double armExtendSpeed = gamepad2.right_stick_y*0.6;
             armExtend.setPower(armExtendSpeed);
 
+            if(armLiftLocation < 300)
+            {
+                if (armExtendLocation< 100)
+                {
+                    if (gamepad2.a)
+                        armExtendPower=1;
+                    else(gampad2.b)
+                            armExtendPower=0;
+                }
+                else if(armExtendLocation < 3500)
+                {
+                    if (gamepad2.a)
+                        armExtendPower=1;
+                    else(gampad2.b)
+                            armExtendPower=-1;
+                }
+                else
+                {
+                    if (gamepad2.a)
+                        armExtendPower=0;
+                    else(gampad2.b)
+                            armExtendPower=-1;
+                }
+            } else if (armLiftLocation > 300) {
+                if (armExtendLocation< 100)
+                {
+                    if (gamepad2.a)
+                        armExtendPower=1;
+                    else(gampad2.b)
+                            armExtendPower=0;
+                }
+                else if(armExtendLocation < 6500)
+                {
+                    if (gamepad2.a)
+                        armExtendPower=1;
+                    else(gampad2.b)
+                            armExtendPower=-1;
+                }
 
-
+                else if(armExtendLocation < 8500)
+                {
+                    if (gamepad2.a)
+                        armExtendPower=0.5;
+                    else(gampad2.b)
+                            armExtendPower=-0.5;
+                else
+                {
+                    if (gamepad2.a)
+                        armExtendPower=0;
+                    else(gampad2.b)
+                            armExtendPower=-1;
+                }
+            }
 
 
             double max;
@@ -188,29 +269,15 @@ public class servo_omnidrive extends LinearOpMode {
                 rightBackPower /= max;
             }
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
 
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-*/
 
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-
+            armExtend.setPower(armExtendPower);
+            armLift.setPower(armLiftPower);
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -226,6 +293,12 @@ public class servo_omnidrive extends LinearOpMode {
                     .addData("Saturation", "%.3f", hsvValues[1])
                     .addData("Value", "%.3f", hsvValues[2]);
             telemetry.addData("Alpha", "%.3f", colors.alpha);
+
+            telemetry.addData("Starting at",  "%7d :%7d",
+                    armLift.getCurrentPosition(),
+                    armExtend.getCurrentPosition());
+            telemetry.update();
+
             if(grab_mode==true) {
                 telemetry.addLine("Grab Mode On");
                 if (gamepad2.b)
