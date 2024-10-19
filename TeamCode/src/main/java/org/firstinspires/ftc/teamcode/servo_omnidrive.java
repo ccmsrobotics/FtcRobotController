@@ -35,6 +35,7 @@ import android.view.View;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -134,6 +135,7 @@ public class servo_omnidrive extends LinearOpMode {
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
