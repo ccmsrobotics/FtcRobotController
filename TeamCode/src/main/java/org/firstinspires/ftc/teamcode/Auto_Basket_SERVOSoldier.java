@@ -122,6 +122,8 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setTargetPosition(0);
+        armLift.setTargetPosition(0);
         armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -240,7 +242,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         armLift.setTargetPosition(2000);
         sleep(250);
         // Extend arm
-        armExtend.setTargetPosition(9000);
+        armExtend.setTargetPosition(3000);
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
 
