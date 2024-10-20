@@ -243,7 +243,7 @@ public class servo_omnidrive extends LinearOpMode {
                     if (gamepad2.b)
                         armExtendPower=-1;
                     else
-                            armExtendPower=0;
+                        armExtendPower=0;
                 }
             }
 
