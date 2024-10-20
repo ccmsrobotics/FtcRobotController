@@ -191,51 +191,59 @@ public class servo_omnidrive extends LinearOpMode {
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gamepad2.b)
+                    else
                             armExtendPower=0;
                 }
                 else if(armExtendLocation < 3500)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gamepad2.b)
+                    else if(gamepad2.b)
                             armExtendPower=-1;
+                    else
+                        armExtendPower=0;
                 }
                 else
                 {
-                    if (gamepad2.a)
-                        armExtendPower=0;
-                    else(gamepad2.b)
-                            armExtendPower=-1;
+                    if (gamepad2.b)
+                        armExtendPower=-1;
+                    else
+                            armExtendPower=0;
                 }
-            } else if (armLiftLocation > 300) {
+            }
+            else if (armLiftLocation > 300)
+            {
                 if (armExtendLocation< 100)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gamepad2.b)
+                    else
                             armExtendPower=0;
                 }
                 else if(armExtendLocation < 6500)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gamepad2.b)
+                    else if(gamepad2.b)
                             armExtendPower=-1;
+                    else
+                        armExtendPower=0;
                 }
-
                 else if(armExtendLocation < 8500)
                 {
                     if (gamepad2.a)
-                        armExtendPower=0.5;
-                    else(gamepad2.b)
-                            armExtendPower=-0.5;
+                        armExtendPower = 0.5;
+                    else if (gamepad2.b)
+                        armExtendPower = -0.5;
+                    else
+                        armExtendPower = 0;
+                }
                 else
                 {
-                    if (gamepad2.a)
-                        armExtendPower=0;
-                    else(gamepad2.b)
-                            armExtendPower=-1;
+                    if (gamepad2.b)
+                        armExtendPower=-1;
+                    else
+                            armExtendPower=0;
                 }
             }
 
