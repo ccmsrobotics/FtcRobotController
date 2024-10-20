@@ -167,6 +167,8 @@ public class servo_omnidrive extends LinearOpMode {
             armExtendLocation = armExtend.getCurrentPosition();
             double armLiftSpeed = gamepad2.left_stick_y*-0.5;
             //armLift.setPower(armLiftSpeed);
+            armLiftPower = gamepad2.left_stick_y;
+            /*
             if (armLiftLocation < 200)
             {
                 armLiftPower = gamepad2.left_stick_y*0.4 + 0.6;
@@ -180,10 +182,9 @@ public class servo_omnidrive extends LinearOpMode {
             {
                 armLiftPower = gamepad2.left_stick_y*0.15;
             }
+             */
 
             //ARM EXTEND
-            double armExtendSpeed = gamepad2.right_stick_y*0.6;
-            //armExtend.setPower(armExtendSpeed);
 
             if(armLiftLocation < 600)
             {
@@ -194,7 +195,7 @@ public class servo_omnidrive extends LinearOpMode {
                     else
                             armExtendPower=0;
                 }
-                else if(armExtendLocation < 3500)
+                else if(armExtendLocation < 1500)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
@@ -220,7 +221,7 @@ public class servo_omnidrive extends LinearOpMode {
                     else
                             armExtendPower=0;
                 }
-                else if(armExtendLocation < 6500)
+                else if(armExtendLocation < 2750)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
@@ -229,7 +230,7 @@ public class servo_omnidrive extends LinearOpMode {
                     else
                         armExtendPower=0;
                 }
-                else if(armExtendLocation < 8500)
+                else if(armExtendLocation < 2900)
                 {
                     if (gamepad2.a)
                         armExtendPower = 0.5;
@@ -253,7 +254,7 @@ public class servo_omnidrive extends LinearOpMode {
             double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
-            if(gamepad2.a)
+            if(gamepad2.x)
             {
                 grab_mode = true;
             }
@@ -310,7 +311,7 @@ public class servo_omnidrive extends LinearOpMode {
 
             if(grab_mode==true) {
                 telemetry.addLine("Grab Mode On");
-                if (gamepad2.b)
+                if (gamepad2.y)
                 {
                     grab_mode = false;
                 }
@@ -331,7 +332,7 @@ public class servo_omnidrive extends LinearOpMode {
             }
             else {
                 telemetry.addLine("Grab Mode Off");
-                if (gamepad2.b)
+                if (gamepad2.y)
                 {
                     grabber.setPosition(0.3);
                 }
