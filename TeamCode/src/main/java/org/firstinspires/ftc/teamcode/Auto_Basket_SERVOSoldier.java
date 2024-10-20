@@ -145,7 +145,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         while (opModeIsActive())
         {
              //Move arm to driving location
-            armLift.setTargetPosition(100);
+            armLift.setTargetPosition(300);
 
             //Move towards scoring position
             goToSpot(16,1,0,2);
@@ -237,7 +237,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
     private void ScoreUpperBasket()
     {
         // Rotate Arm
-        armLift.setTargetPosition(600);
+        armLift.setTargetPosition(2000);
         sleep(250);
         // Extend arm
         armExtend.setTargetPosition(9000);
@@ -259,7 +259,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         armExtend.setTargetPosition(300);
         moveRobot(-.15,0,0);
         sleep(500);
-        armLift.setTargetPosition(100);
+        armLift.setTargetPosition(300);
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
 

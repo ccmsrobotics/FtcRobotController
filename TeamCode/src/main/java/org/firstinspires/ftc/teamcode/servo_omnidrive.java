@@ -185,7 +185,7 @@ public class servo_omnidrive extends LinearOpMode {
             double armExtendSpeed = gamepad2.right_stick_y*0.6;
             armExtend.setPower(armExtendSpeed);
 
-            if(armLiftLocation < 300)
+            if(armLiftLocation < 600)
             {
                 if (armExtendLocation< 100)
                 {
@@ -211,7 +211,7 @@ public class servo_omnidrive extends LinearOpMode {
                             armExtendPower=0;
                 }
             }
-            else if (armLiftLocation > 300)
+            else if (armLiftLocation > 600)
             {
                 if (armExtendLocation< 100)
                 {
