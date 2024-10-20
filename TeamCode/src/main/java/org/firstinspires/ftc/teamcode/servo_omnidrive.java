@@ -35,7 +35,6 @@ import android.view.View;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -165,7 +164,7 @@ public class servo_omnidrive extends LinearOpMode {
         while (opModeIsActive()) {
             //ARM LIFT
             armLiftLocation=armLift.getCurrentPosition();
-            armExtendLocation = armExtend.getCurrentPosition()
+            armExtendLocation = armExtend.getCurrentPosition();
             double armLiftSpeed = gamepad2.left_stick_y*-0.5;
             armLift.setPower(armLiftSpeed);
             if (armLiftLocation < 200)
@@ -181,7 +180,7 @@ public class servo_omnidrive extends LinearOpMode {
             {
                 armLiftPower = gamepad2.left_stick_y*0.15;
             }
-            */
+
             //ARM EXTEND
             double armExtendSpeed = gamepad2.right_stick_y*0.6;
             armExtend.setPower(armExtendSpeed);
@@ -192,21 +191,21 @@ public class servo_omnidrive extends LinearOpMode {
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=0;
                 }
                 else if(armExtendLocation < 3500)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=-1;
                 }
                 else
                 {
                     if (gamepad2.a)
                         armExtendPower=0;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=-1;
                 }
             } else if (armLiftLocation > 300) {
@@ -214,14 +213,14 @@ public class servo_omnidrive extends LinearOpMode {
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=0;
                 }
                 else if(armExtendLocation < 6500)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=-1;
                 }
 
@@ -229,13 +228,13 @@ public class servo_omnidrive extends LinearOpMode {
                 {
                     if (gamepad2.a)
                         armExtendPower=0.5;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=-0.5;
                 else
                 {
                     if (gamepad2.a)
                         armExtendPower=0;
-                    else(gampad2.b)
+                    else(gamepad2.b)
                             armExtendPower=-1;
                 }
             }
