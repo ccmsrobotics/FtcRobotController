@@ -34,6 +34,7 @@ import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -90,7 +91,8 @@ public class servo_omnidrive extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private Servo grabber = null;
+    private CRServo grabber = null;
+    private Servo rotator = null;
     private boolean grab_mode = false;
     NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
@@ -109,7 +111,8 @@ public class servo_omnidrive extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        grabber = hardwareMap.get(Servo.class,"grabber");
+        grabber = hardwareMap.get(CRServo.class,"grabber");
+        rotator = hardwareMap.get(Servo.class,"rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         float gain = 2;
@@ -155,17 +158,19 @@ public class servo_omnidrive extends LinearOpMode {
         telemetry.update();
         int armLiftLocation;
         int armExtendLocation;
-        grabber.setPosition(0.3);
+        grabber.setPower(0);
+        rotator.setPosition(0);
 
         waitForStart();
         colorSensor.setGain(gain);
         runtime.reset();
+        rotator.setPosition(.27);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //ARM LIFT
+
             armLiftLocation=armLift.getCurrentPosition();
             armExtendLocation = armExtend.getCurrentPosition();
-            double armLiftSpeed = gamepad2.left_stick_y*-0.5;
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
             /*
@@ -195,7 +200,7 @@ public class servo_omnidrive extends LinearOpMode {
                     else
                             armExtendPower=0;
                 }
-                else if(armExtendLocation < 1500)
+                else if(armExtendLocation < 1900)
                 {
                     if (gamepad2.a)
                         armExtendPower=1;
@@ -288,6 +293,7 @@ public class servo_omnidrive extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
             armExtend.setPower(armExtendPower);
             armLift.setPower(armLiftPower);
+            grabber.setPower(-gamepad2.right_stick_y);
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -308,7 +314,7 @@ public class servo_omnidrive extends LinearOpMode {
                     armLift.getCurrentPosition(),
                     armExtend.getCurrentPosition());
             telemetry.update();
-
+/*
             if(grab_mode==true) {
                 telemetry.addLine("Grab Mode On");
                 if (gamepad2.y)
@@ -337,6 +343,8 @@ public class servo_omnidrive extends LinearOpMode {
                     grabber.setPosition(0.3);
                 }
             }
+
+ */
             telemetry.update();
             }
         }

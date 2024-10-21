@@ -29,31 +29,20 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.view.View;
-
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-@Autonomous(name="Auto Basket", group = "Servo")
-public class Auto_Basket_SERVOSoldier extends LinearOpMode
+@Autonomous(name="Test_OTOS", group = "Servo")
+public class Test_optical extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -123,15 +112,15 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         rotator = hardwareMap.get(Servo.class,"rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setTargetPosition(0);
         armLift.setTargetPosition(0);
         armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Sensor Config
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
@@ -151,15 +140,23 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
 
         while (opModeIsActive())
         {
+            pos = myOtos.getPosition();
+            telemetry.addData(">", "Touch START to start OpMode");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            sleep(100);
+
              //Move arm to driving location
-            rotator.setPosition(.27);
-            armLift.setTargetPosition(300);
+            //rotator.setPosition(.27);
+            //armLift.setTargetPosition(300);
 
 
             //Move towards scoring position
-            goToSpot(16,1,0,2);
+            //goToSpot(16,1,0,2);
 
-            ScoreUpperBasket();
+            //ScoreUpperBasket();
 
 
             //move to Pickup staging point
@@ -226,20 +223,16 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         while(maxError >LocError)
         {
             pos = myOtos.getPosition();
-            xError = xTargetLoc-pos.y;
-            yError = yTargetLoc-pos.x;
+            xError = xTargetLoc-pos.x;
+            yError = yTargetLoc-pos.y;
             yawError =yawErrorCalc(yawTarget,pos.h);
             maxError =Math.max(xError,yError);
             maxError=Math.max(maxError, yawError/5);//If a 1" error is specified, a 5 degree error is allowed.
 
-            drive  = Range.clip(xError * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN*-1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(yError * STRAFE_GAIN*-1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            drive  = Range.clip(xError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(yError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             moveRobot(drive, strafe, turn);
-            //telemetry.addData("Moving(Fwd, Strafe, ya,
-            //        xError, yError, yawError);
-            //telemetry.update();
-
             sleep(10);
         }
         //stop robot at end of move
@@ -250,14 +243,9 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
     private void ScoreUpperBasket()
     {
         // Rotate Arm
-        armLift.setPower(1);
-        armLift.setTargetPosition(1700);
-        telemetry.addData("Extending arms", " at %7d :%7d",
-                armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-        telemetry.update();
+        armLift.setTargetPosition(2000);
         sleep(250);
         // Extend arm
-        armExtend.setPower(1);
         armExtend.setTargetPosition(3000);
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
@@ -273,7 +261,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         moveRobot(0,0,0);
         //Score (release sample)
         grabber.setPower(1);
-        sleep(5500);
+        sleep(500);
         grabber.setPower(0);
         //Retract Arm
         armExtend.setTargetPosition(300);
