@@ -157,7 +157,40 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
 
 
             //Move towards scoring position
-            goToSpot(16,1,0,2);
+            telemetry.addData(">", "16 inch forward");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            goToSpot(24,0,0,2);
+            sleep(1500);
+            telemetry.addData(">", "Move to scoring position");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            goToSpot(24,0,135,.5);
+            sleep(1500);
+            telemetry.addData(">", "rotate 120");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            goToSpot(12,-12,135,0.5);
+            telemetry.addData(">", "rotate 120");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+           sleep(7500);
+            telemetry.addData(">", "rotate 120");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            goToSpot(16,5,120,1);
+
+            sleep(20000);
 
             ScoreUpperBasket();
 
@@ -212,7 +245,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         rightBackDrive.setPower(rightBackPower);
     }
 
-    private void goToSpot(double xTargetLoc, double yTargetLoc, double yawTarget, double LocError)
+    private void goToSpot(double yTargetLoc, double xTargetLoc, double yawTarget, double LocError)
     {
         double xError;
         double yError;
@@ -226,15 +259,16 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         while(maxError >LocError)
         {
             pos = myOtos.getPosition();
-            xError = xTargetLoc-pos.y;
-            yError = yTargetLoc-pos.x;
+            yError = yTargetLoc-pos.y;
+            xError = xTargetLoc-pos.x;
             yawError =yawErrorCalc(yawTarget,pos.h);
             maxError =Math.max(xError,yError);
             maxError=Math.max(maxError, yawError/5);//If a 1" error is specified, a 5 degree error is allowed.
-
-            drive  = Range.clip(xError * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double rotX = xError * Math.cos(-pos.h) - yError * Math.sin(-pos.h);
+            double rotY = xError * Math.sin(-pos.h) + yError * Math.cos(-pos.h);
+            drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN*-1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(yError * STRAFE_GAIN*-1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             moveRobot(drive, strafe, turn);
             //telemetry.addData("Moving(Fwd, Strafe, ya,
             //        xError, yError, yawError);

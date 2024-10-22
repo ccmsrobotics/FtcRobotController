@@ -158,6 +158,9 @@ public class servo_omnidrive extends LinearOpMode {
         telemetry.update();
         int armLiftLocation;
         int armExtendLocation;
+        int armLiftTarget;
+        int armExtendTarget;
+        double speedMode=.7;
         grabber.setPower(0);
         rotator.setPosition(0);
 
@@ -169,7 +172,7 @@ public class servo_omnidrive extends LinearOpMode {
         while (opModeIsActive()) {
             //ARM LIFT
 
-            armLiftLocation=armLift.getCurrentPosition();
+            armLiftLocation = armLift.getCurrentPosition();
             armExtendLocation = armExtend.getCurrentPosition();
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
@@ -191,65 +194,50 @@ public class servo_omnidrive extends LinearOpMode {
 
             //ARM EXTEND
 
-            if(armLiftLocation < 600)
-            {
-                if (armExtendLocation< 100)
-                {
+            if (armLiftLocation < 600) {
+                if (armExtendLocation < 100) {
                     if (gamepad2.a)
-                        armExtendPower=1;
+                        armExtendPower = 1;
                     else
-                            armExtendPower=0;
-                }
-                else if(armExtendLocation < 1900)
-                {
+                        armExtendPower = 0;
+                } else if (armExtendLocation < 1900) {
                     if (gamepad2.a)
-                        armExtendPower=1;
-                    else if(gamepad2.b)
-                            armExtendPower=-1;
+                        armExtendPower = 1;
+                    else if (gamepad2.b)
+                        armExtendPower = -1;
                     else
-                        armExtendPower=0;
-                }
-                else
-                {
+                        armExtendPower = 0;
+                } else {
                     if (gamepad2.b)
-                        armExtendPower=-1;
+                        armExtendPower = -1;
                     else
-                            armExtendPower=0;
+                        armExtendPower = 0;
                 }
-            }
-            else if (armLiftLocation > 600)
-            {
-                if (armExtendLocation< 100)
-                {
+            } else if (armLiftLocation > 600) {
+                if (armExtendLocation < 100) {
                     if (gamepad2.a)
-                        armExtendPower=1;
+                        armExtendPower = 1;
                     else
-                            armExtendPower=0;
-                }
-                else if(armExtendLocation < 2750)
-                {
+                        armExtendPower = 0;
+                } else if (armExtendLocation < 2750) {
                     if (gamepad2.a)
-                        armExtendPower=1;
-                    else if(gamepad2.b)
-                            armExtendPower=-1;
+                        armExtendPower = 1;
+                    else if (gamepad2.b)
+                        armExtendPower = -1;
                     else
-                        armExtendPower=0;
-                }
-                else if(armExtendLocation < 2900)
-                {
+                        armExtendPower = 0;
+                } else if (armExtendLocation < 2900) {
                     if (gamepad2.a)
                         armExtendPower = 0.5;
                     else if (gamepad2.b)
                         armExtendPower = -0.5;
                     else
                         armExtendPower = 0;
-                }
-                else
-                {
+                } else {
                     if (gamepad2.b)
-                        armExtendPower=-1;
+                        armExtendPower = -1;
                     else
-                        armExtendPower=0;
+                        armExtendPower = 0;
                 }
             }
 
@@ -259,6 +247,14 @@ public class servo_omnidrive extends LinearOpMode {
             double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
+            if (gamepad1.left_bumper)
+                speedMode = 0.5;
+            else if (gamepad1.right_bumper) {
+                speedMode = 1;
+            } else {
+                speedMode = 0.7;
+            }
+
             if(gamepad2.x)
             {
                 grab_mode = true;
@@ -283,6 +279,11 @@ public class servo_omnidrive extends LinearOpMode {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
+            if (max > 1.0) {
+                leftFrontPower *= speedMode;
+                rightFrontPower *= speedMode;
+                leftBackPower *= speedMode;
+                rightBackPower *= speedMode;
 
 
 
