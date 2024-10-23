@@ -100,6 +100,7 @@ public class servo_omnidrive extends LinearOpMode {
     View relativeLayout;
     private double armLiftPower;
     private double armExtendPower;
+
     @Override
     public void runOpMode() {
 
@@ -111,8 +112,8 @@ public class servo_omnidrive extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        grabber = hardwareMap.get(CRServo.class,"grabber");
-        rotator = hardwareMap.get(Servo.class,"rotator");
+        grabber = hardwareMap.get(CRServo.class, "grabber");
+        rotator = hardwareMap.get(Servo.class, "rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         float gain = 2;
@@ -160,7 +161,7 @@ public class servo_omnidrive extends LinearOpMode {
         int armExtendLocation;
         int armLiftTarget;
         int armExtendTarget;
-        double speedMode=.7;
+        double speedMode = .7;
         grabber.setPower(0);
         rotator.setPosition(0);
 
@@ -255,8 +256,7 @@ public class servo_omnidrive extends LinearOpMode {
                 speedMode = 0.7;
             }
 
-            if(gamepad2.x)
-            {
+            if (gamepad2.x) {
                 grab_mode = true;
             }
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -286,35 +286,34 @@ public class servo_omnidrive extends LinearOpMode {
                 rightBackPower *= speedMode;
 
 
+                // Send calculated power to wheels
+                leftFrontDrive.setPower(leftFrontPower);
+                rightFrontDrive.setPower(rightFrontPower);
+                leftBackDrive.setPower(leftBackPower);
+                rightBackDrive.setPower(rightBackPower);
+                armExtend.setPower(armExtendPower);
+                armLift.setPower(armLiftPower);
+                grabber.setPower(-gamepad2.right_stick_y);
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+                Color.colorToHSV(colors.toColor(), hsvValues);
+                //what if we simplified this so it only said RED, BLUE, or YELLOW? HI
+                telemetry.addLine()
+                        .addData("Red", "%.3f", colors.red)
+                        .addData("Green", "%.3f", colors.green)
+                        .addData("Blue", "%.3f", colors.blue);
+                telemetry.addLine()
+                        .addData("Hue", "%.3f", hsvValues[0])
+                        .addData("Saturation", "%.3f", hsvValues[1])
+                        .addData("Value", "%.3f", hsvValues[2]);
+                telemetry.addData("Alpha", "%.3f", colors.alpha);
 
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-            armExtend.setPower(armExtendPower);
-            armLift.setPower(armLiftPower);
-            grabber.setPower(-gamepad2.right_stick_y);
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            Color.colorToHSV(colors.toColor(), hsvValues);
-            //what if we simplified this so it only said RED, BLUE, or YELLOW? HI
-            telemetry.addLine()
-                    .addData("Red", "%.3f", colors.red)
-                    .addData("Green", "%.3f", colors.green)
-                    .addData("Blue", "%.3f", colors.blue);
-            telemetry.addLine()
-                    .addData("Hue", "%.3f", hsvValues[0])
-                    .addData("Saturation", "%.3f", hsvValues[1])
-                    .addData("Value", "%.3f", hsvValues[2]);
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-
-            telemetry.addData("Starting at",  "%7d :%7d",
-                    armLift.getCurrentPosition(),
-                    armExtend.getCurrentPosition());
-            telemetry.update();
+                telemetry.addData("Starting at", "%7d :%7d",
+                        armLift.getCurrentPosition(),
+                        armExtend.getCurrentPosition());
+                telemetry.update();
 /*
             if(grab_mode==true) {
                 telemetry.addLine("Grab Mode On");
@@ -346,8 +345,8 @@ public class servo_omnidrive extends LinearOpMode {
             }
 
  */
-            telemetry.update();
+                telemetry.update();
             }
         }
     }
-
+}

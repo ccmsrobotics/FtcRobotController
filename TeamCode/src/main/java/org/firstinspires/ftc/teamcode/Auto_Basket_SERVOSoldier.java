@@ -169,7 +169,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
             telemetry.addData("Y coordinate", pos.y);
             telemetry.addData("Heading angle", pos.h);
             telemetry.update();
-            goToSpot(24,0,135,.5);
+            goToSpot(24,0,-135,.5);
             sleep(1500);
             telemetry.addData(">", "rotate 120");
             telemetry.addData("X coordinate", pos.x);
@@ -261,20 +261,19 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
             pos = myOtos.getPosition();
             yError = yTargetLoc-pos.y;
             xError = xTargetLoc-pos.x;
-            yawError =yawErrorCalc(yawTarget,pos.h);
-            maxError =Math.max(xError,yError);
-            maxError=Math.max(maxError, yawError/5);//If a 1" error is specified, a 5 degree error is allowed.
+            yawError =yawErrorCalc(pos.h,yawTarget);
+            maxError =Math.max(Math.abs(xError),Math.abs(yError));
+            maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
             double rotX = xError * Math.cos(-pos.h) - yError * Math.sin(-pos.h);
             double rotY = xError * Math.sin(-pos.h) + yError * Math.cos(-pos.h);
             drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN*-1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             moveRobot(drive, strafe, turn);
             //telemetry.addData("Moving(Fwd, Strafe, ya,
             //        xError, yError, yawError);
             //telemetry.update();
 
-            sleep(10);
         }
         //stop robot at end of move
         moveRobot(0,0,0);
