@@ -82,66 +82,37 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 
 @TeleOp(name="Servo Omni", group="Linear OpMode")
-//@Disabled
 public class servo_omnidrive extends LinearOpMode {
 
-    // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
+    // Motors
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private CRServo grabber = null;
-    private Servo rotator = null;
-    private boolean grab_mode = false;
-    NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
-    View relativeLayout;
     private double armLiftPower;
     private double armExtendPower;
 
+    //Servos
+    private CRServo grabber = null;
+    private Servo rotator = null;
+
+    //Sensors
+    NormalizedColorSensor colorSensor;
+
+
     @Override
     public void runOpMode() {
-
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-        //left_drive  = hardwareMap.get(DcMotor.class, "left_drive");
-        //right_drive = hardwareMap.get(DcMotor.class, "right_drive");
+        //Motors
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        grabber = hardwareMap.get(CRServo.class, "grabber");
-        rotator = hardwareMap.get(Servo.class, "rotator");
-        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
-        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        float gain = 2;
-        final float[] hsvValues = new float[3];
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -154,22 +125,42 @@ public class servo_omnidrive extends LinearOpMode {
         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double speedMode = 0.7;
+
+        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
+        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        int armLiftLocation;
+        int armLiftTarget;
+
+        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
+        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        int armExtendLocation;
+        int armExtendTarget;
+
+        //Servos
+        grabber = hardwareMap.get(CRServo.class, "grabber");
+        rotator = hardwareMap.get(Servo.class, "rotator");
+        grabber.setPower(0);  //Initialize off
+        rotator.setPosition(0); //Set starting location to zero
+
+        //Sensors
+        float gain = 2;
+        final float[] hsvValues = new float[3];
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+        colorSensor.setGain(gain);
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        int armLiftLocation;
-        int armExtendLocation;
-        int armLiftTarget;
-        int armExtendTarget;
-        double speedMode = .7;
-        grabber.setPower(0);
-        rotator.setPosition(0);
-
         waitForStart();
-        colorSensor.setGain(gain);
-        runtime.reset();
-        rotator.setPosition(.27);
         // run until the end of the match (driver presses STOP)
+        rotator.setPosition(.27);
+
         while (opModeIsActive()) {
             //ARM LIFT
 
@@ -177,21 +168,6 @@ public class servo_omnidrive extends LinearOpMode {
             armExtendLocation = armExtend.getCurrentPosition();
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
-            /*
-            if (armLiftLocation < 200)
-            {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.6;
-            } else if (armLiftLocation <400) {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.4;
-            }
-            else if (armLiftLocation < 600) {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.2;
-            }
-            else
-            {
-                armLiftPower = gamepad2.left_stick_y*0.15;
-            }
-             */
 
             //ARM EXTEND
 
@@ -241,8 +217,6 @@ public class servo_omnidrive extends LinearOpMode {
                         armExtendPower = 0;
                 }
             }
-
-
             double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
@@ -256,9 +230,7 @@ public class servo_omnidrive extends LinearOpMode {
                 speedMode = 0.7;
             }
 
-            if (gamepad2.x) {
-                grab_mode = true;
-            }
+
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -273,20 +245,21 @@ public class servo_omnidrive extends LinearOpMode {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > 1.0) {
+            if (max > 1.0)
+            {
                 leftFrontPower /= max;
                 rightFrontPower /= max;
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
-            if (max > 1.0) {
+
                 leftFrontPower *= speedMode;
                 rightFrontPower *= speedMode;
                 leftBackPower *= speedMode;
                 rightBackPower *= speedMode;
 
 
-                // Send calculated power to wheels
+                // Send calculated power to motors
                 leftFrontDrive.setPower(leftFrontPower);
                 rightFrontDrive.setPower(rightFrontPower);
                 leftBackDrive.setPower(leftBackPower);
@@ -295,7 +268,6 @@ public class servo_omnidrive extends LinearOpMode {
                 armLift.setPower(armLiftPower);
                 grabber.setPower(-gamepad2.right_stick_y);
                 // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
                 Color.colorToHSV(colors.toColor(), hsvValues);
@@ -314,7 +286,7 @@ public class servo_omnidrive extends LinearOpMode {
                         armLift.getCurrentPosition(),
                         armExtend.getCurrentPosition());
                 telemetry.update();
-/*
+                /*
             if(grab_mode==true) {
                 telemetry.addLine("Grab Mode On");
                 if (gamepad2.y)
@@ -345,8 +317,7 @@ public class servo_omnidrive extends LinearOpMode {
             }
 
  */
-                telemetry.update();
+
             }
         }
     }
-}
