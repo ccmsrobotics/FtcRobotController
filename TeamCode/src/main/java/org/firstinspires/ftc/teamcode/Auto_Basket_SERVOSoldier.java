@@ -291,11 +291,11 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         sleep(5500);
         grabber.setPower(0);
         //Retract Arm
-        armExtend.setTargetPosition(300);
+        armExtend.setTargetPosition(0);
         moveRobot(-.15,0,0);
         sleep(500);
 
-        armLift.setTargetPosition(300);
+        armLift.setTargetPosition(0);
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
 
