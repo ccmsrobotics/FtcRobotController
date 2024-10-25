@@ -36,13 +36,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 //hoi
 //Henry is a bot
@@ -81,9 +78,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Servo Omni", group="Linear OpMode")
+@TeleOp(name="Servo Omni Spin Intake", group="Linear OpMode")
 //@Disabled
-public class servo_omnidrive extends LinearOpMode {
+public class servo_omnidrive_Briana extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -140,6 +137,9 @@ public class servo_omnidrive extends LinearOpMode {
         armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armLift.setTargetPosition(0);
+        armLift.setPower(0);
+        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -159,13 +159,13 @@ public class servo_omnidrive extends LinearOpMode {
         telemetry.update();
         int armLiftLocation;
         int armExtendLocation;
-        int armLiftTarget;
+        int armLiftTarget=0;
         int armExtendTarget;
         double speedMode = .7;
         grabber.setPower(0);
         rotator.setPosition(0);
-
         waitForStart();
+        armLift.setPower(1);
         colorSensor.setGain(gain);
         runtime.reset();
         rotator.setPosition(.27);
@@ -177,21 +177,12 @@ public class servo_omnidrive extends LinearOpMode {
             armExtendLocation = armExtend.getCurrentPosition();
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
-            /*
-            if (armLiftLocation < 200)
-            {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.6;
-            } else if (armLiftLocation <400) {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.4;
-            }
-            else if (armLiftLocation < 600) {
-                armLiftPower = gamepad2.left_stick_y*0.4 + 0.2;
-            }
-            else
-            {
-                armLiftPower = gamepad2.left_stick_y*0.15;
-            }
-             */
+            if (gamepad2.dpad_up)
+                armLiftTarget =1550;
+            else if (gamepad2.dpad_right)
+                armLiftTarget =400;
+            else if (gamepad2.dpad_down)
+                armLiftTarget=0;
 
             //ARM EXTEND
 
@@ -256,6 +247,9 @@ public class servo_omnidrive extends LinearOpMode {
                 speedMode = 0.7;
             }
 
+            if (gamepad2.x) {
+                grab_mode = true;
+            }
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -276,6 +270,7 @@ public class servo_omnidrive extends LinearOpMode {
                 leftBackPower /= max;
                 rightBackPower /= max;
             }
+
                 leftFrontPower *= speedMode;
                 rightFrontPower *= speedMode;
                 leftBackPower *= speedMode;
@@ -288,7 +283,7 @@ public class servo_omnidrive extends LinearOpMode {
                 leftBackDrive.setPower(leftBackPower);
                 rightBackDrive.setPower(rightBackPower);
                 armExtend.setPower(armExtendPower);
-                armLift.setPower(armLiftPower);
+                armLift.setTargetPosition(armLiftTarget);
                 grabber.setPower(-gamepad2.right_stick_y);
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -341,7 +336,7 @@ public class servo_omnidrive extends LinearOpMode {
             }
 
  */
-                telemetry.update();
+
             }
         }
     }

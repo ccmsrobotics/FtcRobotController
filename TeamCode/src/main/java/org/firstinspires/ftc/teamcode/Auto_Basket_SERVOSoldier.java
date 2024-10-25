@@ -153,46 +153,23 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         {
              //Move arm to driving location
             rotator.setPosition(.27);
-            armLift.setTargetPosition(300);
+            armLift.setTargetPosition(0);
 
 
             //Move towards scoring position
-            telemetry.addData(">", "16 inch forward");
+            telemetry.addData(">", "24 inch forward");
             telemetry.addData("X coordinate", pos.x);
             telemetry.addData("Y coordinate", pos.y);
             telemetry.addData("Heading angle", pos.h);
             telemetry.update();
             goToSpot(24,0,0,2);
-            sleep(1500);
-            telemetry.addData(">", "Move to scoring position");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
+            //Move to Scoring spot
             goToSpot(24,0,-135,.5);
-            sleep(1500);
-            telemetry.addData(">", "rotate 120");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
-            goToSpot(12,-12,135,0.5);
-            telemetry.addData(">", "rotate 120");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
-           sleep(7500);
-            telemetry.addData(">", "rotate 120");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
-            goToSpot(16,5,120,1);
+            ScoreUpperBasket();
+
 
             sleep(20000);
 
-            ScoreUpperBasket();
 
 
             //move to Pickup staging point
