@@ -41,8 +41,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Test_OTOS", group = "Servo")
-public class Test_optical extends LinearOpMode
+@Autonomous(name="Auto Basket Grabber", group = "Servo")
+public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -55,7 +55,8 @@ public class Test_optical extends LinearOpMode
     private double armExtendPower;
 
     //Servos
-
+    private Servo grabber = null;
+    private Servo rotator = null;
     private boolean grab_mode = false;
 
     //Sensors
@@ -69,13 +70,13 @@ public class Test_optical extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.5;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -107,18 +108,19 @@ public class Test_optical extends LinearOpMode
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Arm (rotation and extend config)
-
+        grabber = hardwareMap.get(Servo.class,"grabber");
+        rotator = hardwareMap.get(Servo.class,"rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setTargetPosition(0);
         armLift.setTargetPosition(0);
         armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Sensor Config
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
@@ -132,28 +134,28 @@ public class Test_optical extends LinearOpMode
         telemetry.addData("Y coordinate", pos.y);
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
+        rotator.setPosition(.05);
+        grabber.setPosition(0);
         waitForStart();
 
 
-        while (opModeIsActive())
-        {
-            pos = myOtos.getPosition();
-            telemetry.addData(">", "Touch START to start OpMode");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
-            sleep(100);
 
              //Move arm to driving location
-            //rotator.setPosition(.27);
-            //armLift.setTargetPosition(300);
+            rotator.setPosition(.55);
+            armLift.setTargetPosition(0);
 
 
             //Move towards scoring position
-            //goToSpot(16,1,0,2);
 
-            //ScoreUpperBasket();
+            goToSpot(14,0,0,2);
+//            goToSpot(24,0,135,.5);
+            //Move to Scoring spot
+  //          goToSpot(12,-12,135,.5);
+            ScoreUpperBasket();
+
+
+            sleep(20000);
+
 
 
             //move to Pickup staging point
@@ -168,6 +170,8 @@ public class Test_optical extends LinearOpMode
 
             //Move towards scoring position
 
+        while (opModeIsActive())
+        {
         }
     }
 
@@ -206,7 +210,7 @@ public class Test_optical extends LinearOpMode
         rightBackDrive.setPower(rightBackPower);
     }
 
-    private void goToSpot(double xTargetLoc, double yTargetLoc, double yawTarget, double LocError)
+    private void goToSpot(double yTargetLoc, double xTargetLoc, double yawTarget, double LocError)
     {
         double xError;
         double yError;
@@ -220,17 +224,29 @@ public class Test_optical extends LinearOpMode
         while(maxError >LocError)
         {
             pos = myOtos.getPosition();
-            xError = xTargetLoc-pos.x;
             yError = yTargetLoc-pos.y;
-            yawError =yawErrorCalc(yawTarget,pos.h);
-            maxError =Math.max(xError,yError);
-            maxError=Math.max(maxError, yawError/5);//If a 1" error is specified, a 5 degree error is allowed.
+            xError = xTargetLoc-pos.x;
+            yawError =yawErrorCalc(pos.h,yawTarget);
+            maxError =Math.max(Math.abs(xError),Math.abs(yError));
+            maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
+            double rotX = xError * Math.cos(-pos.h) - yError * Math.sin(-pos.h);
+            double rotY = xError * Math.sin(-pos.h) + yError * Math.cos(-pos.h);
+            drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.addData("drive power", drive);
+            telemetry.addData("strafe power", strafe);
+            telemetry.addData("turn power", turn);
+            telemetry.update();
 
-            drive  = Range.clip(xError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(yError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-            moveRobot(drive, strafe, turn);
-            sleep(10);
+            moveRobot(drive, -strafe, turn);
+            //telemetry.addData("Moving(Fwd, Strafe, ya,
+            //        xError, yError, yawError);
+            //telemetry.update();
+
         }
         //stop robot at end of move
         moveRobot(0,0,0);
@@ -240,9 +256,14 @@ public class Test_optical extends LinearOpMode
     private void ScoreUpperBasket()
     {
         // Rotate Arm
-        armLift.setTargetPosition(2000);
+        armLift.setPower(1);
+        armLift.setTargetPosition(1700);
+        telemetry.addData("Extending arms", " at %7d :%7d",
+                armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+        telemetry.update();
         sleep(250);
         // Extend arm
+        armExtend.setPower(1);
         armExtend.setTargetPosition(3000);
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
@@ -253,17 +274,17 @@ public class Test_optical extends LinearOpMode
             telemetry.update();
         }
         //Inch forward
-        moveRobot(.25,0,0);
-        sleep(250);
-        moveRobot(0,0,0);
-        //Score (release sample)
+        sleep(1000);
+        grabber.setPosition(.35);
+        sleep(1000);
 
         //Retract Arm
-        armExtend.setTargetPosition(300);
-        moveRobot(-.15,0,0);
+        armExtend.setTargetPosition(0);
         sleep(500);
 
-        armLift.setTargetPosition(300);
+        armLift.setTargetPosition(0);
+        rotator.setPosition(.15);
+
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {
 
@@ -307,7 +328,7 @@ public class Test_optical extends LinearOpMode
         // clockwise (negative rotation) from the robot's orientation, the offset
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(.5, -6, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-5.55, .55, 0);
         myOtos.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for

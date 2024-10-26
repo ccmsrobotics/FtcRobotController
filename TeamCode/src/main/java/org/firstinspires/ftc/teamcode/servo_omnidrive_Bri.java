@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -77,6 +78,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="Servo Omni_Bri", group="Linear OpMode")
+@Disabled
 public class servo_omnidrive_Bri extends LinearOpMode {
 
     // Motors
@@ -129,7 +131,7 @@ public class servo_omnidrive_Bri extends LinearOpMode {
         armLift.setTargetPosition(0);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         int armLiftLocation;
-        int armLiftTarget;
+        int armLiftTarget=0;
 
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         armExtend.setDirection(DcMotor.Direction.REVERSE);
