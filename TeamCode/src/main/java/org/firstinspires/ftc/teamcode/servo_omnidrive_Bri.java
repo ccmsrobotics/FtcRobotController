@@ -269,7 +269,8 @@ public class servo_omnidrive_Bri extends LinearOpMode {
                 leftBackDrive.setPower(leftBackPower);
                 rightBackDrive.setPower(rightBackPower);
                 armExtend.setPower(armExtendPower);
-                armLift.setTargetPosition(armLiftTarget);
+                // TODO: Steve commented out the line below
+                //armLift.setTargetPosition(armLiftTarget);
                 grabber.setPower(-gamepad2.right_stick_y);
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
