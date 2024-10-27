@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="I wuv cheez(mechanum drive)", group="Iterative OpMode")
-//@Disabled
+@Disabled
 public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.

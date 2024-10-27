@@ -232,9 +232,9 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             double currentYawRadians = pos.h*3.1415/180;
             double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
             double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
-            drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            drive  = Range.clip(rotY * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
             telemetry.addData("X coordinate", pos.x);
             telemetry.addData("Y coordinate", pos.y);
@@ -245,7 +245,7 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             telemetry.update();
 
 
-            moveRobot(drive, strafe, -turn);
+            moveRobot(-drive, strafe, -turn);
 
 
         }

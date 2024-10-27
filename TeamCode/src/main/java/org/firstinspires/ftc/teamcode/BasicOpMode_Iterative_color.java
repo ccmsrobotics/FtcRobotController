@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="click me, Henry color", group="Iterative OpMode")
-//@Disabled
+@Disabled
 public class BasicOpMode_Iterative_color extends OpMode
 {
     // Declare OpMode members.
