@@ -150,8 +150,8 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             goToSpot(14,0,0,2);
 //            goToSpot(24,0,135,.5);
             //Move to Scoring spot
-  //          goToSpot(12,-12,135,.5);
-            ScoreUpperBasket();
+            goToSpot(12,-12,135,.5);
+            //ScoreUpperBasket();
 
 
             sleep(20000);
@@ -235,7 +235,7 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-/*
+
             telemetry.addData("X coordinate", pos.x);
             telemetry.addData("Y coordinate", pos.y);
             telemetry.addData("Heading angle", pos.h);
@@ -243,9 +243,9 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             telemetry.addData("strafe power", strafe);
             telemetry.addData("turn power", turn);
             telemetry.update();
- */
 
-            moveRobot(drive, strafe, turn);
+
+            moveRobot(drive, strafe, -turn);
 
 
         }
