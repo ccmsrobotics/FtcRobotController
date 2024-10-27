@@ -70,13 +70,13 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.03 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.03  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.015  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.5;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -226,14 +226,16 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             pos = myOtos.getPosition();
             yError = yTargetLoc-pos.y;
             xError = xTargetLoc-pos.x;
-            yawError =yawErrorCalc(pos.h,yawTarget);
+            yawError =yawErrorCalc(yawTarget,pos.h);
             maxError =Math.max(Math.abs(xError),Math.abs(yError));
             maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
-            double rotX = xError * Math.cos(-pos.h) - yError * Math.sin(-pos.h);
-            double rotY = xError * Math.sin(-pos.h) + yError * Math.cos(-pos.h);
+            double currentYawRadians = pos.h*3.1415/180;
+            double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
+            double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
             drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+/*
             telemetry.addData("X coordinate", pos.x);
             telemetry.addData("Y coordinate", pos.y);
             telemetry.addData("Heading angle", pos.h);
@@ -241,11 +243,10 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             telemetry.addData("strafe power", strafe);
             telemetry.addData("turn power", turn);
             telemetry.update();
+ */
 
-            moveRobot(drive, -strafe, turn);
-            //telemetry.addData("Moving(Fwd, Strafe, ya,
-            //        xError, yError, yawError);
-            //telemetry.update();
+            moveRobot(drive, strafe, turn);
+
 
         }
         //stop robot at end of move
@@ -328,7 +329,7 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         // clockwise (negative rotation) from the robot's orientation, the offset
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-5.55, .55, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0.55, -5.55, 0);
         myOtos.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for

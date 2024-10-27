@@ -241,10 +241,9 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
             yawError =yawErrorCalc(pos.h,yawTarget);
             maxError =Math.max(Math.abs(xError),Math.abs(yError));
             maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
-            double rotX = xError * Math.cos(-pos.h) - yError * Math.sin(-pos.h);
-            double rotY = xError * Math.sin(-pos.h) + yError * Math.cos(-pos.h);
-            drive  = Range.clip(rotY * SPEED_GAIN*-1, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN*1, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            double currentYawRadians = pos.h*3.1415/180;
+            double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
+            double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
             strafe = Range.clip(rotX * STRAFE_GAIN*1, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             moveRobot(drive, strafe, turn);
             //telemetry.addData("Moving(Fwd, Strafe, ya,
@@ -334,7 +333,7 @@ public class Auto_Basket_SERVOSoldier extends LinearOpMode
         // clockwise (negative rotation) from the robot's orientation, the offset
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(.5, -6, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(.55, -5.55, 0);
         myOtos.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for
