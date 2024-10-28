@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+@Disabled
 @Autonomous(name="Auto Basket", group = "Servo")
 public class Auto_Basket_SERVOSoldier extends LinearOpMode
 {

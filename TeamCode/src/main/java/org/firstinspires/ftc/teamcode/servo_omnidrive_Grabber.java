@@ -169,7 +169,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
         colorSensor.setGain(gain);
         runtime.reset();
         rotator.setPosition(.5);
-        grabber.setPosition(0.3);
+        grabber.setPosition(0);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //ARM LIFT
@@ -241,7 +241,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
             if (gamepad1.left_bumper)
-                speedMode = 0.5;
+                speedMode = 0.2;
             else if (gamepad1.right_bumper) {
                 speedMode = 1;
             } else {
