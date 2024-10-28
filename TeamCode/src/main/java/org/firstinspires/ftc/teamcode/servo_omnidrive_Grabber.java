@@ -160,7 +160,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
         int armExtendLocation;
         int armLiftTarget=0;
         int armExtendTarget;
-        double rotatorTarget=.05;
+        double rotatorTarget=.5;
         double speedMode = .7;
         grabber.setPosition(0.0);
         rotator.setPosition(0.2);
@@ -181,11 +181,11 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
             armLiftPower = gamepad2.left_stick_y;
             if (gamepad2.right_stick_y < -.75) {
                 if (armLiftTarget < 1650)
-                    armLiftTarget = armLiftTarget + 1;
+                    armLiftTarget = armLiftTarget + 2;
             }
             if (gamepad2.right_stick_y > .75) {
                 if (armLiftTarget > 0)
-                    armLiftTarget = armLiftTarget - 1;
+                    armLiftTarget = armLiftTarget - 4;
             }
 
             if (gamepad2.dpad_up)
@@ -249,9 +249,9 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
 
             //rotator location
             if (gamepad2.x)
-                rotatorTarget =0.4;
+                rotatorTarget =0.73;
             else if (gamepad2.y)
-                rotatorTarget =0.2;
+                rotatorTarget =0.5;
 
 
 
