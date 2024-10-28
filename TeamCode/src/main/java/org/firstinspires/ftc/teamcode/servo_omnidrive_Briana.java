@@ -41,6 +41,8 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 //hoi
 //Henry is a bot
 //Ephan Is A Stinky Robotman
@@ -79,7 +81,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Servo Omni Spin Intake", group="Linear OpMode")
-//@Disabled
+@Disabled
 public class servo_omnidrive_Briana extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

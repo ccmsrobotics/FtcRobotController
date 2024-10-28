@@ -94,7 +94,6 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
     NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
-    View relativeLayout;
     private double armLiftPower;
     private double armExtendPower;
 
@@ -161,6 +160,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
         int armExtendLocation;
         int armLiftTarget=0;
         int armExtendTarget;
+        double rotatorTarget=.05;
         double speedMode = .7;
         grabber.setPosition(0.0);
         rotator.setPosition(0.2);
@@ -170,6 +170,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
         runtime.reset();
         rotator.setPosition(.5);
         grabber.setPosition(0);
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //ARM LIFT
@@ -178,13 +179,25 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
             armExtendLocation = armExtend.getCurrentPosition();
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
+            if (gamepad2.right_stick_y < -.75) {
+                if (armLiftTarget < 1650)
+                    armLiftTarget = armLiftTarget + 1;
+            }
+            if (gamepad2.right_stick_y > .75) {
+                if (armLiftTarget > 0)
+                    armLiftTarget = armLiftTarget - 1;
+            }
+
             if (gamepad2.dpad_up)
                 armLiftTarget =1550;
-            else if (gamepad2.dpad_right)
-                armLiftTarget =400;
-            else if (gamepad2.dpad_down)
-                armLiftTarget=0;
-
+            else if (gamepad2.dpad_right) {
+                if (armExtendLocation < 1900)
+                    armLiftTarget = 400;
+            }
+                else if (gamepad2.dpad_down) {
+                    if (armExtendLocation < 1900)
+                        armLiftTarget = 0;
+            }
             //ARM EXTEND
 
             if (armLiftLocation < 600) {
@@ -233,6 +246,13 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
                         armExtendPower = 0;
                 }
             }
+
+            //rotator location
+            if (gamepad2.x)
+                rotatorTarget =0.4;
+            else if (gamepad2.y)
+                rotatorTarget =0.2;
+
 
 
             double max;
@@ -285,6 +305,7 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
                 rightBackDrive.setPower(rightBackPower);
                 armExtend.setPower(armExtendPower);
                 armLift.setTargetPosition(armLiftTarget);
+                rotator.setPosition(rotatorTarget);
                 if (gamepad2.right_bumper){
                     grabber.setPosition(0);
                 } else if (gamepad2.left_bumper) {
@@ -295,53 +316,13 @@ public class servo_omnidrive_Grabber extends LinearOpMode {
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-                Color.colorToHSV(colors.toColor(), hsvValues);
-                //what if we simplified this so it only said RED, BLUE, or YELLOW? HI
-                telemetry.addLine()
-                        .addData("Red", "%.3f", colors.red)
-                        .addData("Green", "%.3f", colors.green)
-                        .addData("Blue", "%.3f", colors.blue);
-                telemetry.addLine()
-                        .addData("Hue", "%.3f", hsvValues[0])
-                        .addData("Saturation", "%.3f", hsvValues[1])
-                        .addData("Value", "%.3f", hsvValues[2]);
-                telemetry.addData("Alpha", "%.3f", colors.alpha);
+
 
                 telemetry.addData("Starting at", "%7d :%7d",
                         armLift.getCurrentPosition(),
                         armExtend.getCurrentPosition());
                 telemetry.update();
-/*
-            if(grab_mode==true) {
-                telemetry.addLine("Grab Mode On");
-                if (gamepad2.y)
-                {
-                    grab_mode = false;
-                }
-                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
-                    if (hsvValues[0] > 180) {
-                        telemetry.addLine("Blue!");
-                    } else if (hsvValues[0] > 60) {
-                        telemetry.addLine("Yellow!");
-                        grabber.setPosition(0.55);
-                        grab_mode=false;
-                    } else {
-                        telemetry.addLine("Red!");
-                    }
-                } else {
-                    telemetry.addLine("Out of Range!");
-                    grabber.setPosition(0.3);
-                }
-            }
-            else {
-                telemetry.addLine("Grab Mode Off");
-                if (gamepad2.y)
-                {
-                    grabber.setPosition(0.3);
-                }
-            }
 
- */
 
             }
         }
