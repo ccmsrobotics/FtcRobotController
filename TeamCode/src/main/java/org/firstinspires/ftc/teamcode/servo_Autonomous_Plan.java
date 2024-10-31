@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @TeleOp(name="Servo Atonomous Route Plan", group="Linear OpMode")
-@Disabled
+//@Disabled
 public class servo_Autonomous_Plan extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

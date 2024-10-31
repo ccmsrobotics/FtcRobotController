@@ -31,8 +31,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,8 +41,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Auto Basket Grabber", group = "Servo")
-public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
+@Autonomous(name="Auto Basket Specimen", group = "Servo")
+public class Auto_Basket_SERVOSoldier_Specimen extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -137,38 +137,44 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         rotator.setPosition(.05);
         grabber.setPosition(0);
         waitForStart();
+
+
+
              //Move arm to driving location
-            rotator.setPosition(.55);
-            armLift.setTargetPosition(0);
+            rotator.setPosition(.5);
+            armLift.setTargetPosition(1261);
+            armExtend.setTargetPosition(371);
+            armLift.setPower(0.7);
+            armExtend.setPower(1);
+            sleep(500);
             //Move towards scoring position
 
-//            goToSpot(14,0,0,2);
+            goToSpot(25.9,0,0,0.5);
 //            goToSpot(24,0,135,.5);
-            //Move to Scoring spot
-            goToSpot(10.5,-17,135,1);
-            ScoreUpperBasket();
-            goToSpot(22,-15,0,1);
-            armExtend.setTargetPosition(900);
-            rotator.setPosition(0.73);
-            sleep(750);
-            grabber.setPosition(0);
-            sleep(500);
-            armExtend.setTargetPosition(0);
-            goToSpot(10.5,-17,135,1);
-            ScoreUpperBasket();
-        goToSpot(22,-25,0,1);
-        armExtend.setTargetPosition(900);
-        rotator.setPosition(0.73);
-        sleep(750);
-        grabber.setPosition(0);
+        armLift.setTargetPosition(1000);
         sleep(500);
-        armExtend.setTargetPosition(0);
-        goToSpot(10.5,-17,135,.5);
-        ScoreUpperBasket();
-        armLift.setTargetPosition(0);
-        armExtend.setTargetPosition(0);
-        rotator.setPosition(0.1);
-        goToSpot(10.5,-17,0,.25);
+        goToSpot(23,0,0,0.5);
+        sleep(30000);
+            //Move to Scoring spot
+            goToSpot(12,-12,135,.5);
+            //ScoreUpperBasket();
+
+
+            sleep(20000);
+
+
+
+            //move to Pickup staging point
+
+            //Move arm to grab location
+
+            //Move Robot to grab location
+
+            //Grab sample
+
+            //Move arm to driving location
+
+            //Move towards scoring position
 
         while (opModeIsActive())
         {
@@ -257,7 +263,6 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
     private void ScoreUpperBasket()
     {
         // Rotate Arm
-        rotator.setPosition(.55);
         armLift.setPower(1);
         armLift.setTargetPosition(1700);
         telemetry.addData("Extending arms", " at %7d :%7d",
@@ -276,17 +281,14 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             telemetry.update();
         }
         //Inch forward
-        sleep(750);
+        sleep(1000);
         grabber.setPosition(.35);
-        sleep(500);
+        sleep(1000);
 
         //Retract Arm
-
-        moveRobot(.15,0,0);
         armExtend.setTargetPosition(0);
-
         sleep(500);
-        moveRobot(0,0,0);
+
         armLift.setTargetPosition(0);
         rotator.setPosition(.15);
 
