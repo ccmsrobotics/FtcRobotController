@@ -37,14 +37,16 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
-//@Disabled
-public class servo_omnidrive_fc extends LinearOpMode {
+@Disabled
+public class servo_omnidrive_fc_Kentwood extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -144,7 +146,6 @@ public class servo_omnidrive_fc extends LinearOpMode {
         runtime.reset();
         rotator.setPosition(.5);
         grabber.setPosition(0);
-        armExtend.setTargetPosition(400);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -183,7 +184,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
             //ARM EXTEND
 
             if (armLiftLocation < 600) {
-                if (armExtendLocation < 400) {
+                if (armExtendLocation < 100) {
                     if (gamepad2.a)
                         armExtendPower = 1;
                     else
@@ -202,7 +203,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
                         armExtendPower = 0;
                 }
             } else if (armLiftLocation > 600) {
-                if (armExtendLocation < 400) {
+                if (armExtendLocation < 100) {
                     if (gamepad2.a)
                         armExtendPower = 1;
                     else
@@ -230,9 +231,9 @@ public class servo_omnidrive_fc extends LinearOpMode {
             }
 
             //rotator location
-            if (gamepad1.a)
+            if (gamepad2.x)
                 rotatorTarget =0.73;
-            else if (gamepad1.x)
+            else if (gamepad2.y)
                 rotatorTarget =0.5;
 
 
@@ -293,10 +294,10 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 armExtend.setPower(armExtendPower);
                 armLift.setTargetPosition(armLiftTarget);
                 rotator.setPosition(rotatorTarget);
-                if (gamepad1.left_trigger > 0.5){
+                if (gamepad2.right_bumper){
                     grabber.setPosition(0);
-                } else if (gamepad1.right_trigger > 0.5) {
-                    grabber.setPosition(.15);
+                } else if (gamepad2.left_bumper) {
+                    grabber.setPosition(.3);
                 }
 
                 // Show the elapsed game time and wheel power.
