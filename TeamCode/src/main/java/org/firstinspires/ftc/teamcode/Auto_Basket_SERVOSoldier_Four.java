@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,8 +40,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Auto Basket Three", group = "Servo")
-public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
+@Autonomous(name="Auto Basket Four", group = "Servo")
+public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -70,13 +69,13 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.03  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.015  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.025 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.4;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -139,32 +138,55 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         waitForStart();
              //Move arm to driving location
             rotator.setPosition(.55);
-            armLift.setTargetPosition(0);
-
+            armLift.setPower(1);
+            armExtend.setPower(1);
+            armLift.setTargetPosition(1700);
+            armExtend.setTargetPosition(900);
             //Move to Scoring spot
             goToSpot(9,-18.5,135,1);
             ScoreUpperBasket();
             goToSpot(21,-15,0,1);
             armExtend.setTargetPosition(900);
+            armLift.setTargetPosition(0);
             rotator.setPosition(0.73);
-            sleep(750);
+            //sleep(750);
             grabber.setPosition(0);
             sleep(500);
-            armExtend.setTargetPosition(0);
+            //armExtend.setTargetPosition(0);
+            armLift.setTargetPosition(1700);
             goToSpot(9,-18.5,135,1);
             ScoreUpperBasket();
         goToSpot(21,-25,0,1);
         armExtend.setTargetPosition(900);
+        armLift.setTargetPosition(0);
         rotator.setPosition(0.73);
-        sleep(750);
+        //sleep(750);
         grabber.setPosition(0);
         sleep(500);
-        armExtend.setTargetPosition(0);
+        //armExtend.setTargetPosition(0);
+        armLift.setTargetPosition(1700);
         goToSpot(9,-18.5,135,.5);
         ScoreUpperBasket();
+        //Pickup fourth
+
+        goToSpot(16.5,-22,30,1);
+        armExtend.setTargetPosition(1800);
+        armLift.setTargetPosition(250);
+        sleep(210);
+        rotator.setPosition(0.73);
+        sleep(500);
+        grabber.setPosition(0);
+        sleep(500);
+        armExtend.setTargetPosition(900);
+        //armExtend.setTargetPosition(0);
+        armLift.setTargetPosition(1700);
+        goToSpot(9,-18.5,135,.5);
+        ScoreUpperBasket();
+
         armLift.setTargetPosition(0);
         armExtend.setTargetPosition(0);
         rotator.setPosition(0.1);
+
         goToSpot(10.5,-17,0,.25);
 
         while (opModeIsActive())
@@ -255,14 +277,12 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
     {
         // Rotate Arm
         rotator.setPosition(.55);
-        armLift.setPower(1);
         armLift.setTargetPosition(1700);
         telemetry.addData("Extending arms", " at %7d :%7d",
                 armLift.getCurrentPosition(), armExtend.getCurrentPosition());
         telemetry.update();
         sleep(250);
         // Extend arm
-        armExtend.setPower(1);
         armExtend.setTargetPosition(2950);
         while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
         {
@@ -275,17 +295,17 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         //Inch forward
         //sleep(750);
         grabber.setPosition(.35);
-        sleep(500);
+        sleep(350);
 
         //Retract Arm
 
-        moveRobot(.15,0,0);
-        armExtend.setTargetPosition(0);
+        moveRobot(.4,0,0);
+        armExtend.setTargetPosition(900);
 
-        sleep(500);
+        sleep(400);
         moveRobot(0,0,0);
-        armLift.setTargetPosition(0);
-        rotator.setPosition(.15);
+        armLift.setTargetPosition(100);
+        rotator.setPosition(.73);
 
         while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
         {

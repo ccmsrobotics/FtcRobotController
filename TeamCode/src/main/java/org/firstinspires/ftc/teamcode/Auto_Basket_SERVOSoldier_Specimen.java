@@ -162,20 +162,6 @@ public class Auto_Basket_SERVOSoldier_Specimen extends LinearOpMode
 
             sleep(20000);
 
-
-
-            //move to Pickup staging point
-
-            //Move arm to grab location
-
-            //Move Robot to grab location
-
-            //Grab sample
-
-            //Move arm to driving location
-
-            //Move towards scoring position
-
         while (opModeIsActive())
         {
         }

@@ -37,14 +37,14 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
+@TeleOp(name="ServoSolder recovery", group="Linear OpMode")
 //@Disabled
-public class servo_omnidrive_fc extends LinearOpMode {
+public class Servo_Recovery extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -104,7 +104,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armLift.setTargetPosition(0);
         armLift.setPower(0);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -121,15 +121,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        configureOtos();
-        pos = myOtos.getPosition();
         // Wait for the game to start (driver presses PLAY)
-        telemetry.addData("Status", "Initialized");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
-        telemetry.update();
         int armLiftLocation;
         int armExtendLocation;
         int armLiftTarget=0;
@@ -139,178 +131,16 @@ public class servo_omnidrive_fc extends LinearOpMode {
         grabber.setPosition(0.0);
         rotator.setPosition(0.2);
         waitForStart();
-        armLift.setPower(1);
-        colorSensor.setGain(gain);
-        runtime.reset();
-        rotator.setPosition(.5);
-        grabber.setPosition(0);
-
-        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            //fix compass heading
-            if (gamepad1.options) {
-                telemetry.addData("Reseting IMU", "wait");
-                telemetry.update();
-                resetCompass();
-            }
-
-            //ARM LIFT
-
-            armLiftLocation = armLift.getCurrentPosition();
-            armExtendLocation = armExtend.getCurrentPosition();
-            //armLift.setPower(armLiftSpeed);
-            armLiftPower = gamepad2.left_stick_y;
-            if (gamepad2.left_stick_y < -.25) {
-                if (armLiftTarget < 1800)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*4);
-            }
-            if (gamepad2.left_stick_y > .75) {
-                if (armLiftTarget > 0)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*4);
-            }
-
-            if (gamepad2.dpad_up)
-                armLiftTarget =1700;
-            else if (gamepad2.dpad_right) {
-                if (armExtendLocation < 1900)
-                    armLiftTarget = 400;
-            }
-                else if (gamepad2.dpad_down) {
-                    if (armExtendLocation < 1900)
-                        armLiftTarget = 0;
-            }
-            //ARM EXTEND
-
-            if (armLiftLocation < 600) {
-                if (armExtendLocation < 100) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 1900) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                } else {
-                    if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                }
-            } else if (armLiftLocation > 600) {
-                if (armExtendLocation < 100) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 2750) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 2900) {
-                    if (gamepad2.a)
-                        armExtendPower = 0.5;
-                    else if (gamepad2.b)
-                        armExtendPower = -0.5;
-                    else
-                        armExtendPower = 0;
-                } else {
-                    if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                }
-            }
-
-            //rotator location
-            if (gamepad2.x)
-                rotatorTarget =0.73;
-            else if (gamepad2.y)
-                rotatorTarget =0.5;
-
-
-
-            double max;
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral = -gamepad1.left_stick_x;
-            double yaw = -gamepad1.right_stick_x;
-            if (gamepad1.left_bumper)
-                speedMode = 0.2;
-            else if (gamepad1.right_bumper) {
-                speedMode = 1;
-            } else {
-                speedMode = 0.7;
-            }
-
-            if (gamepad2.x) {
-                grab_mode = true;
-            }
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            pos = myOtos.getPosition();
-            double currentYawRadians = pos.h*3.1415/180;
-            double rotStrafe = lateral * Math.cos(-currentYawRadians) - axial * Math.sin(-currentYawRadians);
-            double rotDrive = lateral * Math.sin(-currentYawRadians) + axial * Math.cos(-currentYawRadians);
-            rotStrafe = rotStrafe*1.1;
-            double leftFrontPower = rotDrive + rotStrafe + yaw;
-            double rightFrontPower = rotDrive - rotStrafe - yaw;
-            double leftBackPower = rotDrive - rotStrafe + yaw;
-            double rightBackPower = rotDrive + rotStrafe - yaw;
-
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
-
-                leftFrontPower *= speedMode;
-                rightFrontPower *= speedMode;
-                leftBackPower *= speedMode;
-                rightBackPower *= speedMode;
-
-
-                // Send calculated power to wheels
-                leftFrontDrive.setPower(leftFrontPower);
-                rightFrontDrive.setPower(rightFrontPower);
-                leftBackDrive.setPower(leftBackPower);
-                rightBackDrive.setPower(rightBackPower);
-                armExtend.setPower(armExtendPower);
-                armLift.setTargetPosition(armLiftTarget);
-                rotator.setPosition(rotatorTarget);
-                if (gamepad2.right_bumper){
-                    grabber.setPosition(0);
-                } else if (gamepad2.left_bumper) {
-                    grabber.setPosition(.3);
-                }
-
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-
-
-                telemetry.addData("Starting at", "%7d :%7d",
-                        armLift.getCurrentPosition(),
-                        armExtend.getCurrentPosition());
-                telemetry.update();
-
-
-            }
+            if (gamepad1.a)
+                armExtend.setPower(-0.2);
+            else
+                armExtend.setPower(0);
+            if (gamepad1.b)
+                armLift.setPower(-0.2);
+            else
+                armLift.setPower(0);
+        }
         }
         private void resetCompass(){
             leftFrontDrive.setPower(0);
