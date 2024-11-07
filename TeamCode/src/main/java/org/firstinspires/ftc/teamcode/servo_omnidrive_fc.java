@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 
 @TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
@@ -161,13 +162,13 @@ public class servo_omnidrive_fc extends LinearOpMode {
             armExtendLocation = armExtend.getCurrentPosition();
             //armLift.setPower(armLiftSpeed);
             armLiftPower = gamepad2.left_stick_y;
-            if (gamepad2.left_stick_y < -.25) {
+            if (gamepad2.left_stick_y < -.15) {
                 if (armLiftTarget < 1800)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*4);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*6);
             }
-            if (gamepad2.left_stick_y > .75) {
+            if (gamepad2.left_stick_y > .15) {
                 if (armLiftTarget > 0)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*4);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*6);
             }
 
             if (gamepad2.dpad_up)
@@ -214,7 +215,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
                         armExtendPower = -1;
                     else
                         armExtendPower = 0;
-                } else if (armExtendLocation < 2900) {
+                } else if (armExtendLocation < 3000) {
                     if (gamepad2.a)
                         armExtendPower = 0.5;
                     else if (gamepad2.b)
@@ -235,9 +236,6 @@ public class servo_omnidrive_fc extends LinearOpMode {
             else if (gamepad1.x)
                 rotatorTarget =0.5;
 
-
-
-            double max;
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = -gamepad1.left_stick_x;
@@ -250,10 +248,8 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 speedMode = 0.7;
             }
 
-            if (gamepad2.x) {
-                grab_mode = true;
-            }
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             pos = myOtos.getPosition();
@@ -268,10 +264,10 @@ public class servo_omnidrive_fc extends LinearOpMode {
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
+            double max;
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
-
             if (max > 1.0) {
                 leftFrontPower /= max;
                 rightFrontPower /= max;
@@ -290,6 +286,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 rightFrontDrive.setPower(rightFrontPower);
                 leftBackDrive.setPower(leftBackPower);
                 rightBackDrive.setPower(rightBackPower);
+                //Send power to arm motors
                 armExtend.setPower(armExtendPower);
                 armLift.setTargetPosition(armLiftTarget);
                 rotator.setPosition(rotatorTarget);
@@ -298,6 +295,27 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 } else if (gamepad1.right_trigger > 0.5) {
                     grabber.setPosition(.15);
                 }
+
+                //Code for color sensor
+            /*
+            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+            Color.colorToHSV(colors.toColor(), hsvValues);
+
+            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
+                if (hsvValues[0] > 180) {
+                    telemetry.addLine("Blue!");
+                } else if (hsvValues[0] > 60) {
+                    telemetry.addLine("Yellow!");
+                    grabber.setPosition(0.55);
+                    grab_mode=false;
+                } else {
+                    telemetry.addLine("Red!");
+                }
+            } else {
+                telemetry.addLine("Out of Range!");
+                grabber.setPosition(0.3);
+            }
+            */
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
