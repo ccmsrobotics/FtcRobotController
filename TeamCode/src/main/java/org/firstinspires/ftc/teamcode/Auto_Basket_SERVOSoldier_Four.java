@@ -118,8 +118,6 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         armLift.setTargetPosition(0);
         armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Sensor Config
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
@@ -135,62 +133,96 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         telemetry.update();
         rotator.setPosition(.05);
         grabber.setPosition(0);
+
+        //Wait for start
         waitForStart();
-             //Move arm to driving location
-            rotator.setPosition(.55);
-            armLift.setPower(1);
-            armExtend.setPower(1);
-            armLift.setTargetPosition(1700);
-            armExtend.setTargetPosition(900);
-            //Move to Scoring spot
-            goToSpot(9,-18.5,135,1);
-            ScoreUpperBasket();
-            goToSpot(21,-15,0,1);
-            armExtend.setTargetPosition(900);
-            armLift.setTargetPosition(0);
-            rotator.setPosition(0.73);
-            //sleep(750);
-            grabber.setPosition(0);
-            sleep(500);
-            //armExtend.setTargetPosition(0);
-            armLift.setTargetPosition(1700);
-            goToSpot(9,-18.5,135,1);
-            ScoreUpperBasket();
-        goToSpot(21,-25,0,1);
+
+        //Move arm to driving location
+        rotator.setPosition(.55);
+        armLift.setPower(1);
+        armExtend.setPower(1);
+        armLift.setTargetPosition(1700);
         armExtend.setTargetPosition(900);
+        //Move to Scoring spot
+        goToSpot(9,-18.5,135,1);
+        ScoreUpperBasket();
+
+        //Pick up Second sample
+        goToSpot(21,-15,0,1);
         armLift.setTargetPosition(0);
-        rotator.setPosition(0.73);
-        //sleep(750);
         grabber.setPosition(0);
         sleep(500);
-        //armExtend.setTargetPosition(0);
+        armLift.setTargetPosition(1700);
+        goToSpot(9,-18.5,135,1);
+        ScoreUpperBasket();
+
+        //Pick up and score third sample
+        goToSpot(21,-25,0,1);
+        armLift.setTargetPosition(0);
+        grabber.setPosition(0);
+        sleep(500);
         armLift.setTargetPosition(1700);
         goToSpot(9,-18.5,135,.5);
         ScoreUpperBasket();
-        //Pickup fourth
 
+        //Pickup fourth
         goToSpot(16.5,-22,30,1);
         armExtend.setTargetPosition(1800);
         armLift.setTargetPosition(250);
         sleep(210);
-        rotator.setPosition(0.73);
         sleep(500);
         grabber.setPosition(0);
         sleep(500);
         armExtend.setTargetPosition(900);
-        //armExtend.setTargetPosition(0);
         armLift.setTargetPosition(1700);
         goToSpot(9,-18.5,135,.5);
         ScoreUpperBasket();
 
+        //Move to Teleop start position - This may be updated to Lvl 1 ascend, but will require not resetting IMU and motor encoders.
         armLift.setTargetPosition(0);
         armExtend.setTargetPosition(0);
         rotator.setPosition(0.1);
-
         goToSpot(10.5,-17,0,.25);
-
         while (opModeIsActive())
         {
+        }
+    }
+//End of main loop
+
+
+    private void ScoreUpperBasket()
+    {
+        // Rotate Arm
+        rotator.setPosition(.55);//would this dropoff easier if we didnt change?
+        armLift.setTargetPosition(1700);
+        sleep(250); //Is this necessary?  Delete?
+        // Extend arm
+        armExtend.setTargetPosition(2950);
+        while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
+        {
+            telemetry.addData("Extending arms", " at %7d :%7d",
+                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+            telemetry.update();
+        }
+        //Open grabber
+        grabber.setPosition(.35);
+        sleep(350);
+
+        //Move backwards so arm doesn't hit basket.  Motors are reversed, so 0.4 is move backwards
+        moveRobot(.4,0,0);
+        armExtend.setTargetPosition(900);
+        sleep(400);
+        moveRobot(0,0,0);
+        armLift.setTargetPosition(100);
+        rotator.setPosition(.73);
+
+        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))//There is error in code.  Should be an or, but the code works so we left it.  Maybe try remove it completely.
+        {
+
+            // Display it for the driver.
+            telemetry.addData("Extending arms", " at %7d :%7d",
+                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+            telemetry.update();
         }
     }
 
@@ -239,7 +271,6 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
         double maxError = LocError+1;
         pos = myOtos.getPosition();
-
         while(maxError >LocError)
         {
             pos = myOtos.getPosition();
@@ -254,68 +285,13 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
             drive  = Range.clip(rotY * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.addData("drive power", drive);
-            telemetry.addData("strafe power", strafe);
-            telemetry.addData("turn power", turn);
-            telemetry.update();
-
-
-            moveRobot(-drive, strafe, -turn);
-
-
+            moveRobot(-drive, strafe, -turn);//motors are reversed in config.  This should be fixed.
         }
         //stop robot at end of move
         moveRobot(0,0,0);
-
     }
 
-    private void ScoreUpperBasket()
-    {
-        // Rotate Arm
-        rotator.setPosition(.55);
-        armLift.setTargetPosition(1700);
-        telemetry.addData("Extending arms", " at %7d :%7d",
-                armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-        telemetry.update();
-        sleep(250);
-        // Extend arm
-        armExtend.setTargetPosition(2950);
-        while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
-        {
 
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-        //Inch forward
-        //sleep(750);
-        grabber.setPosition(.35);
-        sleep(350);
-
-        //Retract Arm
-
-        moveRobot(.4,0,0);
-        armExtend.setTargetPosition(900);
-
-        sleep(400);
-        moveRobot(0,0,0);
-        armLift.setTargetPosition(100);
-        rotator.setPosition(.73);
-
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
-        {
-
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-    }
     public double yawErrorCalc(double yawTarget, double yawCurrent) {
         // Determine the heading current error
         headingError = yawTarget - yawCurrent;
