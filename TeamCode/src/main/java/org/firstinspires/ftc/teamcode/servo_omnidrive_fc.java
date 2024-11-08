@@ -33,6 +33,7 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,7 +42,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-
+import android.graphics.Color;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
 //@Disabled
@@ -55,6 +57,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     private Servo grabber = null;
     private Servo rotator = null;
+    private DcMotorSimple colorServo = null;
     private boolean grab_mode = false;
     NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
@@ -79,6 +82,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         rotator = hardwareMap.get(Servo.class, "rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        colorServo = hardwareMap.get(DcMotorSimple.class, "color_servo");
         float gain = 2;
         final float[] hsvValues = new float[3];
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
@@ -139,6 +143,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         double speedMode = .7;
         grabber.setPosition(0.0);
         rotator.setPosition(0.2);
+        colorServo.setPower(0.86);
         waitForStart();
         armLift.setPower(1);
         colorSensor.setGain(gain);
@@ -297,25 +302,26 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 }
 
                 //Code for color sensor
-            /*
+
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             Color.colorToHSV(colors.toColor(), hsvValues);
 
             if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
                 if (hsvValues[0] > 180) {
                     telemetry.addLine("Blue!");
+                    colorServo.setPower(0.87);//blue
                 } else if (hsvValues[0] > 60) {
                     telemetry.addLine("Yellow!");
-                    grabber.setPosition(0.55);
-                    grab_mode=false;
+                    colorServo.setPower(0.69);//yellow
                 } else {
                     telemetry.addLine("Red!");
+                    colorServo.setPower(0.61);//red
                 }
             } else {
                 telemetry.addLine("Out of Range!");
-                grabber.setPosition(0.3);
+                colorServo.setPower(0.73);//green
             }
-            */
+
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
