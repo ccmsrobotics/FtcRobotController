@@ -38,12 +38,12 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import android.graphics.Color;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
 //@Disabled
@@ -57,7 +57,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     private Servo grabber = null;
     private Servo rotator = null;
-    private DcMotorSimple colorServo = null;
+    private RevBlinkinLedDriver colorServo;
     private boolean grab_mode = false;
     NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
@@ -82,7 +82,8 @@ public class servo_omnidrive_fc extends LinearOpMode {
         rotator = hardwareMap.get(Servo.class, "rotator");
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        colorServo = hardwareMap.get(DcMotorSimple.class, "color_servo");
+        colorServo = hardwareMap.get(RevBlinkinLedDriver.class, "color_servo");
+
         float gain = 2;
         final float[] hsvValues = new float[3];
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
@@ -143,7 +144,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         double speedMode = .7;
         grabber.setPosition(0.0);
         rotator.setPosition(0.2);
-        colorServo.setPower(0.86);
+        colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         armLift.setPower(1);
         colorSensor.setGain(gain);
@@ -236,9 +237,9 @@ public class servo_omnidrive_fc extends LinearOpMode {
             }
 
             //rotator location
-            if (gamepad1.a)
+            if (gamepad2.x)
                 rotatorTarget =0.73;
-            else if (gamepad1.x)
+            else if (gamepad2.y)
                 rotatorTarget =0.5;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -309,17 +310,17 @@ public class servo_omnidrive_fc extends LinearOpMode {
             if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
                 if (hsvValues[0] > 180) {
                     telemetry.addLine("Blue!");
-                    colorServo.setPower(0.87);//blue
+                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                 } else if (hsvValues[0] > 60) {
                     telemetry.addLine("Yellow!");
-                    colorServo.setPower(0.69);//yellow
+                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                 } else {
                     telemetry.addLine("Red!");
-                    colorServo.setPower(0.61);//red
+                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 }
             } else {
                 telemetry.addLine("Out of Range!");
-                colorServo.setPower(0.73);//green
+                colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
 
 

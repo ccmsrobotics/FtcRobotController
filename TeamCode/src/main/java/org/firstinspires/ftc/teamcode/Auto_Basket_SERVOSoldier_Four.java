@@ -136,7 +136,6 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
 
         //Wait for start
         waitForStart();
-
         //Move arm to driving location
         rotator.setPosition(.55);
         armLift.setPower(1);
