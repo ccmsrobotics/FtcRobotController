@@ -50,8 +50,6 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
     private DcMotor rightBackDrive = null;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
-    private double armLiftPower;
-    private double armExtendPower;
 
     //Servos
     private Servo grabber = null;

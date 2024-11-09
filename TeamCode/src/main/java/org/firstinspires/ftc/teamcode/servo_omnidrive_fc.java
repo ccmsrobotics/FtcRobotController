@@ -49,70 +49,36 @@ import android.graphics.Color;
 //@Disabled
 public class servo_omnidrive_fc extends LinearOpMode {
 
-    // Declare OpMode members for each of the 4 motors.
+    // Declare variables used by the class
+    //Motors
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private Servo grabber = null;
-    private Servo rotator = null;
-    private RevBlinkinLedDriver colorServo;
-    private boolean grab_mode = false;
-    NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
-    private double armLiftPower;
-    private double armExtendPower;
+
+    //Servos
+    private Servo grabber = null;
+    private Servo rotator = null;
+
+    //Sensors
+    private RevBlinkinLedDriver Blinkin;
+    NormalizedColorSensor colorSensor;
     SparkFunOTOS myOtos;
     SparkFunOTOS.Pose2D pos;
 
-    @Override
-    public void runOpMode() {
-
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-        //left_drive  = hardwareMap.get(DcMotor.class, "left_drive");
-        //right_drive = hardwareMap.get(DcMotor.class, "right_drive");
+    @Override public void runOpMode() {
+        //Chassis motor config
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        grabber = hardwareMap.get(Servo.class, "grabber");
-        rotator = hardwareMap.get(Servo.class, "rotator");
-        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
-        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        colorServo = hardwareMap.get(RevBlinkinLedDriver.class, "color_servo");
-
-        float gain = 2;
-        final float[] hsvValues = new float[3];
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armLift.setTargetPosition(0);
-        armLift.setPower(0);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -125,10 +91,43 @@ public class servo_omnidrive_fc extends LinearOpMode {
         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double speedMode = .7;
+
+        //Mechanism Motor config
+        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
+        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
+        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armLift.setTargetPosition(0);
+        armLift.setPower(0);
+        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double armExtendPower=0;
+        int armLiftLocation;
+        int armExtendLocation;
+        int armLiftTarget=0;
 
 
+        //Servo Config
+        grabber = hardwareMap.get(Servo.class, "grabber");
+        rotator = hardwareMap.get(Servo.class, "rotator");
+
+        //Sensor Config
+        Blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "color_servo");
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+        float gain = 2;
+        final float[] hsvValues = new float[3];
+        colorSensor.setGain(gain);
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         configureOtos();
+
+
+
+
         pos = myOtos.getPosition();
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -136,29 +135,24 @@ public class servo_omnidrive_fc extends LinearOpMode {
         telemetry.addData("Y coordinate", pos.y);
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
-        int armLiftLocation;
-        int armExtendLocation;
-        int armLiftTarget=0;
-        int armExtendTarget;
+
         double rotatorTarget=.5;
-        double speedMode = .7;
-        grabber.setPosition(0.0);
-        rotator.setPosition(0.2);
-        colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        //grabber.setPosition(0.0);
+        //rotator.setPosition(0.2);
+        Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+
+        //Start of TeleOp
         waitForStart();
         armLift.setPower(1);
-        colorSensor.setGain(gain);
         runtime.reset();
         rotator.setPosition(.5);
         grabber.setPosition(0);
-        armExtend.setTargetPosition(400);
+        armExtend.setTargetPosition(400);//This doesn't do anything since this is not in position mode.
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //fix compass heading
-            if (gamepad1.options) {
-                telemetry.addData("Reseting IMU", "wait");
-                telemetry.update();
+            if (gamepad1.back) {
                 resetCompass();
             }
 
@@ -166,8 +160,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
 
             armLiftLocation = armLift.getCurrentPosition();
             armExtendLocation = armExtend.getCurrentPosition();
-            //armLift.setPower(armLiftSpeed);
-            armLiftPower = gamepad2.left_stick_y;
+
             if (gamepad2.left_stick_y < -.15) {
                 if (armLiftTarget < 1800)
                     armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*6);
@@ -187,7 +180,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
                     if (armExtendLocation < 1900)
                         armLiftTarget = 0;
             }
-            //ARM EXTEND
+            //ARM EXTEND - This code prevents us from extending the arm too far when horizontal
 
             if (armLiftLocation < 600) {
                 if (armExtendLocation < 400) {
@@ -254,8 +247,6 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 speedMode = 0.7;
             }
 
-
-
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             pos = myOtos.getPosition();
@@ -286,7 +277,6 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 leftBackPower *= speedMode;
                 rightBackPower *= speedMode;
 
-
                 // Send calculated power to wheels
                 leftFrontDrive.setPower(leftFrontPower);
                 rightFrontDrive.setPower(rightFrontPower);
@@ -307,20 +297,20 @@ public class servo_omnidrive_fc extends LinearOpMode {
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             Color.colorToHSV(colors.toColor(), hsvValues);
 
-            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 2) {
+            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4) {
                 if (hsvValues[0] > 180) {
                     telemetry.addLine("Blue!");
-                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                 } else if (hsvValues[0] > 60) {
                     telemetry.addLine("Yellow!");
-                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                 } else {
                     telemetry.addLine("Red!");
-                    colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 }
             } else {
-                telemetry.addLine("Out of Range!");
-                colorServo.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                telemetry.addLine("Nothing Detected");
+                Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
 
 
@@ -328,17 +318,15 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-
-
-                telemetry.addData("Starting at", "%7d :%7d",
+                telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
                         armLift.getCurrentPosition(),
                         armExtend.getCurrentPosition());
                 telemetry.update();
-
-
             }
         }
         private void resetCompass(){
+            telemetry.addData("Reseting IMU", "wait");
+            telemetry.update();
             leftFrontDrive.setPower(0);
             rightFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
