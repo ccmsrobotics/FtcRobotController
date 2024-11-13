@@ -50,9 +50,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Foot", group="Iterative OpMode")
+@TeleOp(name="one controller", group="Iterative OpMode")
 //@Disabled
-public class BasicOpMode_Iterative extends OpMode
+public class BasicOpMode_Iterative_One_Controller extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -66,34 +66,16 @@ public class BasicOpMode_Iterative extends OpMode
     private Servo claw = null;
     private Servo wrist = null;
 
+    private int maxExtension = 8100;
+    private int minExtension = 20;
     int seesawPosition = 0;
     int seesawSensitivity = 50;
-    int extenderBasePosition = 0;
-    int seesawTiltPosition = 2500;
-    double clawPosition = 0;
-    int extenderpos = 0;
-    double seesawPower = 0;
-    double wristPosition = 0;
-
-    // robot mode
-    // enter power saver mode if NOT in preset and extender is retracted
-    // enter preset mode when preset button is pressed, do not exit unless
-    //   seesaw or extender is manually manipulated by the driver
-    // enter classic
-    //   when NOT in preset mode and extender is extended
-    //   OR when seesaw or extender is manually manipulated by the driver
-    enum Mode {
-        powersaver,preset,classic
-    }
-    // start in powersaver mode
-    Mode robotMode = Mode.powersaver;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     //@Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -106,8 +88,6 @@ public class BasicOpMode_Iterative extends OpMode
         extender = hardwareMap.get(DcMotor.class,"extender");
         seesaw = hardwareMap.get(DcMotor.class, "seesaw");
         seesawPosition = seesaw.getCurrentPosition();
-        extenderBasePosition = extender.getCurrentPosition();
-        seesawTiltPosition = extenderBasePosition + 2500;
         claw = hardwareMap.get(Servo.class,"claw");
         wrist = hardwareMap.get(Servo.class,"wrist");
 
@@ -118,17 +98,14 @@ public class BasicOpMode_Iterative extends OpMode
         toprightDrive.setDirection(DcMotor.Direction.FORWARD);
         backleftDrive.setDirection(DcMotor.Direction.FORWARD);
         backrightDrive.setDirection(DcMotor.Direction.FORWARD);
-
         extender.setDirection(DcMotor.Direction.FORWARD);
         seesaw.setDirection(DcMotorSimple.Direction.REVERSE);
         seesaw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        clawPosition = claw.getPosition();
-        claw.setPosition(1); // used to be 0
-        wrist.setPosition(wristPosition);
+        claw.setPosition(0);
+        wrist.setPosition(0);
+
         seesaw.setTargetPosition(0);
         seesaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        extender.setTargetPosition(0);
-        extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -153,100 +130,56 @@ public class BasicOpMode_Iterative extends OpMode
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
 
+    double extenderExtendPower = 0;
+    double extenderRetractPower = 0;
 
+    double clawPosition = 0;
+    double wristPosition = 0;
 
     @Override
     public void loop() {
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
         double max;
-        double axial = -gamepad1.left_stick_y / 1.5;  // Note: pushing stick forward gives negative value
-        double lateral = gamepad1.left_stick_x / 1.5;
-        double yaw = gamepad1.right_stick_x / 2;
+        double axial   = -gamepad2.left_stick_y/1.5;  // Note: pushing stick forward gives negative value
+        double lateral =  gamepad2.left_stick_x/1.5;
+        double yaw     =  gamepad2.right_stick_x/2;
 
-        seesawPower = 0;
+        // extender logic
+        extenderExtendPower = gamepad2.right_trigger/4;
+        if ( extender.getCurrentPosition() > maxExtension) { extenderExtendPower = 0; }
+        extenderRetractPower = gamepad2.left_trigger/4;
+        if ( extender.getCurrentPosition() < minExtension) { extenderRetractPower = 0; }
 
-        // only switch into powersave or classic if NOT moving to a preset
-        if (robotMode != Mode.preset) {
-            if (extender.getCurrentPosition() > seesawTiltPosition) {
-                robotMode = Mode.classic;
-            }
-            else {
-                robotMode = Mode.powersaver;
-            }
+        // seesaw logic
+        // change the position by the sensitivity and prevent over-movement
+        if (gamepad2.dpad_up && (seesawPosition - seesaw.getCurrentPosition()) < seesawSensitivity) {
+            seesawPosition += seesawSensitivity;
         }
-
-        if (gamepad2.left_trigger > 0
-                && extender.getCurrentPosition() < (5600 + extenderBasePosition)) {
-            extenderpos = extender.getCurrentPosition() + 100;
-            robotMode = Mode.classic;
-        }
-        if (gamepad2.right_trigger > 0
-                && extender.getCurrentPosition() > extenderBasePosition) {
-            extenderpos = extender.getCurrentPosition() - 100;
-            robotMode = Mode.classic;
+        if (gamepad2.dpad_down && (seesawPosition - seesaw.getCurrentPosition()) > -seesawSensitivity) {
+            seesawPosition -= seesawSensitivity;
         }
 
-        if (robotMode == Mode.powersaver) {
-            if (gamepad2.dpad_up) {
-                seesawPower = 0.3;
-            }
-            if (gamepad2.dpad_down) {
-                seesawPower = -0.3;
-            }
-        }
-        else {
-            if (gamepad2.dpad_up && (seesawPosition - seesaw.getCurrentPosition()) < seesawSensitivity) {
-                seesawPosition += seesawSensitivity;
-                robotMode = Mode.classic;
-            }
-            if (gamepad2.dpad_down && (seesawPosition - seesaw.getCurrentPosition()) > -seesawSensitivity) {
-                seesawPosition -= seesawSensitivity;
-                robotMode = Mode.classic;
-            }
-        }
 
-        if (gamepad2.x) {
-            seesawPosition = -1000;
-            extenderpos = 3000 + extenderBasePosition;
-            wristPosition = 0.92;
-            clawPosition = 0;
-            robotMode = Mode.preset;
-        }
-        if (gamepad2.y) {
-            extenderpos = 5000 + extenderBasePosition;
-            seesawPosition = 800;
-            wristPosition = 0;
-            robotMode = Mode.preset;
-        }
-
-        if (gamepad2.a && clawPosition < 1.0) {
+        if ( gamepad2.x && clawPosition < 1 ) {
             clawPosition += 0.01;
         }
-        if (gamepad2.b && clawPosition > 0.0) {
+        if (gamepad2.b && clawPosition  > 0 ) {
             clawPosition -= 0.01;
         }
-
-        if (gamepad2.left_bumper && wristPosition < 1) {
+        if ( gamepad2.y && wristPosition < 1 ) {
             wristPosition += 0.01;
         }
-        if (gamepad2.right_bumper && wristPosition > 0) {
+        if ( gamepad2.a && wristPosition  > 0 ) {
             wristPosition -= 0.01;
-        }
-
-        if (gamepad1.right_trigger > 0) {
-            lateral = gamepad1.right_trigger / 1.5;
-        }
-        if (gamepad1.left_trigger > 0) {
-            lateral = gamepad1.left_trigger / -1.5;
         }
 
         // Combine the joystick requests for each axis-motion to determine each wheel's power.
         // Set up a variable for each drive wheel to save the power level for telemetry.
-        double leftFrontPower = axial + lateral + yaw;
+        double leftFrontPower  = axial + lateral + yaw;
         double rightFrontPower = axial - lateral - yaw;
-        double leftBackPower = axial - lateral + yaw;
-        double rightBackPower = axial + lateral - yaw;
+        double leftBackPower   = axial - lateral + yaw;
+        double rightBackPower  = axial + lateral - yaw;
 
         // Normalize the values so no wheel power exceeds 100%
         // This ensures that the robot maintains the desired motion.
@@ -255,12 +188,11 @@ public class BasicOpMode_Iterative extends OpMode
         max = Math.max(max, Math.abs(rightBackPower));
 
         if (max > 1.0) {
-            leftFrontPower /= max;
+            leftFrontPower  /= max;
             rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
+            leftBackPower   /= max;
+            rightBackPower  /= max;
         }
-
 
         // Send calculated power to wheels
         topleftDrive.setPower(leftFrontPower);
@@ -268,50 +200,25 @@ public class BasicOpMode_Iterative extends OpMode
         backleftDrive.setPower(leftBackPower);
         backrightDrive.setPower(rightBackPower);
 
-        extender.setTargetPosition(extenderpos);
-        extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // set the power of the extender when it is not in position, otherwise
-        // set the power to 0. Intent is to save motor power
-        if (extender.getCurrentPosition() > extenderpos + 5 ||
-                extender.getCurrentPosition() < extenderpos - 5) {
-            extender.setPower(0.9);
-        }
-        else {
-            extender.setPower(0);
-        }
-
-        if (robotMode == Mode.powersaver) {
-            seesaw.setPower(seesawPower);
-            seesaw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        else { // if in classic or preset, run to position
-            seesaw.setPower(0.25);
-            seesaw.setTargetPosition(seesawPosition);
-            seesaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
+        extender.setPower(extenderExtendPower - extenderRetractPower);
+        seesaw.setPower(0.3);
+        seesaw.setTargetPosition(seesawPosition);
         claw.setPosition(clawPosition);
         wrist.setPosition(wristPosition);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Wrist Position (actual)", wrist.getPosition());
-        telemetry.addData("Wrist Position (program)", wristPosition);
-        telemetry.addData("Claw Position", claw.getPosition());
-        telemetry.addData("Seesaw Target", seesawPosition);
-        telemetry.addData("Seesaw Position", seesaw.getCurrentPosition());
-        telemetry.addData("Extender target", extenderpos);
+        telemetry.addData("Wrist Position",wrist.getPosition());
+        telemetry.addData("Claw Position",claw.getPosition());
         telemetry.addData("Extender Position", extender.getCurrentPosition());
-        telemetry.addData("Mode", robotMode);
-        telemetry.addData("Tilt Position", seesawTiltPosition);
+        telemetry.addData("Seesaw Position", seesaw.getCurrentPosition());
     }
 
-
-        /*
-         * Code to run ONCE after the driver hits STOP
-         */
-        @Override
-        public void stop() {
-        }
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
+    }
 
 }
