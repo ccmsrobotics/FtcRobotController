@@ -130,7 +130,7 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
         rotator.setPosition(.05);
-        grabber.setPosition(0);
+        grabber.setPosition(0.02);
 
         //Wait for start
         waitForStart();
@@ -147,7 +147,7 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         //Pick up Second sample
         goToSpot(21,-15,0,1);
         armLift.setTargetPosition(0);
-        grabber.setPosition(0);
+        grabber.setPosition(0.02);
         sleep(500);
         armLift.setTargetPosition(1700);
         goToSpot(9,-18.5,135,1);
@@ -156,7 +156,7 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         //Pick up and score third sample
         goToSpot(21,-25,0,1);
         armLift.setTargetPosition(0);
-        grabber.setPosition(0);
+        grabber.setPosition(0.02);
         sleep(500);
         armLift.setTargetPosition(1700);
         goToSpot(9,-18.5,135,.5);
@@ -168,7 +168,7 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
         armLift.setTargetPosition(250);
         sleep(210);
         sleep(500);
-        grabber.setPosition(0);
+        grabber.setPosition(0.02);
         sleep(500);
         armExtend.setTargetPosition(900);
         armLift.setTargetPosition(1700);
@@ -202,7 +202,7 @@ public class Auto_Basket_SERVOSoldier_Four extends LinearOpMode
             telemetry.update();
         }
         //Open grabber
-        grabber.setPosition(.35);
+        grabber.setPosition(.4);
         sleep(350);
 
         //Move backwards so arm doesn't hit basket.  Motors are reversed, so 0.4 is move backwards

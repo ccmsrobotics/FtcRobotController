@@ -137,7 +137,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         telemetry.update();
 
         double rotatorTarget=.5;
-        //grabber.setPosition(0.0);
+        grabber.setPosition(0.02);
         //rotator.setPosition(0.2);
         Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
 
@@ -146,7 +146,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         armLift.setPower(1);
         runtime.reset();
         rotator.setPosition(.5);
-        grabber.setPosition(0);
+        grabber.setPosition(0.05);
         armExtend.setTargetPosition(400);//This doesn't do anything since this is not in position mode.
 
         // run until the end of the match (driver presses STOP)
@@ -239,6 +239,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
             double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
+
             if (gamepad1.left_bumper)
                 speedMode = 0.2;
             else if (gamepad1.right_bumper) {
@@ -287,9 +288,9 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 armLift.setTargetPosition(armLiftTarget);
                 rotator.setPosition(rotatorTarget);
                 if (gamepad1.left_trigger > 0.5){
-                    grabber.setPosition(0);
+                    grabber.setPosition(0.05);
                 } else if (gamepad1.right_trigger > 0.5) {
-                    grabber.setPosition(.15);
+                    grabber.setPosition(.23);
                 }
 
                 //Code for color sensor
@@ -297,7 +298,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             Color.colorToHSV(colors.toColor(), hsvValues);
 
-            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4) {
+            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 5) {
                 if (hsvValues[0] > 180) {
                     telemetry.addLine("Blue!");
                     Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
