@@ -257,8 +257,8 @@ public class servo_from_basket_auto extends LinearOpMode {
 
             if(gamepad1.a)
             {
-                axial = (9-pos.y)*SPEED_GAIN;
-                lateral = (-18.5-pos.x)*STRAFE_GAIN;
+                axial = (9-pos.y)*SPEED_GAIN*-1;
+                lateral = (-18.5-pos.x)*STRAFE_GAIN*-1;
                 yaw = yawErrorCalc(135,pos.h)*TURN_GAIN;
             }
 
