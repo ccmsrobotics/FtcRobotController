@@ -1,4 +1,4 @@
-/* Copyright (c) 2023 FIRST. All rights reserved.
+/* Copyright (c) 2021 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -30,70 +30,83 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-@Disabled
-@Autonomous(name="Test_OTOS", group = "Servo")
-public class Test_optical extends LinearOpMode
-{
-    //Motors
+
+
+@TeleOp(name="ServoSolder recovery", group="Linear OpMode")
+//@Disabled
+public class Servo_Recovery extends LinearOpMode {
+
+    // Declare OpMode members for each of the 4 motors.
+    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private Servo grabber = null;
+    private Servo rotator = null;
+    private boolean grab_mode = false;
+    NormalizedColorSensor colorSensor;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
     private double armLiftPower;
     private double armExtendPower;
-
-    //Servos
-
-    private boolean grab_mode = false;
-
-    //Sensors
-    NormalizedColorSensor colorSensor;
-    float gain = 2;
-    final float[] hsvValues = new float[3];
     SparkFunOTOS myOtos;
     SparkFunOTOS.Pose2D pos;
 
-    //Robot Speed Tuning
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    @Override
+    public void runOpMode() {
 
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
-    private double headingError  = 0;
-
-
-    @Override public void runOpMode()
-    {
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-        //Drive Motor config
+        // Initialize the hardware variables. Note that the strings used here must correspond
+        // to the names assigned during the robot configuration step on the DS or RC devices.
+        //left_drive  = hardwareMap.get(DcMotor.class, "left_drive");
+        //right_drive = hardwareMap.get(DcMotor.class, "right_drive");
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        grabber = hardwareMap.get(Servo.class, "grabber");
+        rotator = hardwareMap.get(Servo.class, "rotator");
+        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
+        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
+        float gain = 2;
+        final float[] hsvValues = new float[3];
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+
+
+        // ########################################################################################
+        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
+        // ########################################################################################
+        // Most robots need the motors on one side to be reversed to drive forward.
+        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
+        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
+        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
+        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
+        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
+        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armExtend.setDirection(DcMotor.Direction.REVERSE);
+        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armLift.setTargetPosition(0);
+        armLift.setPower(0);
+//        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -107,181 +120,37 @@ public class Test_optical extends LinearOpMode
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //Arm (rotation and extend config)
 
-        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
-        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setTargetPosition(0);
-        armLift.setTargetPosition(0);
-        armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //Sensor Config
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        //Initialize the sparkFun optical Odometry module
-        configureOtos();
-        colorSensor.setGain(gain);
-        pos = myOtos.getPosition();
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
-        telemetry.update();
+        // Wait for the game to start (driver presses PLAY)
+        int armLiftLocation;
+        int armExtendLocation;
+        int armLiftTarget=0;
+        int armExtendTarget;
+        double rotatorTarget=.5;
+        double speedMode = .7;
+        grabber.setPosition(0.0);
+        rotator.setPosition(0.2);
         waitForStart();
-
-
-        while (opModeIsActive())
-        {
-            pos = myOtos.getPosition();
-            telemetry.addData(">", "Touch START to start OpMode");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.update();
-            sleep(100);
-
-             //Move arm to driving location
-            //rotator.setPosition(.27);
-            //armLift.setTargetPosition(300);
-
-
-            //Move towards scoring position
-            //goToSpot(16,1,0,2);
-
-            //ScoreUpperBasket();
-
-
-            //move to Pickup staging point
-
-            //Move arm to grab location
-
-            //Move Robot to grab location
-
-            //Grab sample
-
-            //Move arm to driving location
-
-            //Move towards scoring position
-
+        while (opModeIsActive()) {
+            if (gamepad1.a)
+                armExtend.setPower(-0.2);
+            else
+                armExtend.setPower(0);
+            if (gamepad1.b)
+                armLift.setPower(-0.2);
+            else
+                armLift.setPower(0);
         }
-    }
-
-    /**
-     * Move robot according to desired axes motions
-     * <p>
-     * Positive X is forward
-     * <p>
-     * Positive Y is strafe left
-     * <p>
-     * Positive Yaw is counter-clockwise
-     */
-    public void moveRobot(double x, double y, double yaw) {
-        // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
-
-        // Normalize wheel powers to be less than 1.0
-        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-        max = Math.max(max, Math.abs(leftBackPower));
-        max = Math.max(max, Math.abs(rightBackPower));
-
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
         }
-
-        // Send powers to the wheels.
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
-    }
-
-    private void goToSpot(double xTargetLoc, double yTargetLoc, double yawTarget, double LocError)
-    {
-        double xError;
-        double yError;
-        double yawError;
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-        double maxError = LocError+1;
-        pos = myOtos.getPosition();
-
-        while(maxError >LocError)
-        {
-            pos = myOtos.getPosition();
-            xError = xTargetLoc-pos.x;
-            yError = yTargetLoc-pos.y;
-            yawError =yawErrorCalc(yawTarget,pos.h);
-            maxError =Math.max(xError,yError);
-            maxError=Math.max(maxError, yawError/5);//If a 1" error is specified, a 5 degree error is allowed.
-
-            drive  = Range.clip(xError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-            strafe = Range.clip(yError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-            moveRobot(drive, strafe, turn);
-            sleep(10);
+        private void resetCompass(){
+            leftFrontDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            leftBackDrive.setPower(0);
+            rightBackDrive.setPower(0);
+            armExtend.setPower(0);
+            sleep(150);
+            myOtos.calibrateImu();
         }
-        //stop robot at end of move
-        moveRobot(0,0,0);
-
-    }
-
-    private void ScoreUpperBasket()
-    {
-        // Rotate Arm
-        armLift.setTargetPosition(2000);
-        sleep(250);
-        // Extend arm
-        armExtend.setTargetPosition(3000);
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
-        {
-
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-        //Inch forward
-        moveRobot(.25,0,0);
-        sleep(250);
-        moveRobot(0,0,0);
-        //Score (release sample)
-
-        //Retract Arm
-        armExtend.setTargetPosition(300);
-        moveRobot(-.15,0,0);
-        sleep(500);
-
-        armLift.setTargetPosition(300);
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
-        {
-
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-    }
-    public double yawErrorCalc(double yawTarget, double yawCurrent) {
-        // Determine the heading current error
-        headingError = yawTarget - yawCurrent;
-        // Normalize the error to be within +/- 180 degrees
-        while (headingError > 180)  headingError -= 360;
-        while (headingError <= -180) headingError += 360;
-        return headingError;
-    }
 
     private void configureOtos() {
         telemetry.addLine("Configuring OTOS...");
@@ -308,7 +177,7 @@ public class Test_optical extends LinearOpMode
         // clockwise (negative rotation) from the robot's orientation, the offset
         // would be {-5, 10, -90}. These can be any value, even the angle can be
         // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(.55, -5.55, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0.55, -5.55, 0);
         myOtos.setOffset(offset);
 
         // Here we can set the linear and angular scalars, which can compensate for

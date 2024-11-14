@@ -29,25 +29,25 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import android.graphics.Color;
 
-@TeleOp(name="Servo Omni grabber field centric", group="Linear OpMode")
+@TeleOp(name="teleop from basket auto", group="Linear OpMode")
 //@Disabled
-public class servo_omnidrive_fc extends LinearOpMode {
+public class servo_from_basket_auto extends LinearOpMode {
 
     // Declare variables used by the class
     //Motors
@@ -58,6 +58,10 @@ public class servo_omnidrive_fc extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
+    final double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.025 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    private double headingError  = 0;
 
     //Servos
     private Servo grabber = null;
@@ -96,8 +100,8 @@ public class servo_omnidrive_fc extends LinearOpMode {
         //Mechanism Motor config
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+       // armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armExtend.setDirection(DcMotor.Direction.REVERSE);
         armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -109,7 +113,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         double armExtendPower=0;
         int armLiftLocation;
         int armExtendLocation;
-        int armLiftTarget=0;
+        int armLiftTarget= armLift.getCurrentPosition();
 
 
         //Servo Config
@@ -123,7 +127,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         final float[] hsvValues = new float[3];
         colorSensor.setGain(gain);
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        configureOtos();
+       // configureOtos();
 
 
 
@@ -137,7 +141,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
         telemetry.update();
 
         double rotatorTarget=.5;
-        grabber.setPosition(0.02);
+        //grabber.setPosition(0.02);
         //rotator.setPosition(0.2);
         Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
 
@@ -146,12 +150,13 @@ public class servo_omnidrive_fc extends LinearOpMode {
         armLift.setPower(1);
         runtime.reset();
         rotator.setPosition(.5);
-        grabber.setPosition(0.05);
+        grabber.setPosition(0.02);
         armExtend.setTargetPosition(400);//This doesn't do anything since this is not in position mode.
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //fix compass heading
+            pos = myOtos.getPosition();
             if (gamepad1.back) {
                 resetCompass();
             }
@@ -172,13 +177,23 @@ public class servo_omnidrive_fc extends LinearOpMode {
 
             if (gamepad2.dpad_up)
                 armLiftTarget =1700;
-            else if (gamepad2.dpad_right) {
-                if (armExtendLocation < 1900)
-                    armLiftTarget = 400;
+            else if (gamepad2.dpad_right)
+            {
+                if (armExtendLocation < 1000)
+                {
+                    armLiftTarget = 133;
+                    rotatorTarget = 0.41;
+                }
             }
-                else if (gamepad2.dpad_down) {
-                    if (armExtendLocation < 1900)
-                        armLiftTarget = 0;
+            else if (gamepad2.dpad_down)
+            {
+                if (armExtendLocation < 1900)
+                    armLiftTarget = 0;
+            }
+            else if (gamepad2.dpad_left)
+            {
+                rotatorTarget = 0.56;
+                armLiftTarget = 1174;
             }
             //ARM EXTEND - This code prevents us from extending the arm too far when horizontal
 
@@ -240,6 +255,13 @@ public class servo_omnidrive_fc extends LinearOpMode {
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
 
+            if(gamepad1.a)
+            {
+                axial = (9-pos.y)*SPEED_GAIN*-1;
+                lateral = (-18.5-pos.x)*STRAFE_GAIN*-1;
+                yaw = yawErrorCalc(135,pos.h)*TURN_GAIN;
+            }
+
             if (gamepad1.left_bumper)
                 speedMode = 0.2;
             else if (gamepad1.right_bumper) {
@@ -250,7 +272,7 @@ public class servo_omnidrive_fc extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            pos = myOtos.getPosition();
+
             double currentYawRadians = pos.h*3.1415/180;
             double rotStrafe = lateral * Math.cos(-currentYawRadians) - axial * Math.sin(-currentYawRadians);
             double rotDrive = lateral * Math.sin(-currentYawRadians) + axial * Math.cos(-currentYawRadians);
@@ -288,9 +310,9 @@ public class servo_omnidrive_fc extends LinearOpMode {
                 armLift.setTargetPosition(armLiftTarget);
                 rotator.setPosition(rotatorTarget);
                 if (gamepad1.left_trigger > 0.5){
-                    grabber.setPosition(0.05);
+                    grabber.setPosition(0.02);
                 } else if (gamepad1.right_trigger > 0.5) {
-                    grabber.setPosition(.23);
+                    grabber.setPosition(.33);
                 }
 
                 //Code for color sensor
@@ -418,5 +440,15 @@ public class servo_omnidrive_fc extends LinearOpMode {
         telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
         telemetry.update();
     }
+
+    public double yawErrorCalc(double yawTarget, double yawCurrent) {
+        // Determine the heading current error
+        headingError = yawTarget - yawCurrent;
+        // Normalize the error to be within +/- 180 degrees
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+        return headingError;
+    }
+
 
 }

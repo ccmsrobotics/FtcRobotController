@@ -31,38 +31,27 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-@Autonomous(name="Auto Basket Three", group = "Servo")
-public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
+@Disabled
+@Autonomous(name="Auto Sparkfun OTOS", group = "Auton")
+public class Auto_Sparkfun_OTOS extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor armLift = null;
-    private DcMotor armExtend = null;
-    private double armLiftPower;
-    private double armExtendPower;
 
     //Servos
-    private Servo grabber = null;
-    private Servo rotator = null;
-    private boolean grab_mode = false;
 
     //Sensors
-    NormalizedColorSensor colorSensor;
-    float gain = 2;
-    final float[] hsvValues = new float[3];
     SparkFunOTOS myOtos;
     SparkFunOTOS.Pose2D pos;
 
@@ -70,13 +59,13 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.03  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.015  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.010  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.2;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -90,10 +79,10 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -108,85 +97,56 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Arm (rotation and extend config)
-        grabber = hardwareMap.get(Servo.class,"grabber");
-        rotator = hardwareMap.get(Servo.class,"rotator");
-        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
-        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armExtend.setTargetPosition(0);
-        armLift.setTargetPosition(0);
-        armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Sensor Config
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         //Initialize the sparkFun optical Odometry module
         configureOtos();
-        colorSensor.setGain(gain);
         pos = myOtos.getPosition();
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.addData("X coordinate", pos.x);
         telemetry.addData("Y coordinate", pos.y);
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
-        rotator.setPosition(.05);
-        grabber.setPosition(0);
-        waitForStart();
-             //Move arm to driving location
-            rotator.setPosition(.55);
-            armLift.setTargetPosition(0);
 
-            //Move to Scoring spot
-            goToSpot(9,-18.5,135,1);
-            ScoreUpperBasket();
-            goToSpot(21,-15,0,1);
-            armExtend.setTargetPosition(900);
-            rotator.setPosition(0.73);
-            sleep(750);
-            grabber.setPosition(0);
-            sleep(500);
-            armExtend.setTargetPosition(0);
-            goToSpot(9,-18.5,135,1);
-            ScoreUpperBasket();
-        goToSpot(21,-25,0,1);
-        armExtend.setTargetPosition(900);
-        rotator.setPosition(0.73);
-        sleep(750);
-        grabber.setPosition(0);
-        sleep(500);
-        armExtend.setTargetPosition(0);
-        goToSpot(9,-18.5,135,.5);
-        ScoreUpperBasket();
-        armLift.setTargetPosition(0);
-        armExtend.setTargetPosition(0);
-        rotator.setPosition(0.1);
-        goToSpot(10.5,-17,0,.25);
+        //Wait for start
+        waitForStart();
+
+
+        //Move to Scoring spot and score preloaded sample
+        goToSpot(9,-18.5,135,1);
+        //Move / use mechanisms
+
+        //Pick up Second sample
+        goToSpot(21,-15,0,1);
+        //Move / use mechanisms
+
+        //Move to Scoring position and score second sample
+        goToSpot(9,-18.5,135,1);
+        //Move / use mechanisms
 
         while (opModeIsActive())
         {
         }
     }
+//End of main loop
+
 
     /**
      * Move robot according to desired axes motions
      * <p>
-     * Positive X is forward
+     * Positive drive is forward
      * <p>
-     * Positive Y is strafe left
+     * Negative strafe is strafe left
      * <p>
      * Positive Yaw is counter-clockwise
      */
-    public void moveRobot(double x, double y, double yaw) {
+    public void moveRobot(double drive, double strafe, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
+        double leftFrontPower    =  drive -strafe -yaw;
+        double rightFrontPower   =  drive +strafe +yaw;
+        double leftBackPower     =  drive +strafe -yaw;
+        double rightBackPower    =  drive -strafe +yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -217,7 +177,6 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
         double maxError = LocError+1;
         pos = myOtos.getPosition();
-
         while(maxError >LocError)
         {
             pos = myOtos.getPosition();
@@ -232,70 +191,13 @@ public class Auto_Basket_SERVOSoldier_Grabber extends LinearOpMode
             drive  = Range.clip(rotY * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
-            telemetry.addData("drive power", drive);
-            telemetry.addData("strafe power", strafe);
-            telemetry.addData("turn power", turn);
-            telemetry.update();
-
-
-            moveRobot(-drive, strafe, -turn);
-
-
+            moveRobot(drive, -strafe, turn);
         }
         //stop robot at end of move
         moveRobot(0,0,0);
-
     }
 
-    private void ScoreUpperBasket()
-    {
-        // Rotate Arm
-        rotator.setPosition(.55);
-        armLift.setPower(1);
-        armLift.setTargetPosition(1700);
-        telemetry.addData("Extending arms", " at %7d :%7d",
-                armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-        telemetry.update();
-        sleep(250);
-        // Extend arm
-        armExtend.setPower(1);
-        armExtend.setTargetPosition(2950);
-        while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
-        {
 
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-        //Inch forward
-        //sleep(750);
-        grabber.setPosition(.35);
-        sleep(500);
-
-        //Retract Arm
-
-        moveRobot(.15,0,0);
-        armExtend.setTargetPosition(0);
-
-        sleep(500);
-        moveRobot(0,0,0);
-        armLift.setTargetPosition(0);
-        rotator.setPosition(.15);
-
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
-        {
-
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
-            telemetry.update();
-        }
-    }
     public double yawErrorCalc(double yawTarget, double yawCurrent) {
         // Determine the heading current error
         headingError = yawTarget - yawCurrent;
