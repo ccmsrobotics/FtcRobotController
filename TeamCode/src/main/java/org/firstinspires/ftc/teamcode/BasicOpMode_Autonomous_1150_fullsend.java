@@ -52,8 +52,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
 //@Disabled
-public class BasicOpMode_Autonomous_1040 extends LinearOpMode
+public class BasicOpMode_Autonomous_1150_fullsend extends LinearOpMode
 {
+    double speedMultiplier = 1.05;
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor topleftDrive = null;
@@ -142,7 +144,7 @@ public class BasicOpMode_Autonomous_1040 extends LinearOpMode
         telemetry.update();
         setWristPosition(0);
         // forward
-        moveRobotVertical(1040,forward);
+        moveRobotVertical(1150,forward);
         telemetry.update();
         // retract extender
         longyarm(baseExtender + 4000,2000);
@@ -152,36 +154,23 @@ public class BasicOpMode_Autonomous_1040 extends LinearOpMode
         setClawPosition(0.5);
         sleep(500);
 
-        moveRobotVertical(1040,backward);
+        moveRobotVertical(1150,backward);
         longyarm(baseExtender,1000);
         setSeesawPosition(baseSeesaw,1000);
-        moveRobotLateral(2500,right);
+        moveRobotLateral(1900,right);
+        moveRobotVertical(2000,forward);
+        moveRobotLateral(400,right);
+        moveRobotVertical(1850,backward);
     }
     // Positive power moves the robot forward
     private void moveRobotVertical(int pTime, double pPower) {
 
-        topleftDrive.setPower(pPower);
-        toprightDrive.setPower(pPower);
-        backleftDrive.setPower(pPower);
-        backrightDrive.setPower(pPower);
+        double lPower = pPower * speedMultiplier;
 
-        sleep(pTime);
-
-        topleftDrive.setPower(0);
-        toprightDrive.setPower(0);
-        backleftDrive.setPower(0);
-        backrightDrive.setPower(0);
-
-        sleep(cooldownTime);
-    }
-
-    // Positive value turns the robot right
-    private void turnRobot(int pTime, double pPower) {
-
-        topleftDrive.setPower(pPower);
-        toprightDrive.setPower(-pPower);
-        backleftDrive.setPower(pPower);
-        backrightDrive.setPower(-pPower);
+        topleftDrive.setPower(lPower);
+        toprightDrive.setPower(lPower);
+        backleftDrive.setPower(lPower);
+        backrightDrive.setPower(lPower);
 
         sleep(pTime);
 
@@ -196,10 +185,12 @@ public class BasicOpMode_Autonomous_1040 extends LinearOpMode
     // positive power moves the robot right
     private void moveRobotLateral(int pTime, double pPower) {
 
-        topleftDrive.setPower(pPower);
-        toprightDrive.setPower(-pPower);
-        backleftDrive.setPower(-pPower);
-        backrightDrive.setPower(pPower);
+        double lPower = pPower * speedMultiplier;
+
+        topleftDrive.setPower(lPower);
+        toprightDrive.setPower(-lPower);
+        backleftDrive.setPower(-lPower);
+        backrightDrive.setPower(lPower);
 
         sleep(pTime);
 

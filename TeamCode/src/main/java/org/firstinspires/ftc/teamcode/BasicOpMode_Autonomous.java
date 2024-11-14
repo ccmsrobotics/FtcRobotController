@@ -30,11 +30,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -52,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
 //@Disabled
-public class BasicOpMode_Autonomous_1080 extends LinearOpMode
+public class BasicOpMode_Autonomous extends LinearOpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -142,7 +145,7 @@ public class BasicOpMode_Autonomous_1080 extends LinearOpMode
         telemetry.update();
         setWristPosition(0);
         // forward
-        moveRobotVertical(1080,forward);
+        moveRobotVertical(1030,forward);
         telemetry.update();
         // retract extender
         longyarm(baseExtender + 4000,2000);
@@ -152,13 +155,10 @@ public class BasicOpMode_Autonomous_1080 extends LinearOpMode
         setClawPosition(0.5);
         sleep(500);
 
-        moveRobotVertical(1080,backward);
+        moveRobotVertical(1049,backward);
         longyarm(baseExtender,1000);
         setSeesawPosition(baseSeesaw,1000);
-        moveRobotLateral(1900,right);
-        moveRobotVertical(2000,forward);
-        moveRobotLateral(400,right);
-        moveRobotVertical(1850,backward);
+        moveRobotLateral(2500,right);
     }
     // Positive power moves the robot forward
     private void moveRobotVertical(int pTime, double pPower) {
