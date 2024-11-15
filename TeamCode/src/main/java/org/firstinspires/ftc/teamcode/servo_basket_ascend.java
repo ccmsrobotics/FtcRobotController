@@ -282,13 +282,19 @@ public class servo_basket_ascend extends LinearOpMode
             xError =xTargetLoc-pos.x;
             yawError =yawErrorCalc(yawTarget,pos.h);
             maxError =Math.max(Math.abs(xError),Math.abs(yError));
-            maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
+            maxError=Math.max(maxError, Math.abs(yawError/2.5));//If a 1" error is specified, a 5 degree error is allowed.
             double currentYawRadians = pos.h*3.1415/180;
             double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
             double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
             drive  = Range.clip(rotY * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            if(maxError<3)//limit min speed of robot.
+            {
+                drive =drive*3/maxError;
+                turn = turn*3/maxError;
+                strafe = strafe*3/maxError;
+            }
             moveRobot(-drive, strafe, -turn);//motors are reversed in config.  This should be fixed.
         }
         //stop robot at end of move
