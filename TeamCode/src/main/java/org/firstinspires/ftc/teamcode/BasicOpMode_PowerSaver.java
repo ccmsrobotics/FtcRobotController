@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -51,7 +52,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Power Saver", group="Iterative OpMode")
-//@Disabled
+@Disabled
 public class BasicOpMode_PowerSaver extends OpMode
 {
     // Declare OpMode members.

@@ -40,7 +40,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
+@Disabled
 @Autonomous(name="Auto Basket Specimen", group = "Servo")
 public class Auto_Basket_SERVOSoldier_Specimen extends LinearOpMode
 {

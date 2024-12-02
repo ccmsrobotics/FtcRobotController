@@ -113,7 +113,7 @@ public class servo_from_basket_auto extends LinearOpMode {
         double armExtendPower=0;
         int armLiftLocation;
         int armExtendLocation;
-        int armLiftTarget= armLift.getCurrentPosition();
+        int armLiftTarget= armLift.getCurrentPosition()+15;
 
 
         //Servo Config
@@ -181,7 +181,7 @@ public class servo_from_basket_auto extends LinearOpMode {
             {
                 if (armExtendLocation < 1000)
                 {
-                    armLiftTarget = 133;
+                    armLiftTarget = 120;
                     rotatorTarget = 0.41;
                 }
             }

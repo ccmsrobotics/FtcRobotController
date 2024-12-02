@@ -42,6 +42,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 //hoi
@@ -82,7 +84,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 
 @TeleOp(name="Servo Omni", group="Linear OpMode")
-//@Disabled
+@Disabled
 public class servo_omnidrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

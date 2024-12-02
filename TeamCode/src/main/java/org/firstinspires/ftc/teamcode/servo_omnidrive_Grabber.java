@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 //hoi
 //Henry is a bot
@@ -79,7 +80,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Servo Omni grabber", group="Linear OpMode")
-//@Disabled
+@Disabled
 public class servo_omnidrive_Grabber extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

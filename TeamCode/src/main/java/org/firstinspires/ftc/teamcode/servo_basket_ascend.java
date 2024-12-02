@@ -129,7 +129,7 @@ public class servo_basket_ascend extends LinearOpMode
         telemetry.addData("Y coordinate", pos.y);
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
-        rotator.setPosition(.05);
+        rotator.setPosition(.15);
         grabber.setPosition(0.02);
 
         //Wait for start
@@ -163,11 +163,11 @@ public class servo_basket_ascend extends LinearOpMode
         ScoreUpperBasket();
 
         //Pickup fourth
-        goToSpot(16.5,-22,30,0.5);
+        goToSpot(16.5,-22,34,0.5);
         armExtend.setTargetPosition(1800);
         armLift.setTargetPosition(250);
         //sleep(210);
-        sleep(450);
+        sleep(550);
         grabber.setPosition(0.02);
         sleep(450);
         armExtend.setTargetPosition(900);
