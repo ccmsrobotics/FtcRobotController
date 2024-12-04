@@ -136,7 +136,24 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         waitForStart();
         myOtos.resetTracking();
         //Move arm to driving location
-
+        rotator.setPosition(0.56);
+        armLift.setPower(1);
+        armExtend.setPower(1);
+        armLift.setTargetPosition(1200);
+        armExtend.setTargetPosition(400);
+        goToSpot(26.5,0,0,0.2);
+        goToSpot(25.5,0,0,0.2);
+        sleep(500);
+        grabber.setPosition(.40);
+        armLift.setTargetPosition(0);
+        //pickup 1st sample
+        goToSpot(25,39,0,0.2);
+        rotator.setPosition(0.73);
+        sleep(250);
+        rotator.setPosition(0.50);
+        grabber.setPosition(0);
+        goToSpot(11.5,39,180,0.2);
+        grabber.setPosition(0.40);
 
 
         while (opModeIsActive())
