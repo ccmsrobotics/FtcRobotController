@@ -168,11 +168,21 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
 
             if (gamepad2.left_stick_y < -.15) {
                 if (armLiftTarget < 1800)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*6);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*18);
             }
             if (gamepad2.left_stick_y > .15) {
-                if (armLiftTarget > 0)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*6);
+                if (armLiftTarget > 0) {
+                    if (armExtendLocation > 1900)
+                    {
+                      if (armLiftTarget > 1200)
+                      {
+                          armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 18);
+
+                      }
+                    }
+                 else
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 18);
+                }
             }
 
             if (gamepad2.dpad_up)
