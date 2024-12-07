@@ -121,6 +121,7 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         //Initialize the sparkFun optical Odometry module
+        grabber.setPosition(0.00);
         configureOtos();
         colorSensor.setGain(gain);
         pos = myOtos.getPosition();
@@ -130,31 +131,99 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
         rotator.setPosition(.15);
-        grabber.setPosition(0.02);
+
 
         //Wait for start
         waitForStart();
         myOtos.resetTracking();
-        //Move arm to driving location
-        rotator.setPosition(0.56);
+
+        //Scoring pre-loaded specimen
+        rotator.setPosition(0.33);
         armLift.setPower(1);
         armExtend.setPower(1);
-        armLift.setTargetPosition(1200);
-        armExtend.setTargetPosition(400);
-        goToSpot(26.5,0,0,0.2);
-        goToSpot(25.5,0,0,0.2);
-        sleep(500);
-        grabber.setPosition(.40);
-        armLift.setTargetPosition(0);
-        //pickup 1st sample
-        goToSpot(25,39,0,0.2);
-        rotator.setPosition(0.73);
-        sleep(250);
-        rotator.setPosition(0.50);
-        grabber.setPosition(0);
-        goToSpot(11.5,39,180,0.2);
+        armLift.setTargetPosition(775);
+        armExtend.setTargetPosition(665);
+        goToSpot(34.5,0,0,6);
+        sleep(400);
         grabber.setPosition(0.40);
+        //sleep(250);
 
+
+        //move out of submersable
+        goToSpot(14.5,0,0,6);
+       armLift.setTargetPosition(0);
+       rotator.setPosition(0.73);
+
+
+       //pickup and drop off first sample on spike mark
+       goToSpot(24.5,41.5,0,0.5);
+       grabber.setPosition(0.02);
+       sleep(500);
+       armLift.setTargetPosition(250);
+       sleep(350);
+       goToSpot(13.6,41.5,175,0.5);
+       grabber.setPosition(0.4);
+       sleep(250);
+
+
+        //pickup and drop off second sample on spike mark
+        armLift.setTargetPosition(0);
+        goToSpot(13.6,41.5,90,20);
+        goToSpot(24.5,49.7,0,0.5);
+        grabber.setPosition(0.02);
+        sleep(400);
+        armLift.setTargetPosition(250);
+        sleep(250);
+        goToSpot(13.6,41.5,175,0.5);
+        grabber.setPosition(0.4);
+        sleep(250);
+
+        //grab specimen
+
+        rotator.setPosition(0.4);
+        armLift.setTargetPosition(180);
+        goToSpot(12,28.5,-180,1);
+        goToSpot(8,28.5,-180,0.5);
+        grabber.setPosition(0.02);
+        sleep(400);
+        rotator.setPosition(0.33);
+        armLift.setTargetPosition(775);
+        goToSpot(10,-4,0,1);
+        goToSpot(34.5,-4,0,6);
+        sleep(400);
+        grabber.setPosition(0.40);
+        sleep(250);
+        goToSpot(14.5,0,0,6);
+        //pickup 3rd specimen
+        rotator.setPosition(0.4);
+        armLift.setTargetPosition(180);
+        goToSpot(12,28.5,-180,1);
+        goToSpot(8,28.5,-180,0.5);
+        grabber.setPosition(0.02);
+        sleep(400);
+        rotator.setPosition(0.33);
+        armLift.setTargetPosition(775);
+        goToSpot(10,-8,0,1);
+        goToSpot(34.5,-8,0,6);
+        sleep(500);
+        grabber.setPosition(0.40);
+        sleep(250);
+        goToSpot(14.5,0,0,6);
+        //pickup 4th specimen
+        rotator.setPosition(0.4);
+        armLift.setTargetPosition(180);
+        goToSpot(12,28.5,-180,1);
+        goToSpot(8,28.5,-180,0.5);
+        grabber.setPosition(0.02);
+        sleep(500);
+        rotator.setPosition(0.33);
+        armLift.setTargetPosition(775);
+        goToSpot(10,-12,0,1);
+        goToSpot(34.5,-12,0,6);
+        sleep(500);
+        grabber.setPosition(0.40);
+        sleep(250);
+        goToSpot(14.5,0,0,6);
 
         while (opModeIsActive())
         {

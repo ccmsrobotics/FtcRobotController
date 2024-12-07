@@ -148,7 +148,6 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
         //Start of TeleOp
         waitForStart();
         armLift.setPower(1);
-        runtime.reset();
         rotator.setPosition(.5);
         grabber.setPosition(0.02);
         armExtend.setTargetPosition(400);//This doesn't do anything since this is not in position mode.
@@ -168,7 +167,7 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
 
             if (gamepad2.left_stick_y < -.15) {
                 if (armLiftTarget < 1800)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*18);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*28);
             }
             if (gamepad2.left_stick_y > .15) {
                 if (armLiftTarget > 0) {
@@ -176,12 +175,12 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
                     {
                       if (armLiftTarget > 1200)
                       {
-                          armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 18);
+                          armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 28);
 
                       }
                     }
                  else
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 18);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 28);
                 }
             }
 
@@ -204,6 +203,11 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
             {
                 rotatorTarget = 0.56;
                 armLiftTarget = 1174;
+
+            } else if (gamepad2.right_trigger > 0.5) {
+                rotatorTarget = 0.33;
+                armLiftTarget = 775;
+
             }
             //ARM EXTEND - This code prevents us from extending the arm too far when horizontal
 
@@ -348,9 +352,6 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
 
 
                 // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
                 telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
                         armLift.getCurrentPosition(),
                         armExtend.getCurrentPosition());
