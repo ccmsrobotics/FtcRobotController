@@ -40,8 +40,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Auto 3 Specimen", group = "Servo")
-public class servo_Auto_5_Specimen_to_park extends LinearOpMode
+@Autonomous(name="Auto Basket-FOUR", group = "Servo")
+public class Auto_Basket_four_SERVOSoldier_Grabber extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -50,6 +50,8 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
     private DcMotor rightBackDrive = null;
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
+    private double armLiftPower;
+    private double armExtendPower;
 
     //Servos
     private Servo grabber = null;
@@ -67,13 +69,13 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.025 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.03  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.015  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.4;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -116,13 +118,13 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         armLift.setTargetPosition(0);
         armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Sensor Config
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         //Initialize the sparkFun optical Odometry module
-        grabber.setPosition(0.00);
-        sleep(250);
         configureOtos();
         colorSensor.setGain(gain);
         pos = myOtos.getPosition();
@@ -131,109 +133,43 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         telemetry.addData("Y coordinate", pos.y);
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
-        rotator.setPosition(.15);
-
-
-        //Wait for start
+        rotator.setPosition(.05);
+        grabber.setPosition(0);
         waitForStart();
-        myOtos.resetTracking();
-
-        //Scoring pre-loaded specimen
-        rotator.setPosition(0.33);
-        armLift.setPower(1);
-        armExtend.setPower(1);
-        armLift.setTargetPosition(775);
-        armExtend.setTargetPosition(665);
-        goToSpot(34.5,0,0,6);
-        sleep(400);
-        grabber.setPosition(0.40);
-        //sleep(250);
-
-
-        //move out of submersable
-        goToSpot(14.5,0,0,6);
-       armLift.setTargetPosition(0);
-       rotator.setPosition(0.73);
-
-
-       //pickup and drop off first sample on spike mark
-       goToSpot(24.5,41.5,0,0.5);
-       grabber.setPosition(0.02);
-       sleep(500);
-       armLift.setTargetPosition(250);
-       sleep(350);
-       goToSpot(13.6,41.5,175,0.5);
-       grabber.setPosition(0.4);
-       sleep(250);
-
-
-        //pickup and drop off second sample on spike mark
+             //Move arm to driving location
+        rotator.setPosition(.55);
         armLift.setTargetPosition(0);
-        goToSpot(13.6,41.5,90,20);
-        goToSpot(24.5,49.7,0,0.5);
-        grabber.setPosition(0.02);
-        sleep(400);
-        armLift.setTargetPosition(250);
-        sleep(250);
-        goToSpot(13.6,41.5,175,0.5);
-        grabber.setPosition(0.4);
-        sleep(250);
 
-        //grab specimen
-
-        rotator.setPosition(0.4);
-        armLift.setTargetPosition(180);
-        goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
-        grabber.setPosition(0.02);
-        sleep(400);
-        rotator.setPosition(0.33);
-        armLift.setTargetPosition(775);
-        goToSpot(10,-4,0,1);
-        goToSpot(34.5,-4,0,6);
-        sleep(400);
-        grabber.setPosition(0.40);
-        sleep(250);
-        goToSpot(14.5,0,0,6);
-        //pickup 3rd specimen
-        rotator.setPosition(0.4);
-        armLift.setTargetPosition(180);
-        goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
-        grabber.setPosition(0.02);
-        sleep(400);
-        rotator.setPosition(0.33);
-        armLift.setTargetPosition(775);
-        goToSpot(10,-8,0,1);
-        goToSpot(34.5,-8,0,6);
+             //Move to Scoring spot
+        goToSpot(10.5,-17,135,1);
+        ScoreUpperBasket();
+        goToSpot(22,-15,0,1);
+        armExtend.setTargetPosition(900);
+        rotator.setPosition(0.73);
+        sleep(750);
+        grabber.setPosition(0);
         sleep(500);
-        grabber.setPosition(0.40);
-        sleep(250);
-        goToSpot(14.5,0,0,6);
-        //pickup 4th specimen
-        rotator.setPosition(0.4);
-        armLift.setTargetPosition(180);
-        goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
-        grabber.setPosition(0.02);
+        armExtend.setTargetPosition(0);
+        goToSpot(10.5,-17,135,1);
+        ScoreUpperBasket();
+        goToSpot(22,-25,0,1);
+        armExtend.setTargetPosition(900);
+        rotator.setPosition(0.73);
+        sleep(750);
+        grabber.setPosition(0);
         sleep(500);
-        rotator.setPosition(0.33);
-        armLift.setTargetPosition(775);
-        goToSpot(10,-12,0,1);
-        goToSpot(34.5,-12,0,6);
-        sleep(500);
-        grabber.setPosition(0.40);
-        sleep(250);
-        goToSpot(14.5,0,0,6);
+        armExtend.setTargetPosition(0);
+        goToSpot(10.5,-17,135,.5);
+        ScoreUpperBasket();
+        armLift.setTargetPosition(0);
+        armExtend.setTargetPosition(0);
+        rotator.setPosition(0.1);
+        goToSpot(10.5,-17,0,.25);
 
         while (opModeIsActive())
         {
         }
     }
-//End of main loop
-
-
-
 
     /**
      * Move robot according to desired axes motions
@@ -280,33 +216,85 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
         double maxError = LocError+1;
         pos = myOtos.getPosition();
-        while(opModeIsActive() && (maxError >LocError))
+
+        while(maxError >LocError)
         {
             pos = myOtos.getPosition();
             yError = yTargetLoc-pos.y;
-            xError =xTargetLoc-pos.x;
+            xError = xTargetLoc-pos.x;
             yawError =yawErrorCalc(yawTarget,pos.h);
             maxError =Math.max(Math.abs(xError),Math.abs(yError));
-            maxError=Math.max(maxError, Math.abs(yawError/2.5));//If a 1" error is specified, a 5 degree error is allowed.
+            maxError=Math.max(maxError, Math.abs(yawError/5));//If a 1" error is specified, a 5 degree error is allowed.
             double currentYawRadians = pos.h*3.1415/180;
             double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
             double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
             drive  = Range.clip(rotY * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn   = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-            if(maxError<3)//limit min speed of robot.
-            {
-                drive =drive*3/maxError;
-                turn = turn*3/maxError;
-                strafe = strafe*3/maxError;
-            }
-            moveRobot(-drive, strafe, -turn);//motors are reversed in config.  This should be fixed.
+
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.addData("drive power", drive);
+            telemetry.addData("strafe power", strafe);
+            telemetry.addData("turn power", turn);
+            telemetry.update();
+
+
+            moveRobot(-drive, strafe, -turn);
+
+
         }
         //stop robot at end of move
         moveRobot(0,0,0);
+
     }
 
+    private void ScoreUpperBasket()
+    {
+        // Rotate Arm
+        rotator.setPosition(.55);
+        armLift.setPower(1);
+        armLift.setTargetPosition(1700);
+        telemetry.addData("Extending arms", " at %7d :%7d",
+                armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+        telemetry.update();
+        sleep(250);
+        // Extend arm
+        armExtend.setPower(1);
+        armExtend.setTargetPosition(3000);
+        while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
+        {
 
+            // Display it for the driver.
+            telemetry.addData("Extending arms", " at %7d :%7d",
+                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+            telemetry.update();
+        }
+        //Inch forward
+        sleep(750);
+        grabber.setPosition(.35);
+        sleep(500);
+
+        //Retract Arm
+
+        moveRobot(.15,0,0);
+        armExtend.setTargetPosition(0);
+
+        sleep(500);
+        moveRobot(0,0,0);
+        armLift.setTargetPosition(0);
+        rotator.setPosition(.15);
+
+        while (opModeIsActive() && (armExtend.isBusy() || armLift.isBusy()))
+        {
+
+            // Display it for the driver.
+            telemetry.addData("Extending arms", " at %7d :%7d",
+                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+            telemetry.update();
+        }
+    }
     public double yawErrorCalc(double yawTarget, double yawCurrent) {
         // Determine the heading current error
         headingError = yawTarget - yawCurrent;
