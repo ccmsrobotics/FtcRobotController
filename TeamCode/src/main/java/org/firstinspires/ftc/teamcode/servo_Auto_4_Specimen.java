@@ -40,8 +40,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Auto 5 Specimen to Park", group = "Servo")
-public class servo_Auto_5_Specimen_to_park extends LinearOpMode
+@Autonomous(name="Auto 4 Specimen", group = "Servo")
+public class servo_Auto_4_Specimen extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
