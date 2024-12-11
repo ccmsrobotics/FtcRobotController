@@ -45,7 +45,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="teleop from basket auto", group="Linear OpMode")
+@TeleOp(name="teleop from Autonomous", group="Linear OpMode")
 //@Disabled
 public class servo_Tele_From_basket_auto extends LinearOpMode {
 
@@ -353,8 +353,8 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
-                        armLift.getCurrentPosition(),
-                        armExtend.getCurrentPosition());
+                        armLiftLocation,
+                        armExtendLocation);
                 telemetry.update();
             }
         }

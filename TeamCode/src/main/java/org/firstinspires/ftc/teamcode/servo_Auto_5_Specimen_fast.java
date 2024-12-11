@@ -40,8 +40,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous(name="Auto 3 Specimen", group = "Servo")
-public class servo_Auto_5_Specimen_to_park extends LinearOpMode
+@Autonomous(name="Auto 5 Specimen fast", group = "Servo")
+public class servo_Auto_5_Specimen_fast extends LinearOpMode
 {
     //Motors
     private DcMotor leftFrontDrive = null;
@@ -67,13 +67,13 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double SPEED_GAIN  =  0.05  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.05 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double TURN_GAIN   =  0.025  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.74;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.75;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -146,13 +146,12 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         armExtend.setTargetPosition(665);
         goToSpot(34.5,0,0,6);
         sleep(400);
-        SPEED_GAIN  =  0.05;
         grabber.setPosition(0.40);
         //sleep(250);
 
 
         //move out of submersable
-        goToSpot(12.5,0,0,6);
+        goToSpot(14.5,0,0,6);
        armLift.setTargetPosition(0);
        rotator.setPosition(0.73);
 
@@ -170,7 +169,7 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
 
         //pickup and drop off second sample on spike mark
         armLift.setTargetPosition(0);
-        goToSpot(13.6,41.5,10,10);
+        goToSpot(13.6,41.5,90,20);
         goToSpot(24.5,49.7,0,0.5);
         grabber.setPosition(0.02);
         sleep(400);
@@ -191,10 +190,8 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-4,0,1);
-        SPEED_GAIN  =  0.035;
         goToSpot(34.5,-4,0,6);
         sleep(400);
-        SPEED_GAIN  =  0.05;
         grabber.setPosition(0.40);
         sleep(250);
         goToSpot(14.5,0,0,6);
@@ -208,9 +205,7 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-8,0,1);
-        SPEED_GAIN  =  0.035;
         goToSpot(34.5,-8,0,6);
-        SPEED_GAIN  =  0.05;
         sleep(500);
         grabber.setPosition(0.40);
         sleep(250);
@@ -225,9 +220,7 @@ public class servo_Auto_5_Specimen_to_park extends LinearOpMode
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-12,0,1);
-        SPEED_GAIN  =  0.035;
         goToSpot(34.5,-12,0,6);
-        SPEED_GAIN  =  0.05;
         sleep(500);
         grabber.setPosition(0.40);
         sleep(250);
