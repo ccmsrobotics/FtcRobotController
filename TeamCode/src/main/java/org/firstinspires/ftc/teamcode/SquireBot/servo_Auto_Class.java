@@ -44,10 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class servo_Auto_Class extends LinearOpMode
 {
     //Motors
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+
     private DcMotor armLift = null;
     private DcMotor armExtend = null;
 
@@ -57,17 +54,13 @@ public class servo_Auto_Class extends LinearOpMode
     private boolean grab_mode = false;
 
     //Sensors
-    NormalizedColorSensor colorSensor;
-    float gain = 2;
-    final float[] hsvValues = new float[3];
-    SparkFunOTOS myOtos;
     SparkFunOTOS.Pose2D pos;
 
     //Robot Speed Tuning
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double FORWARD_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.025 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
@@ -82,27 +75,6 @@ public class servo_Auto_Class extends LinearOpMode
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-        //Drive Motor config
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Arm (rotation and extend config)
         grabber = hardwareMap.get(Servo.class,"grabber");
@@ -122,12 +94,9 @@ public class servo_Auto_Class extends LinearOpMode
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Sensor Config
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-        myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
         //Initialize the sparkFun optical Odometry module
         configureOtos();
-        colorSensor.setGain(gain);
-        pos = myOtos.getPosition();
+        pos = myBot.GPS.GPS;
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.addData("X coordinate", pos.x);
         telemetry.addData("Y coordinate", pos.y);

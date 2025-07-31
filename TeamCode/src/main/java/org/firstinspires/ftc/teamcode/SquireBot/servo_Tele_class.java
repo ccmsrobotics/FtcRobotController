@@ -46,52 +46,20 @@ public class servo_Tele_class extends LinearOpMode {
 
     // Declare variables used by the class
     Squirebot myBot;
-
-    //Motors
-    private DcMotor armLift = null;
-    private DcMotor armExtend = null;
-    final double SPEED_GAIN  =  0.035  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.025 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
     private double headingError  = 0;
-
-    //Servos
-    private Servo grabber = null;
-    private Servo rotator = null;
-
-    //Sensors
     SparkFunOTOS.Pose2D pos;
 
     @Override public void runOpMode() {
         myBot = new Squirebot(hardwareMap,telemetry);
         myBot.drive.maxSpeed =0.7;
         myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.GPS;
 
-        //Mechanism Motor config
-        armLift = hardwareMap.get(DcMotor.class, "arm_lift");
-        armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
-        armExtend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armExtend.setDirection(DcMotor.Direction.REVERSE);
-        armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armLift.setTargetPosition(0);
-        armLift.setPower(0);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         double armExtendPower=0;
         int armLiftLocation;
         int armExtendLocation;
         int armLiftTarget= armLift.getCurrentPosition()+15;
 
-
-        //Servo Config
-        grabber = hardwareMap.get(Servo.class, "grabber");
-        rotator = hardwareMap.get(Servo.class, "rotator");
-
-        //Sensor Config
-
-        pos = myOtos.getPosition();
+        pos = myBot.GPS.GPS;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.addData("X coordinate", pos.x);
@@ -103,21 +71,18 @@ public class servo_Tele_class extends LinearOpMode {
 
         //Start of TeleOp
         waitForStart();
+        myBot.startTele();
         armLift.setPower(1);
         rotator.setPosition(.5);
         grabber.setPosition(0.02);
-        armExtend.setTargetPosition(400);//This doesn't do anything since this is not in position mode.
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            //fix compass heading
-            pos = myBot.GPS.
+            myBot.GPS.UpdateGPS();
+            pos = myBot.GPS.GPS;
             if (gamepad1.back) {
                 resetCompass();
             }
-
             //ARM LIFT
-
             armLiftLocation = armLift.getCurrentPosition();
             armExtendLocation = armExtend.getCurrentPosition();
 
@@ -225,56 +190,15 @@ public class servo_Tele_class extends LinearOpMode {
             double lateral = -gamepad1.left_stick_x;
             double yaw = -gamepad1.right_stick_x;
 
-            if(gamepad1.a)
-            {
-                axial = (9-pos.y)*SPEED_GAIN*-1;
-                lateral = (-18.5-pos.x)*STRAFE_GAIN*-1;
-                yaw = yawErrorCalc(135,pos.h)*TURN_GAIN;
-            }
 
             if (gamepad1.left_bumper)
-                speedMode = 0.2;
+                myBot.drive.maxSpeed = 0.2;
             else if (gamepad1.right_bumper) {
-                speedMode = 1;
+                myBot.drive.maxSpeed = 1;
             } else {
-                speedMode = 0.7;
+                myBot.drive.maxSpeed = 0.7;
             }
-
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-
-            double currentYawRadians = pos.h*3.1415/180;
-            double rotStrafe = lateral * Math.cos(-currentYawRadians) - axial * Math.sin(-currentYawRadians);
-            double rotDrive = lateral * Math.sin(-currentYawRadians) + axial * Math.cos(-currentYawRadians);
-            rotStrafe = rotStrafe*1.1;
-            double leftFrontPower = rotDrive + rotStrafe + yaw;
-            double rightFrontPower = rotDrive - rotStrafe - yaw;
-            double leftBackPower = rotDrive - rotStrafe + yaw;
-            double rightBackPower = rotDrive + rotStrafe - yaw;
-
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            double max;
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
-
-                leftFrontPower *= speedMode;
-                rightFrontPower *= speedMode;
-                leftBackPower *= speedMode;
-                rightBackPower *= speedMode;
-
-                // Send calculated power to wheels
-                leftFrontDrive.setPower(leftFrontPower);
-                rightFrontDrive.setPower(rightFrontPower);
-                leftBackDrive.setPower(leftBackPower);
-                rightBackDrive.setPower(rightBackPower);
+            myBot.drive.driveFC(axial, lateral, yaw,myBot.GPS.GPS.h);
                 //Send power to arm motors
                 armExtend.setPower(armExtendPower);
                 armLift.setTargetPosition(armLiftTarget);
@@ -285,29 +209,6 @@ public class servo_Tele_class extends LinearOpMode {
                     grabber.setPosition(.33);
                 }
 
-                //Code for color sensor
-/*
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
-            Color.colorToHSV(colors.toColor(), hsvValues);
-
-            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 5) {
-                if (hsvValues[0] > 180) {
-                    telemetry.addLine("Blue!");
-                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-                } else if (hsvValues[0] > 60) {
-                    telemetry.addLine("Yellow!");
-                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-                } else {
-                    telemetry.addLine("Red!");
-                    Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                }
-            } else {
-                telemetry.addLine("Nothing Detected");
-                Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            }
-*/
-
-                // Show the elapsed game time and wheel power.
                 telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
                         armLiftLocation,
                         armExtendLocation);
