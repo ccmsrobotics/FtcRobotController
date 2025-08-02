@@ -9,4 +9,5 @@ public class SquireGrabber {
         grabber = hm.get(Servo.class, "grabber");
         rotator = hm.get(Servo.class, "rotator");
     }
+
 }

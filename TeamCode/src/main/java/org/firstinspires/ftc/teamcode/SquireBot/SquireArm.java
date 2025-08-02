@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 public class SquireArm {
-    public DcMotor armLift, armExtend;
+    private DcMotor armLift, armExtend;
     public int
 
     public SquireArm(HardwareMap hm){
@@ -15,10 +15,15 @@ public class SquireArm {
         armLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armLift.setTargetPosition(0);
         armLift.setPower(0);
+        armExtend.setPower(0);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         armExtend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+    public void startTeleArm(){
+
+    }
+    public void startAtonArm(){
 
     }
     public void setArmExtend(int targetArmLocation){
