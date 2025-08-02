@@ -30,6 +30,7 @@ public class Squirebot {
         GPS = new SquireGPS(hardwareMap,telemetry);
         arm = new SquireArm(hardwareMap);
         claw = new SquireGrabber(hardwareMap);
+        //notes
     }
     public void startAton(){
 
