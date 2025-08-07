@@ -18,6 +18,7 @@ public class SquireGPS {
         GPS=myOtos.getPosition();
     }
     public void UpdateGPS(){
+
         GPS = myOtos.getPosition();
     }
     public void resetGPS(){

@@ -19,8 +19,8 @@ public class Squirebot {
     public double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     public double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
     public double MAX_AUTO_TURN  = 0.4;  //  Clip the turn speed to this max value (adjust for your robot)
-    public double MIN_SPEED_CONSTANT = 3;
-    public double ANGLE_ERROR_MULT = 2.5;
+    public double MIN_SPEED_CONSTANT = 3; //This is used in goToSpot to have a minimum speed returned by formula to account for friction at low power levels resulting in robot not moving
+    public double ANGLE_ERROR_MULT = 2.5; //
 
 
     public Squirebot(HardwareMap hm, Telemetry T){
@@ -33,12 +33,13 @@ public class Squirebot {
         //notes
     }
     public void startAton(){
-
+        arm.startAtonArm();
+        GPS.resetGPS();
+        claw.setWristPosition(.5);
+        claw.closeGrabber();
     }
     public void startTele(){
-        arm.armLift.setPower(1);
-        claw.rotator.setPosition(.5);
-        claw.grabber.setPosition(0.02);
+       arm.startMatchTeleArm();
     }
     public goToSpot(double yTargetLoc, double xTargetLoc, double yawTarget, double allowedLocError ){
         double xError;

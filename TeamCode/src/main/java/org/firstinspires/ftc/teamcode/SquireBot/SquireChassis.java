@@ -11,7 +11,7 @@ public class SquireChassis {
     public double maxSpeed;
     private double leftFrontPower,  rightFrontPower, leftBackPower, rightBackPower;
 
-
+//constructor.  This will be called when a new SquireChassis is created. 
     public SquireChassis(HardwareMap hm){
         myHardwareMap = hm;
         leftFrontDrive = myHardwareMap.get(DcMotor.class, "left_front_drive");

@@ -53,12 +53,6 @@ public class servo_Tele_class extends LinearOpMode {
         myBot = new Squirebot(hardwareMap,telemetry);
         myBot.drive.maxSpeed =0.7;
         myBot.GPS.UpdateGPS();
-
-        double armExtendPower=0;
-        int armLiftLocation;
-        int armExtendLocation;
-        int armLiftTarget= armLift.getCurrentPosition()+15;
-
         pos = myBot.GPS.GPS;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -72,30 +66,24 @@ public class servo_Tele_class extends LinearOpMode {
         //Start of TeleOp
         waitForStart();
         myBot.startTele();
-        armLift.setPower(1);
-        rotator.setPosition(.5);
-        grabber.setPosition(0.02);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             myBot.GPS.UpdateGPS();
             pos = myBot.GPS.GPS;
+            myBot.arm.updateEncoders();//avoid repeated calls to read encoders to reduce loop time
+
             if (gamepad1.back) {
                 resetCompass();
             }
-            //ARM LIFT
-            armLiftLocation = armLift.getCurrentPosition();
-            armExtendLocation = armExtend.getCurrentPosition();
 
             if (gamepad2.left_stick_y < -.15) {
-                if (armLiftTarget < 1800)
+                if (myBot.arm.armLiftLocation < 1800)
                     armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*12);
             }
             if (gamepad2.left_stick_y > .15) {
-                if (armLiftTarget > 0) {
-                    if (armExtendLocation > 1900)
-                    {
-                      if (armLiftTarget > 1200)
-                      {
+                if (myBot.arm.armLiftLocation > 0) {
+                    if (armExtendLocation > 1900) {
+                      if (myBot.arm.armLiftLocation > 1200) {
                           armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 12);
 
                       }
@@ -106,90 +94,39 @@ public class servo_Tele_class extends LinearOpMode {
             }
 
             if (gamepad2.dpad_up)
-                armLiftTarget =1700;
+                myBot.arm.setArmLiftTarget(1700);
             else if (gamepad2.dpad_right)
             {
-                if (armExtendLocation < 1000)
+                if (myBot.arm.armExtendLocation < 1000)
                 {
-                    armLiftTarget = 120;
+                    myBot.arm.setArmLiftTarget(120);
                     rotatorTarget = 0.41;
                 }
             }
             else if (gamepad2.dpad_down)
             {
-                if (armExtendLocation < 1900)
-                    armLiftTarget = 0;
+                if (myBot.arm.armExtendLocation < 1900)
+                    myBot.arm.setArmLiftTarget(0);
             }
             else if (gamepad2.dpad_left)
             {
-                rotatorTarget = 0.56;
-                armLiftTarget = 1174;
+                rotatorTarget= 0.56;
+                myBot.arm.setArmLiftTarget(1174);
 
             } else if (gamepad2.right_trigger > 0.5) {
-                rotatorTarget = 0.33;
-                armLiftTarget = 775;
+                rotatorTarget=0.33;
+                myBot.arm.setArmLiftTarget(775);
 
             }
             //ARM EXTEND - This code prevents us from extending the arm too far when horizontal
 
-            if (armLiftLocation < 600) {
-                if (armExtendLocation < 400) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 1900) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                } else {
-                    if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                }
-            } else if (armLiftLocation > 600) {
-                if (armExtendLocation < 400) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 2750) {
-                    if (gamepad2.a)
-                        armExtendPower = 1;
-                    else if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                } else if (armExtendLocation < 3000) {
-                    if (gamepad2.a)
-                        armExtendPower = 0.5;
-                    else if (gamepad2.b)
-                        armExtendPower = -0.5;
-                    else
-                        armExtendPower = 0;
-                } else {
-                    if (gamepad2.b)
-                        armExtendPower = -1;
-                    else
-                        armExtendPower = 0;
-                }
-            }
+
 
             //rotator location
             if (gamepad2.x)
                 rotatorTarget =0.73;
             else if (gamepad2.y)
                 rotatorTarget =0.5;
-
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral = -gamepad1.left_stick_x;
-            double yaw = -gamepad1.right_stick_x;
-
 
             if (gamepad1.left_bumper)
                 myBot.drive.maxSpeed = 0.2;
@@ -198,125 +135,29 @@ public class servo_Tele_class extends LinearOpMode {
             } else {
                 myBot.drive.maxSpeed = 0.7;
             }
-            myBot.drive.driveFC(axial, lateral, yaw,myBot.GPS.GPS.h);
-                //Send power to arm motors
-                armExtend.setPower(armExtendPower);
-                armLift.setTargetPosition(armLiftTarget);
-                rotator.setPosition(rotatorTarget);
+            myBot.drive.driveFC(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x,myBot.GPS.GPS.h);
+
+                myBot.claw.setWristPosition(rotatorTarget);
                 if (gamepad1.left_trigger > 0.5){
-                    grabber.setPosition(0.02);
+                    myBot.claw.closeGrabber();
                 } else if (gamepad1.right_trigger > 0.5) {
-                    grabber.setPosition(.33);
+                    myBot.claw.openGrabber();
                 }
 
                 telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
-                        armLiftLocation,
-                        armExtendLocation);
+                        myBot.arm.armLiftLocation,
+                        myBot.arm.armExtendLocation);
                 telemetry.update();
             }
         }
         private void resetCompass(){
             telemetry.addData("Reseting IMU", "wait");
             telemetry.update();
-            leftFrontDrive.setPower(0);
-            rightFrontDrive.setPower(0);
-            leftBackDrive.setPower(0);
-            rightBackDrive.setPower(0);
-            armExtend.setPower(0);
+            myBot.drive.drive(0,0,0);
             sleep(150);
-            myOtos.calibrateImu();
+            myBot.GPS.resetGPS();
         }
 
-    private void configureOtos() {
-        telemetry.addLine("Configuring OTOS...");
-        telemetry.update();
-
-        // Set the desired units for linear and angular measurements. Can be either
-        // meters or inches for linear, and radians or degrees for angular. If not
-        // set, the default is inches and degrees. Note that this setting is not
-        // persisted in the sensor, so you need to set at the start of all your
-        // OpModes if using the non-default value.
-        // myOtos.setLinearUnit(DistanceUnit.METER);
-        myOtos.setLinearUnit(DistanceUnit.INCH);
-        // myOtos.setAngularUnit(AnguleUnit.RADIANS);
-        myOtos.setAngularUnit(AngleUnit.DEGREES);
-
-        // Assuming you've mounted your sensor to a robot and it's not centered,
-        // you can specify the offset for the sensor relative to the center of the
-        // robot. The units default to inches and degrees, but if you want to use
-        // different units, specify them before setting the offset! Note that as of
-        // firmware version 1.0, these values will be lost after a power cycle, so
-        // you will need to set them each time you power up the sensor. For example, if
-        // the sensor is mounted 5 inches to the left (negative X) and 10 inches
-        // forward (positive Y) of the center of the robot, and mounted 90 degrees
-        // clockwise (negative rotation) from the robot's orientation, the offset
-        // would be {-5, 10, -90}. These can be any value, even the angle can be
-        // tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0.55, -5.55, 0);
-        myOtos.setOffset(offset);
-
-        // Here we can set the linear and angular scalars, which can compensate for
-        // scaling issues with the sensor measurements. Note that as of firmware
-        // version 1.0, these values will be lost after a power cycle, so you will
-        // need to set them each time you power up the sensor. They can be any value
-        // from 0.872 to 1.127 in increments of 0.001 (0.1%). It is recommended to
-        // first set both scalars to 1.0, then calibrate the angular scalar, then
-        // the linear scalar. To calibrate the angular scalar, spin the robot by
-        // multiple rotations (eg. 10) to get a precise error, then set the scalar
-        // to the inverse of the error. Remember that the angle wraps from -180 to
-        // 180 degrees, so for example, if after 10 rotations counterclockwise
-        // (positive rotation), the sensor reports -15 degrees, the required scalar
-        // would be 3600/3585 = 1.004. To calibrate the linear scalar, move the
-        // robot a known distance and measure the error; do this multiple times at
-        // multiple speeds to get an average, then set the linear scalar to the
-        // inverse of the error. For example, if you move the robot 100 inches and
-        // the sensor reports 103 inches, set the linear scalar to 100/103 = 0.971
-        myOtos.setLinearScalar(1.0);
-        myOtos.setAngularScalar(1.0);
-
-        // The IMU on the OTOS includes a gyroscope and accelerometer, which could
-        // have an offset. Note that as of firmware version 1.0, the calibration
-        // will be lost after a power cycle; the OTOS performs a quick calibration
-        // when it powers up, but it is recommended to perform a more thorough
-        // calibration at the start of all your OpModes. Note that the sensor must
-        // be completely stationary and flat during calibration! When calling
-        // calibrateImu(), you can specify the number of samples to take and whether
-        // to wait until the calibration is complete. If no parameters are provided,
-        // it will take 255 samples and wait until done; each sample takes about
-        // 2.4ms, so about 612ms total
-        myOtos.calibrateImu();
-
-        // Reset the tracking algorithm - this resets the position to the origin,
-        // but can also be used to recover from some rare tracking errors
-        myOtos.resetTracking();
-
-        // After resetting the tracking, the OTOS will report that the robot is at
-        // the origin. If your robot does not start at the origin, or you have
-        // another source of location information (eg. vision odometry), you can set
-        // the OTOS location to match and it will continue to track from there.
-        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
-        myOtos.setPosition(currentPosition);
-
-        // Get the hardware and firmware version
-        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
-        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
-        myOtos.getVersionInfo(hwVersion, fwVersion);
-
-        telemetry.addLine("OTOS configured! Press start to get position data!");
-        telemetry.addLine();
-        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
-        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
-        telemetry.update();
-    }
-
-    public double yawErrorCalc(double yawTarget, double yawCurrent) {
-        // Determine the heading current error
-        headingError = yawTarget - yawCurrent;
-        // Normalize the error to be within +/- 180 degrees
-        while (headingError > 180)  headingError -= 360;
-        while (headingError <= -180) headingError += 360;
-        return headingError;
-    }
 
 
 }
