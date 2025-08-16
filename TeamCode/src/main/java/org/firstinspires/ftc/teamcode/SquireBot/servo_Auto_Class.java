@@ -32,29 +32,19 @@ package org.firstinspires.ftc.teamcode.SquireBot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-@Autonomous(name="Auto 4 top basket to Ascend", group = "Servo")
-public class servo_Auto_Class extends LinearOpMode
-{
-
+@Autonomous(name = "Auto 4 top basket to Ascend", group = "Servo")
+public class servo_Auto_Class extends LinearOpMode {
     SparkFunOTOS.Pose2D pos;
-    private double headingError  = 0;
+    private double headingError = 0;
     private Squirebot myBot;
-    @Override public void runOpMode()
-    {
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-        myBot = new Squirebot(HardwareMap,telemetry);
+
+    @Override
+    public void runOpMode() {
+        double drive = 0;        // Desired forward power/speed (-1 to +1)
+        double strafe = 0;        // Desired strafe power/speed (-1 to +1)
+        double turn = 0;        // Desired turning power/speed (-1 to +1)
+        myBot = new Squirebot(hardwareMap, telemetry);
         //Arm (rotation and extend config)
         myBot.arm.resetArm();
         sleep(1000);
@@ -70,101 +60,67 @@ public class servo_Auto_Class extends LinearOpMode
 
         //Wait for start
         waitForStart();
-        myOtos.resetTracking();
-        //Move arm to driving location
-        rotator.setPosition(.55);
-        armLift.setPower(1);
-        armExtend.setPower(1);
-        armLift.setTargetPosition(1700);
-        armExtend.setTargetPosition(900);
+
+        myBot.claw.setWristPosition(.55);
+        myBot.arm.startMatchAtonArm();
+        myBot.arm.setArmLiftTarget(1700);
+        myBot.arm.setExtendTarget(900);
         //Move to Scoring spot
-        goToSpot(8,-19,135,1);
+        myBot.goToSpot(8, -19, 135, 1);
         ScoreUpperBasket();
 
         //Pick up Second sample
-        goToSpot(20.5,-15,0,1);
-        armLift.setTargetPosition(0);
-        grabber.setPosition(0.02);
+        myBot.goToSpot(20.5, -15, 0, 1);
+        myBot.arm.setArmLiftTarget(0);
+        myBot.claw.closeGrabber();
         sleep(450);
-        armLift.setTargetPosition(1700);
-        goToSpot(8,-19,135,1);
+        myBot.arm.setArmLiftTarget(1700);
+        myBot.goToSpot(8, -19, 135, 1);
         ScoreUpperBasket();
 
-        //Pick up and score third sample
-        goToSpot(20.5,-25,0,1);
-        armLift.setTargetPosition(0);
-        grabber.setPosition(0.02);
-        sleep(450);
-        armLift.setTargetPosition(1700);
-        goToSpot(8,-19,135,1);
-        ScoreUpperBasket();
-
-        //Pickup fourth
-        armLift.setTargetPosition(300);
-        goToSpot(16.5,-22,34,0.5);
-        armExtend.setTargetPosition(1800);
-        sleep(350);
-        armLift.setTargetPosition(150);
-        //sleep(210);
-        sleep(550);
-        grabber.setPosition(0.02);
-        sleep(450);
-        armExtend.setTargetPosition(900);
-        armLift.setTargetPosition(1700);
-        goToSpot(8,-19,135,1);
-        ScoreUpperBasket();
-
-        //Move to Teleop start position - This may be updated to Lvl 1 ascend, but will require not resetting IMU and motor encoders.
-        armLift.setTargetPosition(1000);
-        rotator.setPosition(0.1);
-        goToSpot(50,-4,-90,1);
-        armExtend.setTargetPosition(1657);
-        goToSpot(50,4.25,-90,1);
-        armLift.setPower(0);
-        //allow gravity to move arm to bar
-        rotator.setPosition(-1);
-
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
         }
     }
 //End of main loop
 
 
-    private void ScoreUpperBasket()
-    {
+    private void ScoreUpperBasket() {
         // Rotate Arm
-        rotator.setPosition(WRISTUPPERBASKET);//would this dropoff easier if we didnt change?
-        armLift.setTargetPosition(1700);
-        //sleep(250); //Is this necessary?  Delete?
-        // Extend arm
-        armExtend.setTargetPosition(2950);
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))
-        {
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+        myBot.claw.setWristPosition(.55);
+        myBot.arm.setArmLiftTarget(1700);
+        myBot.arm.setExtendTarget(2950);
+        while (opModeIsActive() && myBot.arm.armBusy()) {
+            myBot.arm.updateLocation();//
+            telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
+                    myBot.arm.armLiftLocation,
+                    myBot.arm.armExtendLocation);
+            telemetry.addData("Current Error lift:extend", "%7d :%7d",
+                    (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
+                    (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
             telemetry.update();
         }
-        while(opModeIsActive()&& armExtend.getCurrentPosition() <2850)
-        {}
+
         //Open grabber
-        grabber.setPosition(.40);
+        myBot.claw.openGrabber();
         sleep(350);
 
         //Move backwards so arm doesn't hit basket.  Motors are reversed, so 0.4 is move backwards
-        moveRobot(.4,0,0);
-        armExtend.setTargetPosition(900);
+        myBot.drive.drive(-.4, 0, 0);
+        myBot.arm.setExtendTarget(900);
         sleep(400);
-        moveRobot(0,0,0);
-        armLift.setTargetPosition(100);
-        rotator.setPosition(.73);
+        myBot.drive.drive(0, 0, 0);
+        myBot.arm.setArmLiftTarget(100);
+        myBot.claw.setWristPosition(.73);
 
-        while (opModeIsActive() && (armExtend.isBusy() && armLift.isBusy()))//There is error in code.  Should be an or, but the code works so we left it.  Maybe try remove it completely.
+        while (opModeIsActive() && myBot.arm.armBusy())//There is error in code.  Should be an or, but the code works so we left it.  Maybe try remove it completely.
         {
-
-            // Display it for the driver.
-            telemetry.addData("Extending arms", " at %7d :%7d",
-                    armLift.getCurrentPosition(), armExtend.getCurrentPosition());
+            myBot.arm.updateLocation();//
+            telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
+                    myBot.arm.armLiftLocation,
+                    myBot.arm.armExtendLocation);
+            telemetry.addData("Current Error lift:extend", "%7d :%7d",
+                    (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
+                    (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
             telemetry.update();
         }
     }

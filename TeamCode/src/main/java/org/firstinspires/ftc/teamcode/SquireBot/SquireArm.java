@@ -31,7 +31,8 @@ public class SquireArm {
     }
 
     public void startMatchAtonArm(){
-
+        armLift.setPower(1);
+        armExtend.setPower(1);
     }
     public void updateEncoders(){
         armLiftLocation=armLift.getCurrentPosition();
@@ -58,70 +59,46 @@ public class SquireArm {
         armExtend.setPower(pwr);
     }
 
-    public void setExtendTarget(int targetArmLocation){
-        int armLiftLocation = armLift.getCurrentPosition();
-        int armExtendLocation = armExtend.getCurrentPosition();
-        if (armLiftLocation < 600) {
-            if (armExtendLocation < 400) {
-                if (gamepad2.a)
-                    armExtendPower = 1;
-                else
-                    armExtendPower = 0;
-            } else if (armExtendLocation < 1900) {
-                if (gamepad2.a)
-                    armExtendPower = 1;
-                else if (gamepad2.b)
-                    armExtendPower = -1;
-                else
-                    armExtendPower = 0;
-            } else {
-                if (gamepad2.b)
-                    armExtendPower = -1;
-                else
-                    armExtendPower = 0;
+    public void setExtendTarget(int requestedExtendLocation){
+        if(armLiftTarget > 600)
+            if(requestedExtendLocation<3000 && requestedExtendLocation > -1) {
+                armExtendTarget = requestedExtendLocation;
+                armExtend.setTargetPosition(requestedExtendLocation);
             }
-        } else if (armLiftLocation > 600) {
-            if (armExtendLocation < 400) {
-                if (gamepad2.a)
-                    armExtendPower = 1;
-                else
-                    armExtendPower = 0;
-            } else if (armExtendLocation < 2750) {
-                if (gamepad2.a)
-                    armExtendPower = 1;
-                else if (gamepad2.b)
-                    armExtendPower = -1;
-                else
-                    armExtendPower = 0;
-            } else if (armExtendLocation < 3000) {
-                if (gamepad2.a)
-                    armExtendPower = 0.5;
-                else if (gamepad2.b)
-                    armExtendPower = -0.5;
-                else
-                    armExtendPower = 0;
-            } else {
-                if (gamepad2.b)
-                    armExtendPower = -1;
-                else
-                    armExtendPower = 0;
-            }
-        }
-
-    }
-    public void setArmLiftTarget(int targetLiftLocation){
-        if(targetLiftLocation > 0 && targetLiftLocation < 1800){
-            if(armExtendLocation > 1900) {
-                if(targetLiftLocation > 1200) {
-                    armLift.setTargetPosition(targetLiftLocation);
+        else {
+                if(requestedExtendLocation<1900 && requestedExtendLocation > -1) {
+                    armExtendTarget = requestedExtendLocation;
+                    armExtend.setTargetPosition(requestedExtendLocation);
                 }
             }
-            else {
-                armLift.setTargetPosition(targetLiftLocation);
+    }
+    public void setArmLiftTarget(int requestedLiftLocation){
+        if(armExtendTarget>1900)
+        {
+            if (requestedLiftLocation <1800 && requestedLiftLocation>1200)
+            {
+                armLiftTarget = requestedLiftLocation;
+                armLift.setTargetPosition(requestedLiftLocation);
             }
-
+        }
+        else{
+            if (requestedLiftLocation <1800 && requestedLiftLocation>0)
+            {
+                armLiftTarget = requestedLiftLocation;
+                armLift.setTargetPosition(requestedLiftLocation);
+            }
         }
 
     }
+    public void updateLocation(){
+        armLiftLocation=armLift.getCurrentPosition();
+        armExtendLocation=armExtend.getCurrentPosition();
+    }
+    public boolean armBusy(){
+        if(armExtend.isBusy() || armLift.isBusy())
+            return true;
+        else
+            return false;
+           }
 
 }
