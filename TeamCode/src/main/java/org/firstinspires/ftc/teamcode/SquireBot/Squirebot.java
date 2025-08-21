@@ -67,7 +67,7 @@ public class Squirebot {
                 turn = turn * MIN_SPEED_CONSTANT / maxError;
                 strafe = strafe * MIN_SPEED_CONSTANT / maxError;
             }
-            drive.drive(-forward, -strafe, -turn);
+            drive.drive(-forward, -strafe, turn);
         }
         //stop robot at end of move
         drive.drive(0, 0, 0);
