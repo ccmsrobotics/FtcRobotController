@@ -21,7 +21,7 @@ public class SquireArm {
         armExtend.setPower(0);
         armLift.setPower(0);
         armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         updateEncoders();
     }
     public void startMatchTeleArm(){
