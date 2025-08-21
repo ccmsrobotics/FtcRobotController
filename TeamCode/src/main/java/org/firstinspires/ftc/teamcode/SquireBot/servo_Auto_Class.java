@@ -44,7 +44,7 @@ public class servo_Auto_Class extends LinearOpMode {
         double drive = 0;        // Desired forward power/speed (-1 to +1)
         double strafe = 0;        // Desired strafe power/speed (-1 to +1)
         double turn = 0;        // Desired turning power/speed (-1 to +1)
-        myBot = new Squirebot(hardwareMap, telemetry);
+        myBot = new Squirebot(this, hardwareMap, telemetry);
         //Arm (rotation and extend config)
         myBot.arm.resetArm();
         sleep(1000);

@@ -15,6 +15,7 @@ public class Squirebot {
     public HardwareMap hardwareMap;
     public SquireGPS GPS;
     public Telemetry telemetry;
+    private LinearOpMode opMode;
     public double FORWARD_GAIN = 0.035;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     public double STRAFE_GAIN = 0.025;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     public double TURN_GAIN = 0.0175;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
@@ -25,7 +26,8 @@ public class Squirebot {
     public double ANGLE_ERROR_MULT = 2.5; //
 
 
-    public Squirebot(HardwareMap hm, Telemetry T) {
+    public Squirebot(LinearOpMode myOpmode, HardwareMap hm, Telemetry T) {
+        opMode = myOpmode;
         hardwareMap = hm;
         telemetry = T;
         drive = new SquireChassis(hardwareMap);
@@ -48,7 +50,7 @@ public class Squirebot {
         double strafe = 0;        // Desired strafe power/speed (-1 to +1)
         double turn = 0;        // Desired turning power/speed (-1 to +1)
         double maxError = allowedLocError + 1;
-        while ((maxError > allowedLocError)) {//Missing "opModeIsActive() &&"
+        while ((maxError > allowedLocError)&& opMode.opModeIsActive()) {//Missing "opModeIsActive() &&"
             GPS.UpdateGPS();
             yError = yTargetLoc - GPS.GPS.y;
             xError = xTargetLoc - GPS.GPS.x;

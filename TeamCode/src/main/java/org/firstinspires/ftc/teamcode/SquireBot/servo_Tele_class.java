@@ -16,7 +16,7 @@ public class servo_Tele_class extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        myBot = new Squirebot(hardwareMap, telemetry);
+        myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.drive.maxSpeed = 0.7;
         myBot.GPS.UpdateGPS();
         pos = myBot.GPS.GPS;
