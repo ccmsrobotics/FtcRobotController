@@ -25,7 +25,9 @@ public class SquireArm {
         updateEncoders();
     }
     public void startMatchTeleArm(){
-        armLift.setTargetPosition(armLift.getCurrentPosition()+15); //arm is unpowered after auton and may drag won
+
+        armLiftTarget = armLift.getCurrentPosition()+15;
+        armLift.setTargetPosition(armLiftTarget);//arm is unpowered after auton and may drag won
         armLift.setPower(1);
         armExtend.setPower(1);
     }
