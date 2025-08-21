@@ -33,7 +33,7 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Auto 4 top basket to Ascend", group = "Servo")
+@Autonomous(name = "Auto Class", group = "Servo")
 public class servo_Auto_Class extends LinearOpMode {
     SparkFunOTOS.Pose2D pos;
     private double headingError = 0;
@@ -65,6 +65,12 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.arm.startMatchAtonArm();
         myBot.arm.setArmLiftTarget(1700);
         myBot.arm.setExtendTarget(900);
+        sleep(10000);
+        myBot.goToSpot(8,0,0,2);
+        sleep(5000);
+        myBot.goToSpot(8,-10,0,2);
+        sleep(5000);
+        myBot.goToSpot(8,-10,90,2);
         //Move to Scoring spot
         myBot.goToSpot(8, -19, 135, 1);
         ScoreUpperBasket();
