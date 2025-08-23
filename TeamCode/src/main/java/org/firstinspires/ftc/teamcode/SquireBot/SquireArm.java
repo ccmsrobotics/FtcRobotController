@@ -92,10 +92,7 @@ public class SquireArm {
         }
 
     }
-    public void updateLocation(){
-        armLiftLocation=armLift.getCurrentPosition();
-        armExtendLocation=armExtend.getCurrentPosition();
-    }
+
     public boolean armBusy(){
         if(armExtend.isBusy() || armLift.isBusy())
             return true;

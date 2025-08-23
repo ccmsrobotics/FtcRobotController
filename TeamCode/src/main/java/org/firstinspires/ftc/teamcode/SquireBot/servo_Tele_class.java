@@ -19,13 +19,10 @@ public class servo_Tele_class extends LinearOpMode {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.drive.maxSpeed = 0.7;
         myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.GPS;
+        pos = myBot.GPS.location;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
-        telemetry.update();
+        commonTelemetry();
 
         double rotatorTarget = .5;
 
@@ -35,17 +32,16 @@ public class servo_Tele_class extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             myBot.GPS.UpdateGPS();
-            pos = myBot.GPS.GPS;
+            pos = myBot.GPS.location;
             myBot.arm.updateEncoders();//avoid repeated calls to read encoders to reduce loop time
 
             if (gamepad1.back) {
                 resetCompass();
             }
-
+            //Arm Lift
             if (Math.abs(gamepad2.left_stick_y) > .15) {
                 myBot.arm.setArmLiftTarget(myBot.arm.armLiftTarget - Math.round(gamepad2.left_stick_y * 12));
             }
-
 
             if (gamepad2.dpad_up)
                 myBot.arm.setArmLiftTarget(1700);
@@ -87,7 +83,7 @@ public class servo_Tele_class extends LinearOpMode {
             } else {
                 myBot.drive.maxSpeed = 0.7;
             }
-            myBot.drive.driveFC(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, myBot.GPS.GPS.h);
+            myBot.drive.driveFC(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, myBot.GPS.location.h);
 
             myBot.claw.setWristPosition(rotatorTarget);
             if (gamepad1.left_trigger > 0.5) {
@@ -95,16 +91,21 @@ public class servo_Tele_class extends LinearOpMode {
             } else if (gamepad1.right_trigger > 0.5) {
                 myBot.claw.openGrabber();
             }
-            myBot.arm.updateLocation();//
-            telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
-                    myBot.arm.armLiftLocation,
-                    myBot.arm.armExtendLocation);
-            telemetry.addData("Current Error lift:extend", "%7d :%7d",
-                    (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
-                    (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
-
-            telemetry.update();
+         commonTelemetry();
         }
+    }
+
+    private void commonTelemetry(){
+        telemetry.addData("X coordinate", pos.x);
+        telemetry.addData("Y coordinate", pos.y);
+        telemetry.addData("Heading angle", pos.h);
+        telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
+                myBot.arm.armLiftLocation,
+                myBot.arm.armExtendLocation);
+        telemetry.addData("Current Error lift:extend", "%7d :%7d",
+                (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
+                (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
+        telemetry.update();
     }
 
     private void resetCompass() {

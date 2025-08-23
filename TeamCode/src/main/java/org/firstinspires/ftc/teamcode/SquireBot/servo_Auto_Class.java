@@ -49,12 +49,8 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.arm.resetArm();
         sleep(1000);
         myBot.arm.resetEncoders();
-        pos = myBot.GPS.GPS;
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
-        telemetry.update();
+        pos = myBot.GPS.location;
+        commonTelemetry();
         myBot.claw.closeGrabber();
         myBot.claw.setWristPosition(.15);
 
@@ -73,6 +69,7 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.goToSpot(8,-10,90,2);
         //Move to Scoring spot
         myBot.goToSpot(8, -19, 135, 1);
+        commonTelemetry();
         //ScoreUpperBasket();
 
         //Pick up Second sample
@@ -83,12 +80,23 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.arm.setArmLiftTarget(1700);
         myBot.goToSpot(8, -19, 135, 1);
         //ScoreUpperBasket();
-
+        commonTelemetry();
         while (opModeIsActive()) {
         }
     }
 //End of main loop
-
+private void commonTelemetry(){
+        telemetry.addData("X coordinate", pos.x);
+        telemetry.addData("Y coordinate", pos.y);
+        telemetry.addData("Heading angle", pos.h);
+        telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
+                myBot.arm.armLiftLocation,
+                myBot.arm.armExtendLocation);
+        telemetry.addData("Current Error lift:extend", "%7d :%7d",
+                (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
+                (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
+        telemetry.update();
+    }
 
     private void ScoreUpperBasket() {
         // Rotate Arm
@@ -96,14 +104,7 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.arm.setArmLiftTarget(1700);
         myBot.arm.setExtendTarget(2950);
         while (opModeIsActive() && myBot.arm.armBusy()) {
-            myBot.arm.updateLocation();//
-            telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
-                    myBot.arm.armLiftLocation,
-                    myBot.arm.armExtendLocation);
-            telemetry.addData("Current Error lift:extend", "%7d :%7d",
-                    (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
-                    (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
-            telemetry.update();
+            commonTelemetry();
         }
 
         //Open grabber
@@ -120,14 +121,7 @@ public class servo_Auto_Class extends LinearOpMode {
 
         while (opModeIsActive() && myBot.arm.armBusy())//There is error in code.  Should be an or, but the code works so we left it.  Maybe try remove it completely.
         {
-            myBot.arm.updateLocation();//
-            telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
-                    myBot.arm.armLiftLocation,
-                    myBot.arm.armExtendLocation);
-            telemetry.addData("Current Error lift:extend", "%7d :%7d",
-                    (myBot.arm.armLiftTarget - myBot.arm.armLiftLocation),
-                    (myBot.arm.armExtendTarget - myBot.arm.armExtendLocation));
-            telemetry.update();
+          commonTelemetry();
         }
     }
 
