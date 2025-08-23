@@ -65,24 +65,24 @@ public class servo_Auto_Class extends LinearOpMode {
         myBot.arm.startMatchAtonArm();
         myBot.arm.setArmLiftTarget(1700);
         myBot.arm.setExtendTarget(900);
-        sleep(10000);
+        sleep(1000);
         myBot.goToSpot(8,0,0,2);
-        sleep(5000);
+        sleep(500);
         myBot.goToSpot(8,-10,0,2);
-        sleep(5000);
+        sleep(500);
         myBot.goToSpot(8,-10,90,2);
         //Move to Scoring spot
         myBot.goToSpot(8, -19, 135, 1);
-        ScoreUpperBasket();
+        //ScoreUpperBasket();
 
         //Pick up Second sample
         myBot.goToSpot(20.5, -15, 0, 1);
-        myBot.arm.setArmLiftTarget(0);
+        myBot.arm.setArmLiftTarget(300);
         myBot.claw.closeGrabber();
         sleep(450);
         myBot.arm.setArmLiftTarget(1700);
         myBot.goToSpot(8, -19, 135, 1);
-        ScoreUpperBasket();
+        //ScoreUpperBasket();
 
         while (opModeIsActive()) {
         }

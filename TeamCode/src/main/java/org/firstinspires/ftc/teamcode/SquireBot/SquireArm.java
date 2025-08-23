@@ -62,11 +62,11 @@ public class SquireArm {
     }
 
     public void setExtendTarget(int requestedExtendLocation){
-        if(armLiftTarget > 600)
+        if(armLiftTarget > 600){
             if(requestedExtendLocation<3000 && requestedExtendLocation > -1) {
                 armExtendTarget = requestedExtendLocation;
                 armExtend.setTargetPosition(requestedExtendLocation);
-            }
+            }}
         else {
                 if(requestedExtendLocation<1900 && requestedExtendLocation > -1) {
                     armExtendTarget = requestedExtendLocation;

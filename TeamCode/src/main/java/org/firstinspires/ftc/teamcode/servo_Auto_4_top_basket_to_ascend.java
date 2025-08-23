@@ -110,6 +110,10 @@ public class servo_Auto_4_top_basket_to_ascend extends LinearOpMode
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         armExtend.setDirection(DcMotor.Direction.REVERSE);
+
+        armLift.setPower(-0.2);
+        sleep(1000);
+
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setTargetPosition(0);
@@ -142,46 +146,48 @@ public class servo_Auto_4_top_basket_to_ascend extends LinearOpMode
         armLift.setTargetPosition(1700);
         armExtend.setTargetPosition(900);
         //Move to Scoring spot
-        goToSpot(9,-18.5,135,1);
+        goToSpot(8,-19,135,1);
         ScoreUpperBasket();
 
         //Pick up Second sample
-        goToSpot(21,-15,0,1);
+        goToSpot(20.5,-15,0,1);
         armLift.setTargetPosition(0);
         grabber.setPosition(0.02);
         sleep(450);
         armLift.setTargetPosition(1700);
-        goToSpot(9,-18.5,135,1);
+        goToSpot(8,-19,135,1);
         ScoreUpperBasket();
 
         //Pick up and score third sample
-        goToSpot(21,-25,0,1);
+        goToSpot(20.5,-25,0,1);
         armLift.setTargetPosition(0);
         grabber.setPosition(0.02);
         sleep(450);
         armLift.setTargetPosition(1700);
-        goToSpot(9,-18.5,135,1);
+        goToSpot(8,-19,135,1);
         ScoreUpperBasket();
 
         //Pickup fourth
+        armLift.setTargetPosition(300);
         goToSpot(16.5,-22,34,0.5);
         armExtend.setTargetPosition(1800);
-        armLift.setTargetPosition(250);
+        sleep(350);
+        armLift.setTargetPosition(150);
         //sleep(210);
         sleep(550);
         grabber.setPosition(0.02);
         sleep(450);
         armExtend.setTargetPosition(900);
         armLift.setTargetPosition(1700);
-        goToSpot(9,-18.5,135,1);
+        goToSpot(8,-19,135,1);
         ScoreUpperBasket();
 
         //Move to Teleop start position - This may be updated to Lvl 1 ascend, but will require not resetting IMU and motor encoders.
         armLift.setTargetPosition(1000);
         rotator.setPosition(0.1);
-        goToSpot(46,-4,-90,1);
+        goToSpot(50,-4,-90,1);
         armExtend.setTargetPosition(1657);
-        goToSpot(46,4.25,-90,1);
+        goToSpot(50,4.25,-90,1);
         armLift.setPower(0);
         //allow gravity to move arm to bar
         rotator.setPosition(-1);

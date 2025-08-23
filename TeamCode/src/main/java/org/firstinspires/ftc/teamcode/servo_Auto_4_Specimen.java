@@ -71,9 +71,9 @@ public class servo_Auto_4_Specimen extends LinearOpMode
     final double STRAFE_GAIN =  0.05 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.0175  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.74;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.70;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.70;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
     private double headingError  = 0;
 
 
@@ -110,6 +110,10 @@ public class servo_Auto_4_Specimen extends LinearOpMode
         armLift = hardwareMap.get(DcMotor.class, "arm_lift");
         armExtend = hardwareMap.get(DcMotor.class, "arm_extend");
         armExtend.setDirection(DcMotor.Direction.REVERSE);
+
+        armLift.setPower(-0.2);
+        sleep(1000);
+
         armLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armExtend.setTargetPosition(0);
@@ -141,9 +145,9 @@ public class servo_Auto_4_Specimen extends LinearOpMode
         rotator.setPosition(0.33);
         armLift.setPower(1);
         armExtend.setPower(1);
-        armLift.setTargetPosition(775);
-        armExtend.setTargetPosition(665);
-        goToSpot(34.5,0,0,6);
+        armLift.setTargetPosition(790);
+        armExtend.setTargetPosition(700);
+        goToSpot(34.5,0,0,7);
         sleep(400);
         SPEED_GAIN  =  0.05;
         grabber.setPosition(0.40);
@@ -151,13 +155,14 @@ public class servo_Auto_4_Specimen extends LinearOpMode
 
 
         //move out of submersable
-        goToSpot(12.5,0,0,6);
+        goToSpot(10,0,0,6);
        armLift.setTargetPosition(0);
        rotator.setPosition(0.73);
 
 
        //pickup and drop off first sample on spike mark
-       goToSpot(24.5,41.5,0,0.5);
+        goToSpot(10,21,0,1);
+       goToSpot(20.5,38,0,0.5);
        grabber.setPosition(0.02);
        sleep(500);
        armLift.setTargetPosition(250);
@@ -170,7 +175,7 @@ public class servo_Auto_4_Specimen extends LinearOpMode
         //pickup and drop off second sample on spike mark
         armLift.setTargetPosition(0);
         goToSpot(13.6,41.5,10,10);
-        goToSpot(24.5,49.7,0,0.5);
+        goToSpot(20.5,48,0,0.5);
         grabber.setPosition(0.02);
         sleep(400);
         armLift.setTargetPosition(250);
@@ -184,14 +189,14 @@ public class servo_Auto_4_Specimen extends LinearOpMode
         rotator.setPosition(0.4);
         armLift.setTargetPosition(180);
         goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
+        goToSpot(7,28.5,-180,0.5);
         grabber.setPosition(0.02);
         sleep(400);
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-4,0,1);
         SPEED_GAIN  =  0.035;
-        goToSpot(34.5,-4,0,6);
+        goToSpot(34.5,-4,0,7);
         sleep(400);
         SPEED_GAIN  =  0.05;
         grabber.setPosition(0.40);
@@ -201,36 +206,36 @@ public class servo_Auto_4_Specimen extends LinearOpMode
         rotator.setPosition(0.4);
         armLift.setTargetPosition(180);
         goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
+        goToSpot(7,28.5,-180,0.5);
         grabber.setPosition(0.02);
         sleep(400);
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-8,0,1);
         SPEED_GAIN  =  0.035;
-        goToSpot(34.5,-8,0,6);
+        goToSpot(34.5,-8,0,7);
         SPEED_GAIN  =  0.05;
         sleep(500);
         grabber.setPosition(0.40);
         sleep(250);
-        goToSpot(14.5,0,0,6);
+        goToSpot(14.5,0,0,7);
         //pickup 4th specimen
         rotator.setPosition(0.4);
         armLift.setTargetPosition(180);
         goToSpot(12,28.5,-180,1);
-        goToSpot(8,28.5,-180,0.5);
+        goToSpot(7,28.5,-180,0.5);
         grabber.setPosition(0.02);
         sleep(500);
         rotator.setPosition(0.33);
         armLift.setTargetPosition(775);
         goToSpot(10,-12,0,1);
         SPEED_GAIN  =  0.035;
-        goToSpot(34.5,-12,0,6);
+        goToSpot(34.5,-12,0,7);
         SPEED_GAIN  =  0.05;
         sleep(500);
         grabber.setPosition(0.40);
         sleep(250);
-        goToSpot(14.5,0,0,6);
+        goToSpot(14.5,0,0,7);
 
         while (opModeIsActive())
         {

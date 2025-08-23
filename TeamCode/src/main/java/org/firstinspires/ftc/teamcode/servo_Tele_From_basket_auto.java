@@ -167,7 +167,7 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
 
             if (gamepad2.left_stick_y < -.15) {
                 if (armLiftTarget < 1800)
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*28);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y*12);
             }
             if (gamepad2.left_stick_y > .15) {
                 if (armLiftTarget > 0) {
@@ -175,12 +175,12 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
                     {
                       if (armLiftTarget > 1200)
                       {
-                          armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 28);
+                          armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 12);
 
                       }
                     }
                  else
-                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 28);
+                    armLiftTarget = armLiftTarget - Math.round(gamepad2.left_stick_y * 12);
                 }
             }
 
@@ -330,7 +330,7 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
                 }
 
                 //Code for color sensor
-
+/*
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             Color.colorToHSV(colors.toColor(), hsvValues);
 
@@ -349,7 +349,7 @@ public class servo_Tele_From_basket_auto extends LinearOpMode {
                 telemetry.addLine("Nothing Detected");
                 Blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
-
+*/
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Motor Encoders lift:extend", "%7d :%7d",
