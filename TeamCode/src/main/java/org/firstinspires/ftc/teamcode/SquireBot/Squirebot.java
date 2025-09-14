@@ -46,12 +46,12 @@ public class Squirebot {
         double maxError = allowedLocError + 1;
         while ((maxError > allowedLocError)&& opMode.opModeIsActive()) {//Missing "opModeIsActive() &&"
             GPS.UpdateGPS();
-            yError = yTargetLoc - GPS.GPS.y;
-            xError = xTargetLoc - GPS.GPS.x;
-            yawError = yawErrorCalc(yawTarget, GPS.GPS.h);
+            yError = yTargetLoc - GPS.location.y;
+            xError = xTargetLoc - GPS.location.x;
+            yawError = yawErrorCalc(yawTarget, GPS.location.h);
             maxError = Math.max(Math.abs(xError), Math.abs(yError));
             maxError = Math.max(maxError, Math.abs(yawError / ANGLE_ERROR_MULT));//yaw error is scaled so 1" error is equivilent to ANGLE_ERROR_MULT (2.5 deg)
-            double currentYawRadians = GPS.GPS.h * 3.1415 / 180;
+            double currentYawRadians = GPS.location.h * 3.1415 / 180;
             double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
             double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
             forward = Range.clip(rotY * FORWARD_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);

@@ -7,18 +7,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class SquireGPS {
     private SparkFunOTOS myOtos;
-    public SparkFunOTOS.Pose2D GPS;
+    public SparkFunOTOS.Pose2D location;
     public Telemetry telemetry;
 
     public SquireGPS(HardwareMap hm, Telemetry T){
         telemetry = T;
         myOtos = hm.get(SparkFunOTOS.class, "sensor_otos");
         configureOtos();
-        GPS=myOtos.getPosition();
+        location=myOtos.getPosition();
     }
     public void UpdateGPS(){
 
-        GPS = myOtos.getPosition();
+        location = myOtos.getPosition();
     }
     public void resetGPS(){
         myOtos.calibrateImu();
