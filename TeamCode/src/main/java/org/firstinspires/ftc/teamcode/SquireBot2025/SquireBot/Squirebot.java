@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.SquireBot;
+package org.firstinspires.ftc.teamcode.SquireBot2025.SquireBot;
 
-import com.qualcomm.robotcore.*;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Squirebot {
-    public SquireChassis chassis;
+    public SquireChassis drive;
+    public SquireArm arm;
+    public SquireGrabber claw;
     public HardwareMap hardwareMap;
     public SquireGPS GPS;
     public Telemetry telemetry;
@@ -28,13 +28,17 @@ public class Squirebot {
         opMode = myOpmode;
         hardwareMap = hm;
         telemetry = T;
-        chassis = new SquireChassis(hardwareMap);
-        GPS = new SquireGPS(hardwareMap, telemetry);;
+        drive = new SquireChassis(hardwareMap);
+        GPS = new SquireGPS(hardwareMap, telemetry);
+        arm = new SquireArm(hardwareMap);
+        claw = new SquireGrabber(hardwareMap);
         //notes
     }
 
 
-    //public void startTele() {arm.startMatchTeleArm();}
+    public void startTele() {
+        arm.startMatchTeleArm();
+    }
 
     public void goToSpot(double yTargetLoc, double xTargetLoc, double yawTarget, double allowedLocError) {
         double xError;
@@ -63,10 +67,10 @@ public class Squirebot {
                 turn = turn * MIN_SPEED_CONSTANT / maxError;
                 strafe = strafe * MIN_SPEED_CONSTANT / maxError;
             }
-            chassis.drive(-forward, -strafe, turn);
+            drive.drive(-forward, -strafe, turn);
         }
         //stop robot at end of move
-        chassis.drive(0, 0, 0);
+        drive.drive(0, 0, 0);
     }
 
 
