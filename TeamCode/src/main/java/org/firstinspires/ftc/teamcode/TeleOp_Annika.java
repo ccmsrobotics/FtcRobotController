@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode.SquireBot;
+package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
+
 
 @TeleOp(name = "teleop Class", group = "Class")
 //@Disabled
-public class servo_Tele_class extends LinearOpMode {
+public class TeleOp_Annika extends LinearOpMode {
 
     // Declare variables used by the class
     Squirebot myBot;

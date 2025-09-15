@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.SquireBot;
-
 import com.qualcomm.robotcore.*;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -7,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 public class Squirebot {
     public SquireChassis chassis;
     public HardwareMap hardwareMap;
