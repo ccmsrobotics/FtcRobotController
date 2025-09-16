@@ -20,7 +20,7 @@ public class TeleOp_Jonah extends LinearOpMode {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
         myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.GPS;
+        pos = myBot.GPS.location;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.addData("X coordinate", pos.x);
@@ -28,12 +28,17 @@ public class TeleOp_Jonah extends LinearOpMode {
         telemetry.addData("Heading angle", pos.h);
         telemetry.update();
 
-        double rotatorTarget = .5;
-
         //Start of TeleOp
         waitForStart();
         while (opModeIsActive()) {
-
+            myBot.GPS.UpdateGPS();
+            pos=myBot.GPS.location;
+            telemetry.addData("Status", "Initialized");
+            telemetry.addData("X coordinate", pos.x);
+            telemetry.addData("Y coordinate", pos.y);
+            telemetry.addData("Heading angle", pos.h);
+            telemetry.update();
+            myBot.chassis.drive(gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x);
         }
     }
 }
