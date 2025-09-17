@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
 
-@TeleOp(name = "teleop Class", group = "Class")
+@TeleOp(name = "Jonah", group = "Class")
 //@Disabled
 public class TeleOp_Jonah extends LinearOpMode {
 
