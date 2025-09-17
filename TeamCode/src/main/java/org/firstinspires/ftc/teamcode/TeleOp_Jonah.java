@@ -40,11 +40,15 @@ public class TeleOp_Jonah extends LinearOpMode {
             telemetry.update();
             myBot.chassis.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
             if (gamepad1.left_bumper) {
-                myBot.chassis.maxSpeed = 0.3
-            } else if (gamepad1.right_bumper)
-                myBot.chassis.maxSpeed = 1
-            } else
-                myBot.chassis.maxSpeed = 0.7
+                myBot.chassis.maxSpeed = 0.3;
+            }
+            else if (gamepad1.right_bumper)
+            {
+                myBot.chassis.maxSpeed = 1;
+            }
+        else
+            {
+                myBot.chassis.maxSpeed = 0.7;
             }
         }
     }
