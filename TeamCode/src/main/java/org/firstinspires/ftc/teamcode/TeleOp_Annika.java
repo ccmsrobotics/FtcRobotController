@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
 
-@TeleOp(name = "teleop Class", group = "Class")
+@TeleOp(name = "ANNIKA", group = "Class")
 //@Disabled
 public class TeleOp_Annika extends LinearOpMode {
 
@@ -35,6 +35,17 @@ public class TeleOp_Annika extends LinearOpMode {
         while (opModeIsActive()) {
             myBot.GPS.UpdateGPS();
             pos=myBot.GPS.location;
+            if(gamepad1.a)
+            {
+                myBot.chassis.maxSpeed = 1;
+            }
+            else if((gamepad1.b)){
+                myBot.chassis.maxSpeed = 0.2;
+            }
+            else
+            {
+                myBot.chassis.maxSpeed = 0.5;
+            }
             myBot.chassis.driveFC(gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x,myBot.GPS.location.h);
 
 
