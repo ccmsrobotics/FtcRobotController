@@ -3,6 +3,8 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
 
@@ -19,13 +21,12 @@ public class TeleOp_Henry extends LinearOpMode {
     public void runOpMode() {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.location;
+        myBot.GPS2.UpdateGPS();
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
+        telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
+        telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
+        telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
         telemetry.update();
 
         double rotatorTarget = .5;
