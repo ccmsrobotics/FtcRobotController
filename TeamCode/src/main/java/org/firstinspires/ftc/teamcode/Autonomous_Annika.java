@@ -28,9 +28,9 @@ public class Autonomous_Annika extends LinearOpMode {
         }
         waitForStart();
 
-        myBot.goToSpot(72, -12,0,2);
+        myBot.goToSpot(74, -7,0,2);
         sleep(1500);
-        myBot.goToSpot(72,-12,-45,.3);
+        myBot.goToSpot(74,-7,-45,.3);
 
     }
 }
