@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 @Autonomous(name="Red Loading side",group="Red")
 public class Autonomous_Annika extends LinearOpMode {
     private Squirebot myBot;
+    private int obeliskLook;
 
     @Override
     public void runOpMode(){
@@ -30,6 +31,10 @@ public class Autonomous_Annika extends LinearOpMode {
 
         myBot.goToSpot(74, -7,0,2);
         sleep(1500);
+        obeliskLook = myBot.camera.WhichPatternTag();
+        telemetry.addData("Tag detected", obeliskLook);
+        telemetry.update();
+        sleep(5000);
         myBot.goToSpot(74,-7,-45,.3);
 
     }

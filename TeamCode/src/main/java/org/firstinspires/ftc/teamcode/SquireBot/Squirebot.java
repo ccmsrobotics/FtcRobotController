@@ -14,6 +14,7 @@ public class Squirebot {
     public HardwareMap hardwareMap;
     public SquireGPS GPS;
     public SquirePinpoint GPS2;
+    public SquireVision camera;
     public Telemetry telemetry;
     private LinearOpMode opMode;
     public double FORWARD_GAIN = 0.05;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
@@ -33,6 +34,7 @@ public class Squirebot {
         chassis = new SquireChassis(hardwareMap);
         GPS = new SquireGPS(hardwareMap, telemetry);
         GPS2=new SquirePinpoint(hardwareMap, telemetry);
+        camera = new SquireVision(hardwareMap);
         //notes
     }
 
