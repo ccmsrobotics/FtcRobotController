@@ -15,6 +15,7 @@ public class Squirebot {
     public SquireGPS GPS;
     public SquirePinpoint GPS2;
     public SquireVision camera;
+    public SquireShooter shooter;
     public Telemetry telemetry;
     private LinearOpMode opMode;
     public double FORWARD_GAIN = 0.05;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
@@ -35,6 +36,7 @@ public class Squirebot {
         GPS = new SquireGPS(hardwareMap, telemetry);
         GPS2=new SquirePinpoint(hardwareMap, telemetry);
         camera = new SquireVision(hardwareMap);
+        shooter = new SquireShooter(hardwareMap);
         //notes
     }
 
@@ -86,5 +88,17 @@ public class Squirebot {
         while (headingError > 180) headingError -= 360;
         while (headingError <= -180) headingError += 360;
         return headingError;
+    }
+    public void autonShooter(){
+      shooter.shooterPower = 0.8;
+      shooter.enableShooter();
+      opMode.sleep(750);
+      shooter.openStopper();
+      opMode.sleep(750);
+      shooter.intakeOn();
+      opMode.sleep(750);
+      shooter.intakeOff();
+      shooter.disableShooter();
+      shooter.closeStopper();
     }
 }
