@@ -18,7 +18,7 @@ public class servo_Tele_class extends LinearOpMode {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
         myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.GPS;
+        pos = myBot.GPS.location;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.addData("X coordinate", pos.x);
