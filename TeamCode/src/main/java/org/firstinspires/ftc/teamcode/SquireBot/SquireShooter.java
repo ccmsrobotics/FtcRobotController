@@ -17,8 +17,9 @@ public class SquireShooter {
     private Servo stopper;
     public float shooterPower, intakePower;
 
-    private boolean debouncePress, debounceOpen;
-    double debounceStart;
+    private boolean debounceActive;
+    double debounceStart, stateStart;
+    int currentState;
 
     public SquireShooter(HardwareMap hm) {
         myHardwareMap = hm;
@@ -39,6 +40,8 @@ public class SquireShooter {
         shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakePower = 1.0;
         shooterPower = 1.0;
+        currentState = 0;
+        debounceActive=false;
 
         stopper = hm.get(Servo.class, "stopper");
         closeStopper();
@@ -78,32 +81,66 @@ public class SquireShooter {
     public void closeStopper(){
         stopper.setPosition(0.5);
     }
+
+
     public void shooterState(boolean button, double currentTime){
-        if(button == true)
-        {
-            if (debouncePress == false)
-            {
-                debouncePress = true;
-                debounceOpen = false;
-                debounceStartPress = currentTime;
-            }
-            else{
-                if (currentTime - debounceStartPress) > 100)
-            {
+        if(currentState ==0){
+            //What should be always disabled?
 
+            if(stateDebounce(button,currentTime,250)){
+                currentState=1;
+                stateStart=currentTime;
             }
+        }
+        else if(currentState==1){
+            //what commands should be run
+            if(stateDebounce(!button,currentTime,250)){
+                currentState=0;
             }
+            else if((currentTime-stateStart)> 2500){
+                currentState=2;
+                stateStart=currentTime;
+            }
+        }
 
-
+        else if(currentState==2){
+            //what commands should be run
+            if(stateDebounce(!button,currentTime,250)){
+                currentState=0;
+            }
+            else if((currentTime-stateStart)> 2500){
+                currentState=3;
+                stateStart=currentTime;
+            }
 
         }
-        else
-        if (debounceOpen == false)
-        {
-            debouncePress = true;
-            debounceOpen = false;
-            debounceStart = currentTime;
+        else if(currentState==3){
+            //what commands should be run
+            if(stateDebounce(!button,currentTime,250)){
+                currentState=0;
+                intakeOff();
+            }
+        }
+    }
 
-
+    //function used to debounce a button  If more then one instance needs to be used, should be turned into a class
+    private boolean stateDebounce(boolean button, double currentTime, double debouncetime){
+        if(button == true){
+            if(debounceActive==true){
+                if((currentTime-debounceStart) >debouncetime){
+                    debounceActive=false;
+                    return true;
+                }
+            }
+            else
+            {
+                debounceStart=currentTime;
+                debounceActive=true;
+            }
+        }
+        else {
+            debounceActive=false;
+        }
+        return false;
     }
 }
