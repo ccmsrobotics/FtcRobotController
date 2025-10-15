@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Squirebot {
     public SquireChassis chassis;
     public HardwareMap hardwareMap;
-    public SquireGPS GPS;
     public SquirePinpoint GPS2;
     public SquireVision camera;
     public SquireShooter shooter;
@@ -33,7 +32,6 @@ public class Squirebot {
         hardwareMap = hm;
         telemetry = T;
         chassis = new SquireChassis(hardwareMap);
-        GPS = new SquireGPS(hardwareMap, telemetry);
         GPS2=new SquirePinpoint(hardwareMap, telemetry);
         camera = new SquireVision(hardwareMap);
         shooter = new SquireShooter(hardwareMap);

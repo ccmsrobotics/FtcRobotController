@@ -18,8 +18,8 @@ public class SquireShooter {
     public float shooterPower, intakePower;
 
     private boolean debounceActive;
-    double debounceStart, stateStart;
-    int currentState;
+    private double debounceStart, stateStart;
+    public int currentState;
 
     public SquireShooter(HardwareMap hm) {
         myHardwareMap = hm;
@@ -94,6 +94,7 @@ public class SquireShooter {
         }
         else if(currentState==1){
             //what commands should be run
+
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
             }
@@ -121,6 +122,7 @@ public class SquireShooter {
                 intakeOff();
             }
         }
+        else{currentState =0;}
     }
 
     //function used to debounce a button  If more then one instance needs to be used, should be turned into a class
