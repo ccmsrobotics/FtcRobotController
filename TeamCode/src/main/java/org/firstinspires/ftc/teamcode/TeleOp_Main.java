@@ -18,23 +18,17 @@ public class TeleOp_Main extends LinearOpMode {
     Squirebot myBot;
     private ElapsedTime     runtime = new ElapsedTime();
     private double headingError = 0;
-    SparkFunOTOS.Pose2D pos;
-    public DcMotor shootA, shootB;
 
     @Override
     public void runOpMode() {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        shootA = hardwareMap.get(DcMotor.class, "S_A");
-        shootB = hardwareMap.get(DcMotor.class, "S_B");
-        shootB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shootA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
+        telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
+        telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
+        telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
         telemetry.update();
 
         //Start of TeleOp
@@ -49,7 +43,7 @@ public class TeleOp_Main extends LinearOpMode {
             telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
             telemetry.addData("Shooter State", myBot.shooter.currentState);
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
-            telemetry.addData("Time left", 120-runtime.seconds());
+            telemetry.addData("Time left", 117-runtime.seconds());
 
             telemetry.update();
             if(gamepad1.left_trigger>0.7) {
@@ -74,12 +68,18 @@ public class TeleOp_Main extends LinearOpMode {
             {
                 myBot.shooter.intakePower=gamepad1.right_trigger;
                 myBot.shooter.intakeOn();
+            } else if (gamepad2.dpad_left)
+            {
+                myBot.shooter.intakeBackwards();
+                else if (myBot.shooter.currentState>2)
+            {
+
             }
-            else
+            } else
             {
                 myBot.shooter.intakeOff();
             }
-            myBot.shooter.shooterState()(gamepad1.a||gamepad2.a,runtime.milliseconds());
+            myBot.shooter.shooterState(gamepad1.a||gamepad2.a,runtime.milliseconds());
 
             if (gamepad2.x)
             {
@@ -102,6 +102,15 @@ public class TeleOp_Main extends LinearOpMode {
             if (gamepad2.b)
             {
                 myBot.shooter.closeStopper();
+            }
+            if (gamepad2.dpad_up) {
+                myBot.shooter.enableShooter();
+            }
+            if (gamepad2.dpad_down)
+                myBot.shooter.disableShooter();
+            if (gamepad2.dpad_left)
+            {
+                myBot.shooter.intakeBackwards();
             }
         }
     }
