@@ -15,7 +15,7 @@ public class SquireShooter {
     public DcMotor intake, shooterLeft, shooterRight;
     private HardwareMap myHardwareMap;
     private Servo stopper;
-    public float shooterPower, intakePower;
+    public double shooterPower, intakePower;
 
     private boolean debounceActive;
     private double debounceStart, stateStart;
@@ -26,9 +26,9 @@ public class SquireShooter {
         intake = myHardwareMap.get(DcMotor.class, "intake");
         shooterLeft = myHardwareMap.get(DcMotor.class, "shooter_left");
         shooterRight = myHardwareMap.get(DcMotor.class, "shooter_right");
-        intake.setDirection(DcMotor.Direction.FORWARD);
-        shooterLeft.setDirection(DcMotor.Direction.REVERSE);
-        shooterRight.setDirection(DcMotor.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        shooterLeft.setDirection(DcMotor.Direction.FORWARD);
+        shooterRight.setDirection(DcMotor.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -124,7 +124,7 @@ public class SquireShooter {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=1
+            intakePower=1;
             openStopper();
             intakeOn();
             if(stateDebounce(!button,currentTime,250)){

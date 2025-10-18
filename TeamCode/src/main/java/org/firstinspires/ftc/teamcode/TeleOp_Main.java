@@ -34,9 +34,9 @@ public class TeleOp_Main extends LinearOpMode {
         //Start of TeleOp
         waitForStart();
         runtime.reset();
-        runtime.startTime();
         while (opModeIsActive()) {
             myBot.GPS2.UpdateGPS();
+            myBot.camera.aprilTagRanger();
             telemetry.addLine("GoBildaData");
             telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
@@ -44,9 +44,13 @@ public class TeleOp_Main extends LinearOpMode {
             telemetry.addData("Shooter State", myBot.shooter.currentState);
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
             telemetry.addData("Time left", 117-runtime.seconds());
+            telemetry.addData("April tag range", myBot.camera.aprilTagRange);
+            telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
+
+
 
             telemetry.update();
-            if(gamepad1.left_trigger>0.7) {
+            if(gamepad1.left_trigger<0.7) {
                 myBot.chassis.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
             }
             else
@@ -68,13 +72,13 @@ public class TeleOp_Main extends LinearOpMode {
             {
                 myBot.shooter.intakePower=gamepad1.right_trigger;
                 myBot.shooter.intakeOn();
-            } else if (gamepad2.dpad_left)
-            {
+            } else if (gamepad2.dpad_left) {
                 myBot.shooter.intakeBackwards();
+            }
                 else if (myBot.shooter.currentState>2)
             {
 
-            }
+
             } else
             {
                 myBot.shooter.intakeOff();
@@ -83,7 +87,7 @@ public class TeleOp_Main extends LinearOpMode {
 
             if (gamepad2.x)
             {
-                myBot.shooter.shooterPower = gamepad2.left_stick_y*0.5+0.5;
+                myBot.shooter.shooterPower = (gamepad2.left_stick_y*0.5+0.5);
             }
             if (gamepad2.right_bumper)
             {

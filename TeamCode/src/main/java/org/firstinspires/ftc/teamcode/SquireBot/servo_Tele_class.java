@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode.SquireBot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 @TeleOp(name = "teleop Class", group = "Class")
-//@Disabled
+@Disabled
 public class servo_Tele_class extends LinearOpMode {
 
     // Declare variables used by the class
@@ -17,13 +18,13 @@ public class servo_Tele_class extends LinearOpMode {
     public void runOpMode() {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        myBot.GPS.UpdateGPS();
-        pos = myBot.GPS.location;
+//        myBot.GPS.UpdateGPS();
+//        pos = myBot.GPS.location;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("X coordinate", pos.x);
-        telemetry.addData("Y coordinate", pos.y);
-        telemetry.addData("Heading angle", pos.h);
+//        telemetry.addData("X coordinate", pos.x);
+//        telemetry.addData("Y coordinate", pos.y);
+//        telemetry.addData("Heading angle", pos.h);
         telemetry.update();
 
         double rotatorTarget = .5;

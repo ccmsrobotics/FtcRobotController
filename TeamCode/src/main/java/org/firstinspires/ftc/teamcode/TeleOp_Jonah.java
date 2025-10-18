@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
 
 @TeleOp(name = "Jonah", group = "Class")
-//@Disabled
+@Disabled
 public class TeleOp_Jonah extends LinearOpMode {
 
     // Declare variables used by the class
@@ -19,19 +20,16 @@ public class TeleOp_Jonah extends LinearOpMode {
     private ElapsedTime     runtime = new ElapsedTime();
     private double headingError = 0;
     SparkFunOTOS.Pose2D pos;
-    public DcMotor shootA, shootB;
+
 
     @Override
     public void runOpMode() {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        myBot.GPS.UpdateGPS();
-        shootA = hardwareMap.get(DcMotor.class, "S_A");
-        shootB = hardwareMap.get(DcMotor.class, "S_B");
-        shootB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shootA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        myBot.GPS2.UpdateGPS();
 
-        pos = myBot.GPS.location;
+
+     //   pos = myBot.GPS2.location;
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.addData("X coordinate", pos.x);
@@ -43,13 +41,11 @@ public class TeleOp_Jonah extends LinearOpMode {
         //Start of TeleOp
         waitForStart();
         while (opModeIsActive()) {
-            myBot.GPS.UpdateGPS();
             myBot.GPS2.UpdateGPS();
-            pos = myBot.GPS.location;
             telemetry.addData("SparkFun", "Data");
-            telemetry.addData("X coordinate", pos.x);
-            telemetry.addData("Y coordinate", pos.y);
-            telemetry.addData("Heading angle", pos.h);
+//            telemetry.addData("X coordinate", pos.x);
+//            telemetry.addData("Y coordinate", pos.y);
+//            telemetry.addData("Heading angle", pos.h);
             telemetry.addLine("GoBildaData");
             telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
@@ -67,15 +63,6 @@ public class TeleOp_Jonah extends LinearOpMode {
             else
             {
                 myBot.chassis.maxSpeed = 0.7;
-            }
-            if(gamepad1.x)
-            {
-                shootA.setPower(1);
-                shootB.setPower(-1);
-            }
-            else {
-                shootA.setPower(0);
-                shootB.setPower(0);
             }
         }
     }

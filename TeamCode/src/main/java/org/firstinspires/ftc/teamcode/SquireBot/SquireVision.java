@@ -11,12 +11,16 @@ public class SquireVision {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
+    public double aprilTagRange,aprilTagBearing;
+
     public SquireVision(HardwareMap hm){
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         // Create the vision portal the easy way.
         visionPortal = VisionPortal.easyCreateWithDefaults(
                 hm.get(WebcamName.class, "Webcam 1"), aprilTag);
+        aprilTagRange=0;
+        aprilTagBearing=0;
     }
     public int WhichPatternTag(){
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -28,5 +32,20 @@ public class SquireVision {
             }
         }   // end for() loop
         return 0;
+    }
+
+    public boolean aprilTagRanger()
+    {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.id ==20||detection.id  ==24) {
+                aprilTagRange = detection.ftcPose.range;
+                aprilTagBearing = detection.ftcPose.bearing;
+                return true;
+            }
+        }   // end for() loop
+        return false;
     }
 }
