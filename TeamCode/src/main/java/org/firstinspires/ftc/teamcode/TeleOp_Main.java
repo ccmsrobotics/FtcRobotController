@@ -51,11 +51,11 @@ public class TeleOp_Main extends LinearOpMode {
 
             telemetry.update();
             if(gamepad1.left_trigger<0.7) {
-                myBot.chassis.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+                myBot.chassis.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             }
             else
             {
-                    myBot.chassis.driveFC(gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x,myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
+                    myBot.chassis.driveFC(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x,myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
             }
             if (gamepad1.left_bumper) {
                 myBot.chassis.maxSpeed = 0.3;

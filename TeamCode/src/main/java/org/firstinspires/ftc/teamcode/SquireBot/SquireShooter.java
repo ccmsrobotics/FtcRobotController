@@ -28,7 +28,7 @@ public class SquireShooter {
         shooterRight = myHardwareMap.get(DcMotor.class, "shooter_right");
         intake.setDirection(DcMotor.Direction.REVERSE);
         shooterLeft.setDirection(DcMotor.Direction.FORWARD);
-        shooterRight.setDirection(DcMotor.Direction.REVERSE);
+        shooterRight.setDirection(DcMotor.Direction.FORWARD);
         intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
