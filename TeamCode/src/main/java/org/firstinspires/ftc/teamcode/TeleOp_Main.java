@@ -55,7 +55,8 @@ public class TeleOp_Main extends LinearOpMode {
             }
             else
             {
-                    myBot.chassis.driveFC(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x,myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
+                    //myBot.chassis.driveFC(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x,myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
+                myBot.chassis.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x,gamepad1.right_stick_x);
             }
             if (gamepad1.left_bumper) {
                 myBot.chassis.maxSpeed = 0.3;
@@ -91,12 +92,12 @@ public class TeleOp_Main extends LinearOpMode {
             }
             if (gamepad2.right_bumper)
             {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower +.005;
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower +.001;
                 if(myBot.shooter.shooterPower > 1) myBot.shooter.shooterPower=1;
             }
             if (gamepad2.left_bumper)
             {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower -.005;
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower -.001;
                 if(myBot.shooter.shooterPower < 0) myBot.shooter.shooterPower=0;
             }
             if (gamepad2.y)
@@ -115,6 +116,10 @@ public class TeleOp_Main extends LinearOpMode {
             if (gamepad2.dpad_left)
             {
                 myBot.shooter.intakeBackwards();
+            }
+            if (gamepad1.b)
+            {
+                myBot.chassis.drive(0,0,myBot.camera.aprilTagBearing*-0.02);
             }
         }
     }

@@ -94,28 +94,27 @@ public class SquireShooter {
         }
         else if(currentState==1){
             //what commands should be run
-            enableShooter();
+            intakeBackwards();
 
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
-                disableShooter();
+                intakeOff();
             }
-            else if((currentTime-stateStart)> 500){
+            else if((currentTime-stateStart)> 250){
                 currentState=2;
                 stateStart=currentTime;
+                intakeOff();
             }
         }
 
         else if(currentState==2){
             //what commands should be run
             enableShooter();
-            openStopper();
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
                 disableShooter();
-                closeStopper();
             }
-            else if((currentTime-stateStart)> 500){
+            else if((currentTime-stateStart)> 850){
                 currentState=3;
                 stateStart=currentTime;
             }
@@ -124,13 +123,11 @@ public class SquireShooter {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=1;
-            openStopper();
+            intakePower=0.9;
             intakeOn();
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
                 disableShooter();
-                closeStopper();
                 intakeOff();
             }
         }

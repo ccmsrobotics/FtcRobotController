@@ -51,8 +51,8 @@ public class Squirebot {
         double maxError = allowedLocError + 1;
         while ((maxError > allowedLocError)&& opMode.opModeIsActive()) {//Missing "opModeIsActive() &&"
             GPS2.UpdateGPS();
-            yError = yTargetLoc + GPS2.location.getY(DistanceUnit.INCH);
-            xError = xTargetLoc + GPS2.location.getX(DistanceUnit.INCH);
+            yError = yTargetLoc - GPS2.location.getX(DistanceUnit.INCH);
+            xError = xTargetLoc + GPS2.location.getY(DistanceUnit.INCH);
             yawError = yawErrorCalc(yawTarget, GPS2.location.getHeading(AngleUnit.DEGREES));
             maxError = Math.max(Math.abs(xError), Math.abs(yError));
             maxError = Math.max(maxError, Math.abs(yawError / ANGLE_ERROR_MULT));//yaw error is scaled so 1" error is equivilent to ANGLE_ERROR_MULT (2.5 deg)
@@ -68,9 +68,9 @@ public class Squirebot {
                 turn = turn * MIN_SPEED_CONSTANT / maxError;
                 strafe = strafe * MIN_SPEED_CONSTANT / maxError;
             }
-            chassis.drive(-forward, -strafe, turn);
-            telemetry.addData("X coordinate",GPS2.location.getX(DistanceUnit.INCH));
-            telemetry.addData("Y coordinate", GPS2.location.getY(DistanceUnit.INCH));
+            chassis.drive(forward, strafe, -turn);
+            telemetry.addData("X coordinate",-GPS2.location.getY(DistanceUnit.INCH));
+            telemetry.addData("Y coordinate", GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Heading angle", GPS2.location.getHeading(AngleUnit.DEGREES));
             telemetry.update();
         }
