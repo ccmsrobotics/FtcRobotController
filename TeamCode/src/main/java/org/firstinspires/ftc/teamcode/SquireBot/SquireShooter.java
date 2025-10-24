@@ -123,7 +123,7 @@ public class SquireShooter {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=0.9;
+            intakePower=0.7;
             intakeOn();
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;

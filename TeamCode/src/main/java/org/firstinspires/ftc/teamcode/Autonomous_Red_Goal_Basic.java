@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
-@Autonomous(name="Red Loading side",group="Red")
-public class Autonomous_Annika extends LinearOpMode {
+@Autonomous(name="Red Goal Basic",group="Red")
+public class Autonomous_Red_Goal_Basic extends LinearOpMode {
     private Squirebot myBot;
     private int obeliskLook;
 
@@ -29,13 +27,20 @@ public class Autonomous_Annika extends LinearOpMode {
         }
         waitForStart();
 
-        myBot.goToSpot(12, 12,180,2);
-        sleep(150000);
-        obeliskLook = myBot.camera.WhichPatternTag();
-        telemetry.addData("Tag detected", obeliskLook);
-        telemetry.update();
-        sleep(5000);
-        myBot.goToSpot(74,-7,-45,.3);
+        myBot.goToSpot(28, 24,-40,2);
+        myBot.shooter.intakeBackwards();
+        sleep(250);
+        myBot.shooter.intakeOff();
+        myBot.shooter.shooterPower=0.80;
+        myBot.shooter.enableShooter();
+        sleep(850);
+        myBot.shooter.intakePower=0.7;
+        myBot.shooter.intakeOn();
+        sleep(1300);
+        myBot.shooter.disableShooter();
+        myBot.shooter.intakeOff();
+        myBot.goToSpot(12,20,0,2);
+
 
     }
 }

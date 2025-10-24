@@ -17,13 +17,13 @@ public class Squirebot {
     public SquireShooter shooter;
     public Telemetry telemetry;
     private LinearOpMode opMode;
-    public double FORWARD_GAIN = 0.05;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    public double STRAFE_GAIN = 0.05;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    public double FORWARD_GAIN = 0.075;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    public double STRAFE_GAIN = 0.075;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     public double TURN_GAIN = 0.0175;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
     public double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     public double MAX_AUTO_STRAFE = 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
     public double MAX_AUTO_TURN = 0.4;  //  Clip the turn speed to this max value (adjust for your robot)
-    public double MIN_SPEED_CONSTANT = 3; //This is used in goToSpot to have a minimum speed returned by formula to account for friction at low power levels resulting in robot not moving
+    public double MIN_SPEED_CONSTANT = 5; //This is used in goToSpot to have a minimum speed returned by formula to account for friction at low power levels resulting in robot not moving
     public double ANGLE_ERROR_MULT = 2.5; //
 
 
