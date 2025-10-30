@@ -28,7 +28,7 @@ public class Autonomous_Red_Human_Advanced extends LinearOpMode {
         waitForStart();
 
         //drive to shooting position and shoot
-        myBot.goToSpot(74, 0,-225,2);
+        myBot.goToSpot(74, 0,-225,1);
         shoot();
 
         //pick up last row of artifacts and shoots
@@ -41,7 +41,7 @@ public class Autonomous_Red_Human_Advanced extends LinearOpMode {
         sleep(250);
         myBot.shooter.intakeOff();
         myBot.goToSpot(28,0,-90,6);
-        myBot.goToSpot(74, 0,-220,2);
+        myBot.goToSpot(74, 0,-220,1);
         shoot();
 
         //pick up middle row of artifacts and shoot
@@ -54,7 +54,7 @@ public class Autonomous_Red_Human_Advanced extends LinearOpMode {
         sleep(250);
         myBot.shooter.intakeOff();
         myBot.goToSpot(52,14,-90,6);
-        myBot.goToSpot(74, 0,-220,2);
+        myBot.goToSpot(74, 0,-220,1);
         shoot();
 
         //move off launch line
