@@ -27,16 +27,16 @@ public class Autonomous_Blue_Goal_Basic extends LinearOpMode {
         }
         waitForStart();
 
-        myBot.goToSpot(28, -24,55,2);
+        myBot.goToSpot(28, -24,55,1);
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.80;
+        myBot.shooter.shooterPower=0.82;
         myBot.shooter.enableShooter();
-        sleep(850);
+        sleep(1400);
         myBot.shooter.intakePower=0.7;
         myBot.shooter.intakeOn();
-        sleep(1300);
+        sleep(1500);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
         myBot.goToSpot(12,-20,0,2);
