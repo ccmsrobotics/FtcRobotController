@@ -36,7 +36,6 @@ public class TeleOp_Main extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             myBot.GPS2.UpdateGPS();
-            myBot.camera.aprilTagRanger();
             telemetry.addLine("GoBildaData");
             telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
@@ -44,8 +43,8 @@ public class TeleOp_Main extends LinearOpMode {
             telemetry.addData("Shooter State", myBot.shooter.currentState);
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
             telemetry.addData("Time left", 117-runtime.seconds());
-            telemetry.addData("April tag range", myBot.camera.aprilTagRange);
-            telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
+            //telemetry.addData("April tag range", myBot.camera.aprilTagRange);
+            //telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
 
 
 
@@ -116,10 +115,6 @@ public class TeleOp_Main extends LinearOpMode {
             if (gamepad2.dpad_left)
             {
                 myBot.shooter.intakeBackwards();
-            }
-            if (gamepad1.b)
-            {
-                myBot.chassis.drive(0,0,myBot.camera.aprilTagBearing*-0.02);
             }
         }
     }

@@ -13,7 +13,6 @@ public class Squirebot {
     public SquireChassis chassis;
     public HardwareMap hardwareMap;
     public SquirePinpoint GPS2;
-    public SquireVision camera;
     public SquireShooter shooter;
     public Telemetry telemetry;
     private LinearOpMode opMode;
@@ -33,7 +32,6 @@ public class Squirebot {
         telemetry = T;
         chassis = new SquireChassis(hardwareMap);
         GPS2=new SquirePinpoint(hardwareMap, telemetry);
-        camera = new SquireVision(hardwareMap);
         shooter = new SquireShooter(hardwareMap);
         //notes
     }
