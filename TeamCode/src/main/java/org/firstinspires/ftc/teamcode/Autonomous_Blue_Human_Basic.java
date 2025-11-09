@@ -31,12 +31,12 @@ public class Autonomous_Blue_Human_Basic extends LinearOpMode {
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.82;
+        myBot.shooter.shooterPower=0.58;
         myBot.shooter.enableShooter();
         sleep(1400);
         myBot.shooter.intakePower=0.7;
         myBot.shooter.intakeOn();
-        sleep(1500);
+        sleep(1800);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
         myBot.goToSpot(24,0,90,2);

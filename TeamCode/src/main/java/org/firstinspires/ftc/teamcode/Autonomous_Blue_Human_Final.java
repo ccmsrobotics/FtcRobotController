@@ -6,8 +6,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
-@Autonomous(name="Red Goal Basic",group="Red")
-public class Autonomous_Red_Goal_Basic extends LinearOpMode {
+@Autonomous(name="Blue Human Final",group="Red")
+public class Autonomous_Blue_Human_Final extends LinearOpMode {
     private Squirebot myBot;
     private int obeliskLook;
 
@@ -27,20 +27,42 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         }
         waitForStart();
 
-        myBot.goToSpot(28, 24,-55,1);
+        sleep(4000);
+
+        //drive to shooting position and shoot
+        myBot.goToSpot(74, 0,220,1);
+        shoot();
+
+        //pick up last row of artifacts and shoots
+        myBot.goToSpot(28,-12,90,2);
+        myBot.shooter.intakePower=1;
+        myBot.shooter.intakeOn();
+        myBot.chassis.drive(0.5,0,0);
+        sleep(1800);
+        myBot.chassis.drive(0,0,0);
+        sleep(250);
+        myBot.shooter.intakeOff();
+        myBot.goToSpot(28,0,90,6);
+        myBot.goToSpot(74, 0,220,1);
+        shoot();
+
+        myBot.goToSpot(28,0,90,6);
+
+
+
+    }
+    private void shoot()
+    {
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.58;
+        myBot.shooter.shooterPower=0.61;
         myBot.shooter.enableShooter();
         sleep(1400);
         myBot.shooter.intakePower=0.7;
         myBot.shooter.intakeOn();
-        sleep(1800);
+        sleep(1750);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
-        myBot.goToSpot(12,20,0,2);
-
-
     }
 }
