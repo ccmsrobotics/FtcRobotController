@@ -24,6 +24,8 @@ public class Squirebot {
     public double MAX_AUTO_TURN = 0.4;  //  Clip the turn speed to this max value (adjust for your robot)
     public double MIN_SPEED_CONSTANT = 5; //This is used in goToSpot to have a minimum speed returned by formula to account for friction at low power levels resulting in robot not moving
     public double ANGLE_ERROR_MULT = 2.5; //
+    public static final String GPS_OFFSET = "Gps Offset";
+    public static final String ALLIANCE_KEY = "Alliance";
 
 
     public Squirebot(LinearOpMode myOpmode, HardwareMap hm, Telemetry T) {

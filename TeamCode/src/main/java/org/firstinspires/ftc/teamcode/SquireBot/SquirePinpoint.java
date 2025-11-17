@@ -18,8 +18,8 @@ public class SquirePinpoint {
         telemetry = T;
         pinpoint = hm.get(GoBildaPinpointDriver.class, "pinpoint");
         configurePinpoint();
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-        location = pinpoint.getPosition();
+       // pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+       // location = pinpoint.getPosition();
     }
 
     public void UpdateGPS() {
@@ -73,7 +73,11 @@ public class SquirePinpoint {
          * This is recommended before you run your autonomous, as a bad initial calibration can cause
          * an incorrect starting value for x, y, and heading.
          */
-        pinpoint.resetPosAndIMU();
+        //pinpoint.resetPosAndIMU();
     }
-
+public void resetGPS(){
+    pinpoint.resetPosAndIMU();
+pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+     location = pinpoint.getPosition();
+}
 }

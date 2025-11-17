@@ -15,6 +15,10 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
     public void runOpMode(){
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
+        myBot.GPS2.resetGPS();
+        blackboard.put(ALLIANCE_KEY, "RED");
+
+
 
         while(!isStarted()) {
             myBot.GPS2.UpdateGPS();
