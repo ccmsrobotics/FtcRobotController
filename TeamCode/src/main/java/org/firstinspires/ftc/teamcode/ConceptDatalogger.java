@@ -59,6 +59,7 @@ public class ConceptDatalogger extends LinearOpMode
         runtime.reset();
 
         datalog.opModeStatus.set("RUNNING");
+        shooter.shooterPower = 0.65;
 
         for (int i = 0; opModeIsActive(); i++)
         {
