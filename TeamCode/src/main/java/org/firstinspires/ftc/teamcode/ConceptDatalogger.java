@@ -22,14 +22,19 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.SquireBot.SquireShooterEX;
 
 @TeleOp(name = "Concept Datalogger v01", group = "Datalogging")
 public class ConceptDatalogger extends LinearOpMode
 {
     Datalog datalog;
     VoltageSensor battery;
+    SquireShooterEX shooter;
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -37,7 +42,7 @@ public class ConceptDatalogger extends LinearOpMode
         // Get devices from the hardwareMap.
         // If needed, change "Control Hub" to (e.g.) "Expansion Hub 1".
         battery = hardwareMap.voltageSensor.get("Control Hub");
-
+        shooter = new SquireShooterEX(hardwareMap);
         // Initialize the datalog
         datalog = new Datalog("datalog_01");
 
@@ -48,13 +53,10 @@ public class ConceptDatalogger extends LinearOpMode
         datalog.battery.set(battery.getVoltage());
         datalog.writeLine();
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
-
         telemetry.setMsTransmissionInterval(50);
 
         waitForStart();
+        runtime.reset();
 
         datalog.opModeStatus.set("RUNNING");
 
@@ -64,22 +66,26 @@ public class ConceptDatalogger extends LinearOpMode
             // does *not* matter! The order is configured inside
             // the Datalog class constructor.
 
+            shooter.shooterState(true, runtime.milliseconds());
             datalog.loopCounter.set(i);
             datalog.battery.set(battery.getVoltage());
+            datalog.State.set(shooter.currentState);
+            datalog.leftShooter.set(shooter.shooterLeft.getVelocity());
+            datalog.rightShooter.set(shooter.shooterRight.getVelocity());
+            datalog.intake.set(shooter.intake.getVelocity());
+            datalog.leftShooterpwr.set(shooter.shooterLeft.getPower());
+            datalog.rightShooterpwr.set(shooter.shooterRight.getPower());
+            datalog.intakepwr.set(shooter.intake.getPower());
+            datalog.leftCurrent.set(shooter.shooterLeft.getCurrent(CurrentUnit.AMPS));
+            datalog.rightCurrent.set(shooter.shooterRight.getCurrent(CurrentUnit.AMPS));
+            datalog.intakeCurrent.set(shooter.intake.getCurrent(CurrentUnit.AMPS));
 
-            Orientation orientation = imu.getAngularOrientation();
 
-            datalog.yaw.set(orientation.firstAngle);
-            datalog.pitch.set(orientation.secondAngle);
-            datalog.roll.set(orientation.thirdAngle);
 
             // The logged timestamp is taken when writeLine() is called.
             datalog.writeLine();
 
             // Datalog fields are stored as text only; do not format here.
-            telemetry.addData("Yaw", datalog.yaw);
-            telemetry.addData("Pitch", datalog.pitch);
-            telemetry.addData("Roll", datalog.roll);
             telemetry.addLine();
             telemetry.addData("OpMode Status", datalog.opModeStatus);
             telemetry.addData("Loop Counter", datalog.loopCounter);
@@ -87,7 +93,7 @@ public class ConceptDatalogger extends LinearOpMode
 
             telemetry.update();
 
-            sleep(20);
+            //sleep(20);
         }
 
         /*
@@ -108,9 +114,16 @@ public class ConceptDatalogger extends LinearOpMode
         // Note that order here is NOT important. The order is important in the setFields() call below
         public Datalogger.GenericField opModeStatus = new Datalogger.GenericField("OpModeStatus");
         public Datalogger.GenericField loopCounter  = new Datalogger.GenericField("Loop Counter");
-        public Datalogger.GenericField yaw          = new Datalogger.GenericField("Yaw");
-        public Datalogger.GenericField pitch        = new Datalogger.GenericField("Pitch");
-        public Datalogger.GenericField roll         = new Datalogger.GenericField("Roll");
+        public Datalogger.GenericField State          = new Datalogger.GenericField("State");
+        public Datalogger.GenericField leftShooter        = new Datalogger.GenericField("Left Velocity");
+        public Datalogger.GenericField rightShooter         = new Datalogger.GenericField("Right Velocity");
+        public Datalogger.GenericField intake         = new Datalogger.GenericField("Intake Velocity");
+        public Datalogger.GenericField leftShooterpwr        = new Datalogger.GenericField("Left Power");
+        public Datalogger.GenericField rightShooterpwr         = new Datalogger.GenericField("Right Power");
+        public Datalogger.GenericField intakepwr         = new Datalogger.GenericField("Intake Power");
+        public Datalogger.GenericField leftCurrent        = new Datalogger.GenericField("Left Current");
+        public Datalogger.GenericField rightCurrent         = new Datalogger.GenericField("Right Current");
+        public Datalogger.GenericField intakeCurrent         = new Datalogger.GenericField("Intake Current");
         public Datalogger.GenericField battery      = new Datalogger.GenericField("Battery");
 
         public Datalog(String name)
@@ -130,9 +143,16 @@ public class ConceptDatalogger extends LinearOpMode
                     .setFields(
                             opModeStatus,
                             loopCounter,
-                            yaw,
-                            pitch,
-                            roll,
+                            State,
+                            leftShooter,
+                            rightShooter,
+                            intake,
+                            leftShooterpwr,
+                            rightShooterpwr,
+                            intakepwr,
+                            leftCurrent,
+                            rightCurrent,
+                            intakeCurrent,
                             battery
                     )
                     .build();
