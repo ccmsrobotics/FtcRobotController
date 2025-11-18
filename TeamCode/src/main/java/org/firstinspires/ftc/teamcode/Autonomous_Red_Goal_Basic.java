@@ -16,7 +16,8 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
         myBot.GPS2.resetGPS();
-        blackboard.put(ALLIANCE_KEY, "RED");
+        blackboard.put(myBot.ALLIANCE_KEY, "RED");
+        blackboard.put(myBot.GPS_OFFSET, -90);
 
 
 

@@ -64,6 +64,9 @@ public class SquireChassis {
         rightBackDrive.setPower(rightBackPower);
     }
     public void driveFC(double drive, double strafe, double rotation, double currentDirectionDegrees) {
+        while (currentDirectionDegrees > 180) currentDirectionDegrees -= 360;
+        while (currentDirectionDegrees <= -180) currentDirectionDegrees += 360;
+
         double currentYawRadians = currentDirectionDegrees * 3.1415 / 180;
         double rotStrafe = strafe * Math.cos(-currentYawRadians) - drive * Math.sin(-currentYawRadians);
         double rotDrive = strafe * Math.sin(-currentYawRadians) + drive * Math.cos(-currentYawRadians);

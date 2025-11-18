@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -10,9 +8,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.SquireBot.Squirebot;
 
 
-@TeleOp(name = "TeleOp Main", group = "Class")
+@TeleOp(name = "TeleOp Field Centric", group = "Class")
 //@Disabled
-public class TeleOp_Main extends LinearOpMode {
+public class TeleOp_FC extends LinearOpMode {
 
     // Declare variables used by the class
     Squirebot myBot;
@@ -30,6 +28,10 @@ public class TeleOp_Main extends LinearOpMode {
         telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
         telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
         telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Aliance", blackboard.getOrDefault(myBot.ALLIANCE_KEY,"Purple"));
+        telemetry.addData("GPS_OFFSET", blackboard.getOrDefault(myBot.GPS_OFFSET,0));
+        Object FC_offset = blackboard.getOrDefault(myBot.GPS_OFFSET,0);
+
         telemetry.update();
 
         //Start of TeleOp
@@ -50,14 +52,6 @@ public class TeleOp_Main extends LinearOpMode {
 
 
             telemetry.update();
-            if(gamepad1.left_trigger<0.7) {
-                myBot.chassis.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-            }
-            else
-            {
-                    //myBot.chassis.driveFC(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x,myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
-                myBot.chassis.drive(gamepad1.left_stick_y, -gamepad1.left_stick_x,gamepad1.right_stick_x);
-            }
             if (gamepad1.left_bumper) {
                 myBot.chassis.maxSpeed = 0.3;
             }
@@ -69,6 +63,8 @@ public class TeleOp_Main extends LinearOpMode {
             {
                 myBot.chassis.maxSpeed = 0.7;
             }
+            myBot.chassis.driveFC(gamepad1.left_stick_y,-gamepad1.left_stick_x,gamepad1.right_stick_x,(myBot.GPS2.location.getHeading(AngleUnit.DEGREES)+((Number) FC_offset).doubleValue()));
+
             if (gamepad1.right_trigger>0.3)
             {
                 myBot.shooter.intakePower=gamepad1.right_trigger;

@@ -15,6 +15,9 @@ public class Autonomous_Blue_Human_Basic extends LinearOpMode {
     public void runOpMode(){
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
+        myBot.GPS2.resetGPS();
+        blackboard.put(myBot.ALLIANCE_KEY, "RED");
+        blackboard.put(myBot.GPS_OFFSET, 90);
 
         while(!isStarted()) {
             myBot.GPS2.UpdateGPS();

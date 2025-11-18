@@ -29,7 +29,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class ConceptDatalogger extends LinearOpMode
 {
     Datalog datalog;
-    BNO055IMU imu;
     VoltageSensor battery;
 
     @Override
@@ -38,7 +37,6 @@ public class ConceptDatalogger extends LinearOpMode
         // Get devices from the hardwareMap.
         // If needed, change "Control Hub" to (e.g.) "Expansion Hub 1".
         battery = hardwareMap.voltageSensor.get("Control Hub");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         // Initialize the datalog
         datalog = new Datalog("datalog_01");
