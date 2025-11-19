@@ -76,12 +76,14 @@ public class Autonomous_Red_Human_Advanced extends LinearOpMode {
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.58;
+        myBot.shooter.shooterPower=0.65;
         myBot.shooter.enableShooter();
         sleep(1400);
         myBot.shooter.intakePower=0.7;
         myBot.shooter.intakeOn();
-        sleep(1750);
+        sleep(450);
+        myBot.shooter.shooterPower=0.68;
+        sleep(1300);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
     }
