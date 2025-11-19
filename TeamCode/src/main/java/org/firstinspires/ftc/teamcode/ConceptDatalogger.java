@@ -28,12 +28,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.SquireBot.SquireShooterEX;
 
-@TeleOp(name = "Concept Datalogger v01", group = "Datalogging")
+@TeleOp(name = "Shooter Datalogging", group = "Datalogging")
 public class ConceptDatalogger extends LinearOpMode
 {
     Datalog datalog;
     VoltageSensor battery;
     SquireShooterEX shooter;
+    public static final String TIMES_STARTED_KEY = "Times started";
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -44,7 +45,17 @@ public class ConceptDatalogger extends LinearOpMode
         battery = hardwareMap.voltageSensor.get("Control Hub");
         shooter = new SquireShooterEX(hardwareMap);
         // Initialize the datalog
-        datalog = new Datalog("datalog_01");
+        int timesStarted = (int) blackboard.getOrDefault(TIMES_STARTED_KEY, 0);
+        blackboard.put(TIMES_STARTED_KEY, timesStarted + 1);
+        int fileNumber = timesStarted +1;
+        if(fileNumber <10)
+        {
+        datalog = new Datalog("datalog_0"+ fileNumber);
+        }
+        else {
+            datalog = new Datalog("datalog_"+ fileNumber);
+        }
+            
 
         // You do not need to fill every field of the datalog
         // every time you call writeLine(); those fields will simply
@@ -52,14 +63,29 @@ public class ConceptDatalogger extends LinearOpMode
         datalog.opModeStatus.set("INIT");
         datalog.battery.set(battery.getVoltage());
         datalog.writeLine();
-
+        shooter.shooterPower = 0.65;
         telemetry.setMsTransmissionInterval(50);
-
+        while(!isStarted()) {
+        if (gamepad1.right_bumper)
+            {
+                shooter.shooterPower = shooter.shooterPower +.0001;
+                if(shooter.shooterPower > 1) shooter.shooterPower=1;
+            }
+            if (gamepad1.left_bumper)
+            {
+                shooter.shooterPower = shooter.shooterPower -.0001;
+                if(shooter.shooterPower < 0) shooter.shooterPower=0;
+            }
+            telemetry.addLine("FileName datalog_0" + fileNumber);
+            telemetry.addData("Shooter Power ", shooter.shooterPower);
+            telemetry.update();     
+            
+        }
+        
         waitForStart();
         runtime.reset();
 
         datalog.opModeStatus.set("RUNNING");
-        shooter.shooterPower = 0.65;
 
         for (int i = 0; opModeIsActive(); i++)
         {
