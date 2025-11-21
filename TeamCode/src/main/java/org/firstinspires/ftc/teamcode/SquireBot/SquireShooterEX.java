@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.SquireBot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,7 +22,7 @@ public class SquireShooterEX {
         shooterRight = myHardwareMap.get(DcMotorEx.class, "shooter_right");
         intake.setDirection(DcMotorEx.Direction.FORWARD);
         shooterLeft.setDirection(DcMotorEx.Direction.FORWARD);
-        shooterRight.setDirection(DcMotorEx.Direction.FORWARD);
+        shooterRight.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);

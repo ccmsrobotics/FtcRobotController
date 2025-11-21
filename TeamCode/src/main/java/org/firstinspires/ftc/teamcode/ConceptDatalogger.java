@@ -21,6 +21,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -55,17 +58,52 @@ public class ConceptDatalogger extends LinearOpMode
         else {
             datalog = new Datalog("datalog_"+ fileNumber);
         }
-            
+        shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        String motorMode="Using encoders";
 
         // You do not need to fill every field of the datalog
         // every time you call writeLine(); those fields will simply
         // contain the last value.
+        shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
+        shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
         datalog.opModeStatus.set("INIT");
         datalog.battery.set(battery.getVoltage());
         datalog.writeLine();
-        shooter.shooterPower = 0.65;
+        shooter.shooterPower = 0.45;
+        shooter.intakePower=0.7;
         telemetry.setMsTransmissionInterval(50);
+        PIDFCoefficients pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        motorMode="Not using encoders";
         while(!isStarted()) {
+            if(gamepad1.b)
+            {
+               // shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+               // shooter.shooterRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+               // motorMode="Not using encoders";
+                shooter.shooterRight.setVelocityPIDFCoefficients(10,0,1,0.1);
+                shooter.shooterLeft.setVelocityPIDFCoefficients(10,0,1,0.1);
+                pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            }
+            if(gamepad1.a)
+            {
+                //shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                //shooter.shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorMode="Using encoders";
+                shooter.shooterRight.setVelocityPIDFCoefficients(10,1.25,0.5,0.1);
+                shooter.shooterLeft.setVelocityPIDFCoefficients(10,1.25,0.5,0.1);
+                pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            }
+            if(gamepad1.y)
+            {
+                shooter.intakePower = shooter.intakePower +.0001;
+                if(shooter.intakePower > 1) shooter.intakePower=1;
+            }
+            if(gamepad1.x)
+            {
+                shooter.intakePower = shooter.intakePower -.0001;
+                if(shooter.intakePower < 0) shooter.intakePower=0;
+            }
         if (gamepad1.right_bumper)
             {
                 shooter.shooterPower = shooter.shooterPower +.0001;
@@ -78,7 +116,12 @@ public class ConceptDatalogger extends LinearOpMode
             }
             telemetry.addLine("FileName datalog_0" + fileNumber);
             telemetry.addData("Shooter Power ", shooter.shooterPower);
-            telemetry.update();     
+            telemetry.addData("Intake Power ", shooter.intakePower);
+            telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
+                    pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
+            telemetry.addLine(motorMode);
+            telemetry.update();
+            sleep(5);
             
         }
         
