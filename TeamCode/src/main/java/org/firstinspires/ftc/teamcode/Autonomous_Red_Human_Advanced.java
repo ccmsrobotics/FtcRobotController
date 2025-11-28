@@ -18,6 +18,10 @@ public class Autonomous_Red_Human_Advanced extends LinearOpMode {
         myBot.GPS2.resetGPS();
         blackboard.put(myBot.ALLIANCE_KEY, "RED");
         blackboard.put(myBot.GPS_OFFSET, -90);
+        blackboard.put(myBot.X_OFFSET, 7);
+        blackboard.put(myBot.Y_OFFSET, 54);
+        blackboard.put(myBot.X_SCALE, 1);
+        blackboard.put(myBot.Y_SCALE, 1);
 
         while(!isStarted()) {
             myBot.GPS2.UpdateGPS();

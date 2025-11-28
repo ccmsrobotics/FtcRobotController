@@ -27,13 +27,15 @@ public class SquireShooterEX {
         intake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        shooterLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        shooterRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterRight.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        shooterRight.setVelocityPIDFCoefficients(10,1,0,12.6);
+        shooterLeft.setVelocityPIDFCoefficients(10,1,0,12.6);
         intakePower = 1.0;
-        shooterPower = 1.0;
+        shooterPower = .6;
         currentState = 0;
         debounceActive=false;
 
@@ -100,7 +102,7 @@ public class SquireShooterEX {
                 currentState=0;
                 disableShooter();
             }
-            else if((currentTime-stateStart)> 1400){
+            else if((currentTime-stateStart)> 1000){
                 currentState=3;
                 stateStart=currentTime;
             }
@@ -109,7 +111,7 @@ public class SquireShooterEX {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=0.7;
+            intakePower=0.6;
             intakeOn();
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;

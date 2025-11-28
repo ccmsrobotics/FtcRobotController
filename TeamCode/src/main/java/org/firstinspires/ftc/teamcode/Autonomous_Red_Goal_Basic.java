@@ -17,7 +17,11 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         myBot.chassis.maxSpeed = 0.7;
         myBot.GPS2.resetGPS();
         blackboard.put(myBot.ALLIANCE_KEY, "RED");
-        blackboard.put(myBot.GPS_OFFSET, -90);
+        blackboard.put(myBot.GPS_OFFSET, 90);
+        blackboard.put(myBot.X_OFFSET, 130);
+        blackboard.put(myBot.Y_OFFSET, 30);
+        blackboard.put(myBot.X_SCALE, -1);
+        blackboard.put(myBot.Y_SCALE, -1);
 
 
 

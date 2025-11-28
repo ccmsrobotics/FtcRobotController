@@ -100,14 +100,7 @@ public class TeleOp_Main extends LinearOpMode {
                 myBot.shooter.shooterPower = myBot.shooter.shooterPower -.001;
                 if(myBot.shooter.shooterPower < 0) myBot.shooter.shooterPower=0;
             }
-            if (gamepad2.y)
-            {
-                myBot.shooter.openStopper();
-            }
-            if (gamepad2.b)
-            {
-                myBot.shooter.closeStopper();
-            }
+
             if (gamepad2.dpad_up) {
                 myBot.shooter.enableShooter();
             }

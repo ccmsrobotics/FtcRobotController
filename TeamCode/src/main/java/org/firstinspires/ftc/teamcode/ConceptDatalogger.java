@@ -47,17 +47,11 @@ public class ConceptDatalogger extends LinearOpMode
         // If needed, change "Control Hub" to (e.g.) "Expansion Hub 1".
         battery = hardwareMap.voltageSensor.get("Control Hub");
         shooter = new SquireShooterEX(hardwareMap);
-        // Initialize the datalog
+
         int timesStarted = (int) blackboard.getOrDefault(TIMES_STARTED_KEY, 0);
         blackboard.put(TIMES_STARTED_KEY, timesStarted + 1);
         int fileNumber = timesStarted +1;
-        if(fileNumber <10)
-        {
-        datalog = new Datalog("datalog_0"+ fileNumber);
-        }
-        else {
-            datalog = new Datalog("datalog_"+ fileNumber);
-        }
+
         shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         String motorMode="Using encoders";
@@ -67,9 +61,7 @@ public class ConceptDatalogger extends LinearOpMode
         // contain the last value.
         shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
         shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
-        datalog.opModeStatus.set("INIT");
-        datalog.battery.set(battery.getVoltage());
-        datalog.writeLine();
+
         shooter.shooterPower = 0.45;
         shooter.intakePower=0.7;
         telemetry.setMsTransmissionInterval(50);
@@ -80,9 +72,9 @@ public class ConceptDatalogger extends LinearOpMode
             {
                // shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                // shooter.shooterRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-               // motorMode="Not using encoders";
-                shooter.shooterRight.setVelocityPIDFCoefficients(10,0,1,0.1);
-                shooter.shooterLeft.setVelocityPIDFCoefficients(10,0,1,0.1);
+               // motorMode="P:5 I:1, d:0,F:12.6";
+                shooter.shooterRight.setVelocityPIDFCoefficients(5,1,0,12.6);
+                shooter.shooterLeft.setVelocityPIDFCoefficients(5,1,0,12.6);
                 pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
             }
             if(gamepad1.a)
@@ -90,8 +82,8 @@ public class ConceptDatalogger extends LinearOpMode
                 //shooter.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 //shooter.shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motorMode="Using encoders";
-                shooter.shooterRight.setVelocityPIDFCoefficients(10,1.25,0.5,0.1);
-                shooter.shooterLeft.setVelocityPIDFCoefficients(10,1.25,0.5,0.1);
+                shooter.shooterRight.setVelocityPIDFCoefficients(10,.5,0,12.6);
+                shooter.shooterLeft.setVelocityPIDFCoefficients(10,.5,0,12.6);
                 pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
             }
             if(gamepad1.y)
@@ -124,11 +116,20 @@ public class ConceptDatalogger extends LinearOpMode
             sleep(5);
             
         }
-        
+        // Initialize the datalog
+        if(fileNumber <10)
+        {
+            datalog = new Datalog("datalog_0"+ fileNumber);
+        }
+        else {
+            datalog = new Datalog("datalog_"+ fileNumber);
+        }
+        datalog.battery.set(battery.getVoltage());
+        datalog.writeLine();
+
         waitForStart();
         runtime.reset();
 
-        datalog.opModeStatus.set("RUNNING");
 
         for (int i = 0; opModeIsActive(); i++)
         {
@@ -137,7 +138,6 @@ public class ConceptDatalogger extends LinearOpMode
             // the Datalog class constructor.
 
             shooter.shooterState(true, runtime.milliseconds());
-            datalog.loopCounter.set(i);
             datalog.battery.set(battery.getVoltage());
             datalog.State.set(shooter.currentState);
             datalog.leftShooter.set(shooter.shooterLeft.getVelocity());
@@ -157,8 +157,6 @@ public class ConceptDatalogger extends LinearOpMode
 
             // Datalog fields are stored as text only; do not format here.
             telemetry.addLine();
-            telemetry.addData("OpMode Status", datalog.opModeStatus);
-            telemetry.addData("Loop Counter", datalog.loopCounter);
             telemetry.addData("Battery", datalog.battery);
 
             telemetry.update();
@@ -182,8 +180,6 @@ public class ConceptDatalogger extends LinearOpMode
 
         // These are all of the fields that we want in the datalog.
         // Note that order here is NOT important. The order is important in the setFields() call below
-        public Datalogger.GenericField opModeStatus = new Datalogger.GenericField("OpModeStatus");
-        public Datalogger.GenericField loopCounter  = new Datalogger.GenericField("Loop Counter");
         public Datalogger.GenericField State          = new Datalogger.GenericField("State");
         public Datalogger.GenericField leftShooter        = new Datalogger.GenericField("Left Velocity");
         public Datalogger.GenericField rightShooter         = new Datalogger.GenericField("Right Velocity");
@@ -211,8 +207,6 @@ public class ConceptDatalogger extends LinearOpMode
                     // Note that order *IS* important here! The order in which we list
                     // the fields is the order in which they will appear in the log.
                     .setFields(
-                            opModeStatus,
-                            loopCounter,
                             State,
                             leftShooter,
                             rightShooter,

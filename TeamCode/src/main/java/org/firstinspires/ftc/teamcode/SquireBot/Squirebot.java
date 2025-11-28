@@ -13,7 +13,7 @@ public class Squirebot {
     public SquireChassis chassis;
     public HardwareMap hardwareMap;
     public SquirePinpoint GPS2;
-    public SquireShooter shooter;
+    public SquireShooterEX shooter;
     public Telemetry telemetry;
     private LinearOpMode opMode;
     public double FORWARD_GAIN = 0.075;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
@@ -26,6 +26,12 @@ public class Squirebot {
     public double ANGLE_ERROR_MULT = 2.5; //
     public static final String GPS_OFFSET = "Gps Offset";
     public static final String ALLIANCE_KEY = "Alliance";
+    public static final String X_OFFSET = "Gps X Offset";
+    public static final String Y_OFFSET = "Gps Y Offset";  //inches offset
+    public static final String X_SCALE = "Gps X SCALE Offset"; //should be 1 or -1
+    public static final String Y_SCALE = "Gps Y SCALE Offset"; //should be 1 or -1
+
+
 
 
     public Squirebot(LinearOpMode myOpmode, HardwareMap hm, Telemetry T) {
@@ -34,7 +40,7 @@ public class Squirebot {
         telemetry = T;
         chassis = new SquireChassis(hardwareMap);
         GPS2=new SquirePinpoint(hardwareMap, telemetry);
-        shooter = new SquireShooter(hardwareMap);
+        shooter = new SquireShooterEX(hardwareMap);
         //notes
     }
 
@@ -91,12 +97,10 @@ public class Squirebot {
       shooter.shooterPower = 0.8;
       shooter.enableShooter();
       opMode.sleep(750);
-      shooter.openStopper();
       opMode.sleep(750);
       shooter.intakeOn();
       opMode.sleep(750);
       shooter.intakeOff();
       shooter.disableShooter();
-      shooter.closeStopper();
     }
 }
