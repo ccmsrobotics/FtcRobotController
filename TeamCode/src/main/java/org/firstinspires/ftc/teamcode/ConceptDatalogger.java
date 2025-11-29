@@ -59,14 +59,14 @@ public class ConceptDatalogger extends LinearOpMode
         // You do not need to fill every field of the datalog
         // every time you call writeLine(); those fields will simply
         // contain the last value.
-        shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
-        shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
+        //shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
+        //shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
 
-        shooter.shooterPower = 0.45;
+        shooter.shooterPower = 0.42;
         shooter.intakePower=0.7;
         telemetry.setMsTransmissionInterval(50);
         PIDFCoefficients pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        motorMode="Not using encoders";
+       // motorMode="Not using encoders";
         while(!isStarted()) {
             if(gamepad1.b)
             {

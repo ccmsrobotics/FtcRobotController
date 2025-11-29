@@ -19,6 +19,8 @@ public class TeleOp_FC extends LinearOpMode {
     private double targetAngle=0;
     private String alliance;
     int resetDebounce = 0;
+    double driveAngle, shootAngle;
+    double calcXOffset,calcYOffset;
 
     @Override
     public void runOpMode() {
@@ -47,19 +49,35 @@ public class TeleOp_FC extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             myBot.GPS2.UpdateGPS();
-            //calculate target angle
-            if(alliance=="RED")
-                targetAngle=-90+Math.toDegrees(Math.atan2((142-myBot.GPS2.location.getX(DistanceUnit.INCH)*xScale-xOffset),yOffset+yScale*myBot.GPS2.location.getY(DistanceUnit.INCH)));
-            else
-                targetAngle=90-Math.toDegrees(Math.atan2((142-myBot.GPS2.location.getX(DistanceUnit.INCH)*xScale-xOffset),yOffset+yScale*myBot.GPS2.location.getY(DistanceUnit.INCH)));
+            driveAngle = myBot.GPS2.location.getHeading(AngleUnit.DEGREES)+FC_offset;
+            shootAngle = -driveAngle;
+            while (driveAngle > 180) driveAngle -= 360;
+            while (driveAngle <= -180) driveAngle += 360;
+            while (shootAngle > 180) shootAngle -= 360;
+            while (shootAngle <= -180) shootAngle += 360;
 
+            //calculate target angle
+            if(alliance=="RED") {
+                calcXOffset = (142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset);
+                calcYOffset = yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH);
+                targetAngle = -Math.toDegrees(Math.atan2((142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset), yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH)));
+            }
+                else {
+                    calcYOffset = yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH);
+                    calcXOffset = 142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset;
+                targetAngle = Math.toDegrees(Math.atan2((142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset), yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH)));
+            }
             telemetry.addLine("GoBildaData");
             telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
-            telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Heading angle", shootAngle);
             telemetry.addData("Target Angle", targetAngle);
             telemetry.addData("Shooter State", myBot.shooter.currentState);
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
+            telemetry.addData("Calc X offset", calcXOffset);
+            telemetry.addData("Calc Y offset", calcYOffset);
+            telemetry.addData("Kickstand Encoder", myBot.chassis.kickStand.getCurrentPosition());
+
             telemetry.addData("Time left", 117-runtime.seconds());
             //telemetry.addData("April tag range", myBot.camera.aprilTagRange);
             //telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
@@ -78,8 +96,8 @@ public class TeleOp_FC extends LinearOpMode {
             {
                 myBot.chassis.maxSpeed = 0.7;
             }
-            if(gamepad1.x && Math.abs(targetAngle-myBot.GPS2.location.getHeading(AngleUnit.DEGREES))<25)
-                myBot.chassis.drive(0,0,targetAngle-myBot.GPS2.location.getHeading(AngleUnit.DEGREES)*.04);
+            if(gamepad1.x && Math.abs(targetAngle-shootAngle)<25)
+                myBot.chassis.drive(0,0,(targetAngle-shootAngle)*.04);
             else
                 myBot.chassis.driveFC(gamepad1.left_stick_y,-gamepad1.left_stick_x,gamepad1.right_stick_x,(myBot.GPS2.location.getHeading(AngleUnit.DEGREES)+FC_offset));
 

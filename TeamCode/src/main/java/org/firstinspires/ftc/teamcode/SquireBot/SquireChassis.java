@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class SquireChassis {
-    public DcMotor leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive;
+    public DcMotor leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, kickStand;
     private HardwareMap myHardwareMap;
     public double maxSpeed;
     private double leftFrontPower,  rightFrontPower, leftBackPower, rightBackPower;
@@ -34,6 +34,11 @@ public class SquireChassis {
         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        kickStand = myHardwareMap.get(DcMotor.class, "Kickstand");
+        kickStand.setDirection(DcMotorSimple.Direction.FORWARD);
+        kickStand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        kickStand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         maxSpeed=1.0;
     }
     public void drive(double drive, double strafe, double rotation){

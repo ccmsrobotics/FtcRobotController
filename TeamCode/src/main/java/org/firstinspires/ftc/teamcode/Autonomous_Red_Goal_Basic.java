@@ -40,13 +40,12 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.65;
+        myBot.shooter.shooterPower=0.44;
         myBot.shooter.enableShooter();
         sleep(1400);
         myBot.shooter.intakePower=0.7;
         myBot.shooter.intakeOn();
         sleep(500);
-        myBot.shooter.shooterPower=0.68;
         sleep(1300);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
