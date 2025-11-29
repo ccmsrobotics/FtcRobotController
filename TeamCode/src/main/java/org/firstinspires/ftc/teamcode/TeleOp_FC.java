@@ -124,12 +124,12 @@ public class TeleOp_FC extends LinearOpMode {
             }
             if (gamepad2.right_bumper)
             {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower +.001;
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower +.0002;
                 if(myBot.shooter.shooterPower > 1) myBot.shooter.shooterPower=1;
             }
             if (gamepad2.left_bumper)
             {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower -.001;
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower -.0002;
                 if(myBot.shooter.shooterPower < 0) myBot.shooter.shooterPower=0;
             }
 

@@ -35,7 +35,7 @@ public class SquireShooterEX {
         shooterRight.setVelocityPIDFCoefficients(10,1,0,12.6);
         shooterLeft.setVelocityPIDFCoefficients(10,1,0,12.6);
         intakePower = 1.0;
-        shooterPower = .6;
+        shooterPower = .45;
         currentState = 0;
         debounceActive=false;
 
