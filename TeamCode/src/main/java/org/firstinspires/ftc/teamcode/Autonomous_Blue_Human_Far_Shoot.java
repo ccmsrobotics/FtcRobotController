@@ -33,14 +33,14 @@ public class Autonomous_Blue_Human_Far_Shoot extends LinearOpMode {
             telemetry.update();
         }
         waitForStart();
-
+        myBot.goToSpot(7, 0,212.5, .5);
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
         myBot.shooter.shooterPower=0.48;
         myBot.shooter.enableShooter();
         sleep(850);
-        myBot.shooter.intakePower=0.7;
+        myBot.shooter.intakePower=0.6;
         myBot.shooter.intakeOn();
         sleep(500);
         sleep(1300);
