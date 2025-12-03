@@ -19,6 +19,7 @@ public class TeleOp_FC extends LinearOpMode {
     private double targetAngle=0;
     private String alliance;
     int resetDebounce = 0;
+    int kickDebounce = 0;
     double driveAngle, shootAngle;
     double calcXOffset,calcYOffset;
 
@@ -155,6 +156,19 @@ public class TeleOp_FC extends LinearOpMode {
             }
             else
                 resetDebounce=0;
+            if (gamepad1.y)
+            {
+                kickDebounce++;
+                if(kickDebounce==5)
+                {
+                        myBot.chassis.kickStand.setTargetPosition(-875);
+                }
+            }
+            else
+                kickDebounce=0;
+            if(gamepad1.b)
+                myBot.chassis.kickStand.setTargetPosition(0);
         }
+
     }
 }

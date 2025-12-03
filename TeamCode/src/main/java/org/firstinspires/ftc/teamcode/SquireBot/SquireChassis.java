@@ -37,7 +37,9 @@ public class SquireChassis {
         kickStand = myHardwareMap.get(DcMotor.class, "Kickstand");
         kickStand.setDirection(DcMotorSimple.Direction.FORWARD);
         kickStand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        kickStand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        kickStand.setTargetPosition(0);
+        kickStand.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        kickStand.setPower(1);
 
         maxSpeed=1.0;
     }
