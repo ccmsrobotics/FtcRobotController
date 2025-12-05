@@ -39,7 +39,7 @@ public class Autonomous_Blue_Goal_Basic extends LinearOpMode {
         myBot.shooter.intakeBackwards();
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.44;
+        myBot.shooter.shooterPower=0.439;
         myBot.shooter.enableShooter();
         sleep(1000);
         myBot.shooter.intakePower=0.7;
