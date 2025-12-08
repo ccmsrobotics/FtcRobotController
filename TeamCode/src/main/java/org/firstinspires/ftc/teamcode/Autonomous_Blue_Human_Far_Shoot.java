@@ -45,10 +45,10 @@ public class Autonomous_Blue_Human_Far_Shoot extends LinearOpMode {
         myBot.shooter.intakeOff();
         myBot.goToSpot(7, 0,205.5, .5);
         autonShoot(.48);
-        myBot.goToSpot(24,-12,-180,2);
-        myBot.goToSpot(24,-48,-180,2);
+        myBot.goToSpot(24,-12,-135,2);
+        myBot.goToSpot(24,-48,-135,2);
         myBot.shooter.intakeOn();
-        myBot.chassis.drive(0.5,0,0);
+        myBot.chassis.drive(0.5,.1,.06);
         sleep(1400);
         myBot.chassis.drive(0,0,0);
         sleep(250);
