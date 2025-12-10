@@ -39,7 +39,7 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         myBot.goToSpot(28, 24,-55,1);
         shoot();
 
-        myBot.goToSpot(50,8,90,2);
+        myBot.goToSpot(50,10,90,2);
         myBot.shooter.intakePower=1;
         myBot.shooter.intakeOn();
         myBot.chassis.drive(0.5,0,0);
@@ -55,7 +55,7 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         myBot.goToSpot(28, 24,-55,1);
         shoot();
 
-        myBot.goToSpot(74,8,90,2);
+        myBot.goToSpot(74,10,90,2);
         myBot.shooter.intakePower=1;
         myBot.shooter.intakeOn();
         myBot.chassis.drive(0.5,0,0);
