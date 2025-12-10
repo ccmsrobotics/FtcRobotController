@@ -37,20 +37,61 @@ public class Autonomous_Red_Goal_Basic extends LinearOpMode {
         waitForStart();
 
         myBot.goToSpot(28, 24,-55,1);
-        myBot.shooter.intakeBackwards();
+        shoot();
+
+        myBot.goToSpot(50,8,90,2);
+        myBot.shooter.intakePower=1;
+        myBot.shooter.intakeOn();
+        myBot.chassis.drive(0.5,0,0);
+        sleep(1400);
+        myBot.chassis.drive(0,0,0);
         sleep(250);
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.439;
-        myBot.shooter.enableShooter();
-        sleep(1400);
-        myBot.shooter.intakePower=0.7;
+
+        myBot.goToSpot(58,-4,45,2);
+        myBot.chassis.drive(.5,-.5,0);
+        sleep(2000);
+
+        myBot.goToSpot(28, 24,-55,1);
+        shoot();
+
+        myBot.goToSpot(74,8,90,2);
+        myBot.shooter.intakePower=1;
         myBot.shooter.intakeOn();
-        sleep(500);
-        sleep(1300);
-        myBot.shooter.disableShooter();
+        myBot.chassis.drive(0.5,0,0);
+        sleep(1400);
+        myBot.chassis.drive(0,0,0);
+        sleep(250);
         myBot.shooter.intakeOff();
+
+        myBot.goToSpot(28, 24,-55,1);
+        shoot();
+
+
+
+
+
+
+
+
         myBot.goToSpot(12,20,0,2);
 
 
+    }
+
+    private void shoot()
+    {
+        myBot.shooter.intakeBackwards();
+        sleep(250);
+        myBot.shooter.intakeOff();
+        myBot.shooter.shooterPower=0.435;
+        myBot.shooter.enableShooter();
+        sleep(1000);
+        myBot.shooter.intakePower=0.7;
+        myBot.shooter.intakeOn();
+        sleep(450);
+        sleep(1300);
+        myBot.shooter.disableShooter();
+        myBot.shooter.intakeOff();
     }
 }
