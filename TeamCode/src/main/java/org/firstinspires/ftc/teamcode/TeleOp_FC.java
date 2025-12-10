@@ -121,7 +121,19 @@ public class TeleOp_FC extends LinearOpMode {
 
             if (gamepad2.x)
             {
-                myBot.shooter.shooterPower = (gamepad2.left_stick_y*0.5+0.5);
+                myBot.shooter.shooterPower = 0.439;
+            }
+            if (gamepad2.a)
+            {
+                myBot.shooter.shooterPower = 0.47;
+            }
+            if (gamepad2.y)
+            {
+                myBot.shooter.shooterPower = 0.439;
+            }
+            if (gamepad2.b)
+            {
+                myBot.shooter.shooterPower = 0.47;
             }
             if (gamepad2.right_bumper)
             {
@@ -137,6 +149,9 @@ public class TeleOp_FC extends LinearOpMode {
             if (gamepad2.dpad_up) {
                 myBot.shooter.enableShooter();
             }
+
+
+
             if (gamepad2.dpad_down)
                 myBot.shooter.disableShooter();
             if (gamepad2.dpad_left)
