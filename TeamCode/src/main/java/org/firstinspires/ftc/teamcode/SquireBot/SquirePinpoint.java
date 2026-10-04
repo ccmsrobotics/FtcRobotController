@@ -75,9 +75,9 @@ public class SquirePinpoint {
          */
         //pinpoint.resetPosAndIMU();
     }
-public void resetGPS(){
+public void resetGPS(double startX, double startY,double startHeading){
     pinpoint.resetPosAndIMU();
-pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, startX, startY, AngleUnit.DEGREES, startHeading));
      location = pinpoint.getPosition();
 }
 }

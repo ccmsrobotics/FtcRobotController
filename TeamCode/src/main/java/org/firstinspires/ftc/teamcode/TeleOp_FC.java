@@ -27,7 +27,6 @@ public class TeleOp_FC extends LinearOpMode {
     public void runOpMode() {
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        alliance = (String) blackboard.getOrDefault(myBot.ALLIANCE_KEY,"Purple");
         myBot.GPS2.UpdateGPS();
 
         // Wait for the game to start (driver presses PLAY)
@@ -35,14 +34,6 @@ public class TeleOp_FC extends LinearOpMode {
         telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
         telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
         telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Alliance", alliance);
-        double FC_offset = ((Number) blackboard.getOrDefault(myBot.GPS_OFFSET,0)).doubleValue();
-        double xOffset = ((Number) blackboard.getOrDefault(myBot.X_OFFSET,0)).doubleValue();
-        double yOffset = ((Number) blackboard.getOrDefault(myBot.Y_OFFSET,0)).doubleValue();
-        double xScale = ((Number) blackboard.getOrDefault(myBot.X_SCALE,1)).doubleValue();
-        double yScale = ((Number) blackboard.getOrDefault(myBot.Y_SCALE,1)).doubleValue();
-
-        telemetry.addData("GPS_OFFSET", FC_offset);
         telemetry.update();
 
         //Start of TeleOp
@@ -50,7 +41,7 @@ public class TeleOp_FC extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()) {
             myBot.GPS2.UpdateGPS();
-            driveAngle = myBot.GPS2.location.getHeading(AngleUnit.DEGREES)+FC_offset;
+            driveAngle = myBot.GPS2.location.getHeading(AngleUnit.DEGREES);
             shootAngle = -driveAngle;
             while (driveAngle > 180) driveAngle -= 360;
             while (driveAngle <= -180) driveAngle += 360;
@@ -58,6 +49,13 @@ public class TeleOp_FC extends LinearOpMode {
             while (shootAngle <= -180) shootAngle += 360;
 
             //calculate target angle
+            if (myBot.GPS2.location.getX(DistanceUnit.INCH)<48) {
+                targetAngle = -Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH))/(60-myBot.GPS2.location.getY(DistanceUnit.INCH)) ));
+            }
+                else if (myBot.GPS2.location.getX(DistanceUnit.INCH)>96){
+                targetAngle = -Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH))/(84-myBot.GPS2.location.getY(DistanceUnit.INCH)) ));
+            }
+
             if(alliance=="RED") {
                 calcXOffset = (142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset);
                 calcYOffset = yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH);
