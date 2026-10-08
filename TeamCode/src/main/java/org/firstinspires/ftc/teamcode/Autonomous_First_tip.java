@@ -28,6 +28,10 @@ public class Autonomous_First_tip extends LinearOpMode {
         }
         waitForStart();
 
+        shoot();
+        myBot.goToSpot(9,50,90,2);
+
+        /*
         myBot.goToSpot(28, -24,55,1);
         shoot();
 
@@ -60,10 +64,9 @@ public class Autonomous_First_tip extends LinearOpMode {
         myBot.goToSpot(28, -24,55,1);
         shoot();
 
-        myBot.goToSpot(12,-20,0,2);
+        myBot.goToSpot(12,-20,0,2); */
 
     }
-
     private void shoot()
     {
         myBot.shooter.intakeBackwards();
