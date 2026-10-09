@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,14 +15,14 @@ public class TeleOp_FC extends LinearOpMode {
 
     // Declare variables used by the class
     Squirebot myBot;
-    private ElapsedTime     runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
     private double headingError = 0;
-    private double targetAngle=0;
+    private double targetAngle = 0;
     private String alliance;
     int resetDebounce = 0;
     int kickDebounce = 0;
     double driveAngle, shootAngle;
-    double calcXOffset,calcYOffset;
+    double calcXOffset, calcYOffset;
 
     @Override
     public void runOpMode() {
@@ -49,23 +50,14 @@ public class TeleOp_FC extends LinearOpMode {
             while (shootAngle <= -180) shootAngle += 360;
 
             //calculate target angle
-            if (myBot.GPS2.location.getX(DistanceUnit.INCH)<48) {
-                targetAngle = -Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH))/(48-myBot.GPS2.location.getY(DistanceUnit.INCH)) ));
-            }
-                else if (myBot.GPS2.location.getX(DistanceUnit.INCH)>96){
-                targetAngle = -Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH))/(96-myBot.GPS2.location.getY(DistanceUnit.INCH)) ));
+            if (myBot.GPS2.location.getX(DistanceUnit.INCH) < 48) {
+                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)) / (48 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
+            } else if (myBot.GPS2.location.getX(DistanceUnit.INCH) > 96) {
+                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)) / (96 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
+            } else {
+                targetAngle = driveAngle;
             }
 
-            if(alliance=="RED") {
-                calcXOffset = (142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset);
-                calcYOffset = yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH);
-                targetAngle = -Math.toDegrees(Math.atan2((142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset), yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH)));
-            }
-                else {
-                    calcYOffset = yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH);
-                    calcXOffset = 142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset;
-                targetAngle = Math.toDegrees(Math.atan2((142 - myBot.GPS2.location.getX(DistanceUnit.INCH) * xScale - xOffset), yOffset + yScale * myBot.GPS2.location.getY(DistanceUnit.INCH)));
-            }
             telemetry.addLine("GoBildaData");
             telemetry.addData("X coordinate", myBot.GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", myBot.GPS2.location.getY(DistanceUnit.INCH));
@@ -77,71 +69,54 @@ public class TeleOp_FC extends LinearOpMode {
             telemetry.addData("Calc Y offset", calcYOffset);
             telemetry.addData("Kickstand Encoder", myBot.chassis.kickStand.getCurrentPosition());
 
-            telemetry.addData("Time left", 117-runtime.seconds());
+            telemetry.addData("Time left", 117 - runtime.seconds());
             //telemetry.addData("April tag range", myBot.camera.aprilTagRange);
             //telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
-
 
 
             telemetry.update();
             if (gamepad1.left_bumper) {
                 myBot.chassis.maxSpeed = 0.3;
-            }
-            else if (gamepad1.right_bumper)
-            {
+            } else if (gamepad1.right_bumper) {
                 myBot.chassis.maxSpeed = 1;
-            }
-            else
-            {
+            } else {
                 myBot.chassis.maxSpeed = 0.7;
             }
-            if(gamepad1.x && Math.abs(targetAngle-shootAngle)<25)
-                myBot.chassis.drive(0,0,(targetAngle-shootAngle)*.04);
+            if (gamepad1.x && Math.abs(targetAngle - shootAngle) < 65)
+                myBot.chassis.drive(0, 0, (targetAngle - shootAngle) * .04);
             else
-                myBot.chassis.driveFC(gamepad1.left_stick_y,-gamepad1.left_stick_x,gamepad1.right_stick_x,(myBot.GPS2.location.getHeading(AngleUnit.DEGREES)+FC_offset));
+                myBot.chassis.driveFC(gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, (myBot.GPS2.location.getHeading(AngleUnit.DEGREES)));
 
-            if (gamepad1.right_trigger>0.3)
-            {
-                myBot.shooter.intakePower=gamepad1.right_trigger;
+            if (gamepad1.right_trigger > 0.3) {
+                myBot.shooter.intakePower = gamepad1.right_trigger;
                 myBot.shooter.intakeOn();
             } else if (gamepad2.dpad_left) {
                 myBot.shooter.intakeBackwards();
-            }
-                else if (myBot.shooter.currentState>2)
-            {
-
-
-            } else
-            {
+            } else if (myBot.shooter.currentState > 2) {
+            } else {
                 myBot.shooter.intakeOff();
             }
-            myBot.shooter.shooterState(gamepad1.a||gamepad2.a,runtime.milliseconds());
+            myBot.shooter.shooterState(gamepad1.a || gamepad2.a, runtime.milliseconds());
 
-            if (gamepad2.x)
-            {
+            if (gamepad2.x) {
                 myBot.shooter.shooterPower = 0.439;
             }
-            if (gamepad2.a)
-            {
+            if (gamepad2.a) {
                 myBot.shooter.shooterPower = 0.47;
             }
-            if (gamepad2.y)
-            {
+            if (gamepad2.y) {
                 myBot.shooter.shooterPower = 0.439;
             }
-            if (gamepad2.b)
-            {
+            if (gamepad2.b) {
                 myBot.shooter.shooterPower = 0.47;
             }
-            if (gamepad2.right_bumper)
-            {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower +.0002;
-                if(myBot.shooter.shooterPower > 1) myBot.shooter.shooterPower=1;
+            if (gamepad2.right_bumper) {
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower + .0002;
+                if (myBot.shooter.shooterPower > 1) myBot.shooter.shooterPower = 1;
             }
-            if (gamepad2.left_bumper)
-            {
-                myBot.shooter.shooterPower = myBot.shooter.shooterPower -.0002;
-                if(myBot.shooter.shooterPower < 0) myBot.shooter.shooterPower=0;
+            if (gamepad2.left_bumper) {
+                myBot.shooter.shooterPower = myBot.shooter.shooterPower - .0002;
+                if (myBot.shooter.shooterPower < 0) myBot.shooter.shooterPower = 0;
             }
 
             if (gamepad2.dpad_up) {
@@ -149,37 +124,28 @@ public class TeleOp_FC extends LinearOpMode {
             }
 
 
-
             if (gamepad2.dpad_down)
                 myBot.shooter.disableShooter();
-            if (gamepad2.dpad_left)
-            {
+            if (gamepad2.dpad_left) {
                 myBot.shooter.intakeBackwards();
             }
-            if (gamepad1.back)
-            {
+            if (gamepad1.back) {
                 resetDebounce++;
-                if(resetDebounce==5)
-                {
+                if (resetDebounce == 5) {
                     myBot.chassis.drive(0, 0, 0);
                     sleep(250);
                     myBot.GPS2.resetGPS();
-                    FC_offset = 0;
                 }
-            }
-            else
-                resetDebounce=0;
-            if (gamepad1.y)
-            {
+            } else
+                resetDebounce = 0;
+            if (gamepad1.y) {
                 kickDebounce++;
-                if(kickDebounce==5)
-                {
-                        myBot.chassis.kickStand.setTargetPosition(-875);
+                if (kickDebounce == 5) {
+                    myBot.chassis.kickStand.setTargetPosition(-875);
                 }
-            }
-            else
-                kickDebounce=0;
-            if(gamepad1.b)
+            } else
+                kickDebounce = 0;
+            if (gamepad1.b)
                 myBot.chassis.kickStand.setTargetPosition(0);
         }
 
