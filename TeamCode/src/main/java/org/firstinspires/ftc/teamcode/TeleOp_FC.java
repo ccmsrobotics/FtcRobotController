@@ -51,9 +51,9 @@ public class TeleOp_FC extends LinearOpMode {
 
             //calculate target angle
             if (myBot.GPS2.location.getX(DistanceUnit.INCH) < 48) {
-                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)) / (48 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
+                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)), (48 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
             } else if (myBot.GPS2.location.getX(DistanceUnit.INCH) > 96) {
-                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)) / (96 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
+                targetAngle = Math.toDegrees(Math.atan2((60 - myBot.GPS2.location.getY(DistanceUnit.INCH)), (96 - myBot.GPS2.location.getY(DistanceUnit.INCH))));
             } else {
                 targetAngle = driveAngle;
             }
@@ -134,7 +134,7 @@ public class TeleOp_FC extends LinearOpMode {
                 if (resetDebounce == 5) {
                     myBot.chassis.drive(0, 0, 0);
                     sleep(250);
-                    myBot.GPS2.resetGPS();
+                    myBot.GPS2.resetGPS(9,9,0);
                 }
             } else
                 resetDebounce = 0;
