@@ -67,8 +67,6 @@ public class driveTest extends LinearOpMode {
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
             telemetry.addData("Calc X offset", calcXOffset);
             telemetry.addData("Calc Y offset", calcYOffset);
-            telemetry.addData("Kickstand Encoder", myBot.chassis.kickStand.getCurrentPosition());
-
             telemetry.addData("Time left", 117 - runtime.seconds());
             //telemetry.addData("April tag range", myBot.camera.aprilTagRange);
             //telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
@@ -83,6 +81,9 @@ public class driveTest extends LinearOpMode {
             }
             if (gamepad1.y) {
                 myBot.chassis.leftBackDrive.setPower(0.3);
+            }
+            if (gamepad1.x) {
+                myBot.chassis.rightBackDrive.setPower(0.3);
             }
         }
 

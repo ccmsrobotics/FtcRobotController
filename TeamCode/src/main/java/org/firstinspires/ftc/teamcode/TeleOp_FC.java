@@ -67,8 +67,6 @@ public class TeleOp_FC extends LinearOpMode {
             telemetry.addData("Shooter Power", myBot.shooter.shooterPower);
             telemetry.addData("Calc X offset", calcXOffset);
             telemetry.addData("Calc Y offset", calcYOffset);
-            telemetry.addData("Kickstand Encoder", myBot.chassis.kickStand.getCurrentPosition());
-
             telemetry.addData("Time left", 117 - runtime.seconds());
             //telemetry.addData("April tag range", myBot.camera.aprilTagRange);
             //telemetry.addData("April tag bearing", myBot.camera.aprilTagBearing);
@@ -138,15 +136,6 @@ public class TeleOp_FC extends LinearOpMode {
                 }
             } else
                 resetDebounce = 0;
-            if (gamepad1.y) {
-                kickDebounce++;
-                if (kickDebounce == 5) {
-                    myBot.chassis.kickStand.setTargetPosition(-875);
-                }
-            } else
-                kickDebounce = 0;
-            if (gamepad1.b)
-                myBot.chassis.kickStand.setTargetPosition(0);
         }
 
     }

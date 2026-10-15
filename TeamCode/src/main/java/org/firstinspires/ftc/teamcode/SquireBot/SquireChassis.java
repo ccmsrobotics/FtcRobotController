@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class SquireChassis {
-    public DcMotor leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, kickStand;
+    public DcMotor leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive;
     private HardwareMap myHardwareMap;
     public double maxSpeed;
     private double leftFrontPower,  rightFrontPower, leftBackPower, rightBackPower;
@@ -18,10 +18,10 @@ public class SquireChassis {
         leftBackDrive = myHardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = myHardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = myHardwareMap.get(DcMotor.class, "right_back_drive");
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -34,12 +34,7 @@ public class SquireChassis {
         rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        kickStand = myHardwareMap.get(DcMotor.class, "Kickstand");
-        kickStand.setDirection(DcMotorSimple.Direction.FORWARD);
-        kickStand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        kickStand.setTargetPosition(0);
-        kickStand.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        kickStand.setPower(1);
+
 
         maxSpeed=1.0;
     }
