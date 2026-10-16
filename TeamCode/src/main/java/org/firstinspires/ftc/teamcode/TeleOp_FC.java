@@ -43,7 +43,6 @@ public class TeleOp_FC extends LinearOpMode {
         while (opModeIsActive()) {
             myBot.GPS2.UpdateGPS();
             driveAngle = myBot.GPS2.location.getHeading(AngleUnit.DEGREES);
-            shootAngle = -driveAngle;
             while (driveAngle > 180) driveAngle -= 360;
             while (driveAngle <= -180) driveAngle += 360;
             while (shootAngle > 180) shootAngle -= 360;
@@ -80,10 +79,10 @@ public class TeleOp_FC extends LinearOpMode {
             } else {
                 myBot.chassis.maxSpeed = 0.7;
             }
-            if (gamepad1.x && Math.abs(targetAngle - shootAngle) < 65)
-                myBot.chassis.drive(0, 0, (targetAngle - shootAngle) * .04);
+            if (gamepad1.x && Math.abs(targetAngle - driveAngle) < 65)
+                myBot.chassis.drive(0, 0, (targetAngle - driveAngle) * .04);
             else
-                myBot.chassis.driveFC(gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x, (myBot.GPS2.location.getHeading(AngleUnit.DEGREES)));
+                myBot.chassis.driveFC(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, (myBot.GPS2.location.getHeading(AngleUnit.DEGREES)));
 
             if (gamepad1.right_trigger > 0.3) {
                 myBot.shooter.intakePower = gamepad1.right_trigger;
@@ -132,7 +131,7 @@ public class TeleOp_FC extends LinearOpMode {
                 if (resetDebounce == 5) {
                     myBot.chassis.drive(0, 0, 0);
                     sleep(250);
-                    myBot.GPS2.resetGPS(9,9,0);
+                    myBot.GPS2.currentLocation(9,9,0);
                 }
             } else
                 resetDebounce = 0;

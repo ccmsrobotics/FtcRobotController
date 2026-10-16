@@ -14,7 +14,13 @@ public class Autonomous_First_tip extends LinearOpMode {
     public void runOpMode(){
         myBot = new Squirebot(this, hardwareMap, telemetry);
         myBot.chassis.maxSpeed = 0.7;
-        myBot.GPS2.resetGPS(9,60,90);
+        myBot.GPS2.resetGPS();
+        telemetry.addData("Status", "Calibrated");
+        telemetry.update();
+        sleep(500);
+
+
+        myBot.GPS2.currentLocation(9,60,90);
 
 
         while(!isStarted()) {
