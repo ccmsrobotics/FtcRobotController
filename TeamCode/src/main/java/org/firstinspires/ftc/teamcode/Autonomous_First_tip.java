@@ -20,7 +20,7 @@ public class Autonomous_First_tip extends LinearOpMode {
         sleep(500);
 
 
-        myBot.GPS2.currentLocation(9,60,90);
+        myBot.GPS2.currentLocation(60,9,90);
 
 
         while(!isStarted()) {
@@ -32,11 +32,12 @@ public class Autonomous_First_tip extends LinearOpMode {
             telemetry.addData("Heading angle", myBot.GPS2.location.getHeading(AngleUnit.DEGREES));
             telemetry.update();
         }
+
         waitForStart();
-
-        shoot();
-        myBot.goToSpot(9,50,90,2);
-
+        //shoot();
+        myBot.goToSpot(36,9,90,2);
+        //Drive to Parking Spot...Sudo
+        //myBot.goToSpot(100,9,90,1);
         /*
         myBot.goToSpot(28, -24,55,1);
         shoot();
@@ -73,7 +74,7 @@ public class Autonomous_First_tip extends LinearOpMode {
         myBot.goToSpot(12,-20,0,2); */
 
     }
-    private void shoot()
+    /*private void shoot()
     {
         myBot.shooter.intakeBackwards();
         sleep(250);
@@ -87,5 +88,7 @@ public class Autonomous_First_tip extends LinearOpMode {
         sleep(1300);
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
-    }
+
+    }*/
 }
+

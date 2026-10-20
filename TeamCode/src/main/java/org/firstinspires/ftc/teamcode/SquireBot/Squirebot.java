@@ -47,7 +47,7 @@ public class Squirebot {
 
     //public void startTele() {arm.startMatchTeleArm();}
 
-    public void goToSpot(double yTargetLoc, double xTargetLoc, double yawTarget, double allowedLocError) {
+    public void goToSpot(double xTargetLoc, double yTargetLoc, double yawTarget, double allowedLocError) {
         double xError;
         double yError;
         double yawError;
@@ -75,8 +75,8 @@ public class Squirebot {
                 strafe = strafe * MIN_SPEED_CONSTANT / maxError;
             }
             chassis.drive(forward, strafe, -turn);
-            telemetry.addData("X coordinate",-GPS2.location.getY(DistanceUnit.INCH));
-            telemetry.addData("Y coordinate", GPS2.location.getX(DistanceUnit.INCH));
+            telemetry.addData("X coordinate",-GPS2.location.getX(DistanceUnit.INCH));
+            telemetry.addData("Y coordinate", GPS2.location.getY(DistanceUnit.INCH));
             telemetry.addData("Heading angle", GPS2.location.getHeading(AngleUnit.DEGREES));
             telemetry.update();
         }
