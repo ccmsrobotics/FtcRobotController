@@ -57,25 +57,25 @@ public class Squirebot {
         double maxError = allowedLocError + 1;
         while ((maxError > allowedLocError)&& opMode.opModeIsActive()) {//Missing "opModeIsActive() &&"
             GPS2.UpdateGPS();
-            yError = yTargetLoc - GPS2.location.getX(DistanceUnit.INCH);
-            xError = xTargetLoc + GPS2.location.getY(DistanceUnit.INCH);
+            yError = yTargetLoc - GPS2.location.getY(DistanceUnit.INCH);
+            xError = xTargetLoc - GPS2.location.getX(DistanceUnit.INCH);
             yawError = yawErrorCalc(yawTarget, GPS2.location.getHeading(AngleUnit.DEGREES));
             maxError = Math.max(Math.abs(xError), Math.abs(yError));
             maxError = Math.max(maxError, Math.abs(yawError / ANGLE_ERROR_MULT));//yaw error is scaled so 1" error is equivilent to ANGLE_ERROR_MULT (2.5 deg)
             double currentYawRadians = GPS2.location.getHeading(AngleUnit.DEGREES) * 3.1415 / 180;
-            double rotX = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
-            double rotY = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
-            forward = Range.clip(rotY * FORWARD_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double rotDrive = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
+            double rotStrafe = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
+            forward = Range.clip(rotDrive * FORWARD_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
             turn = Range.clip(yawError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            strafe = Range.clip(rotX * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            strafe = Range.clip(rotStrafe * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             if (maxError < MIN_SPEED_CONSTANT)//limit min speed of robot.  This compensates for friction at low error levels
             {
                 forward = forward * MIN_SPEED_CONSTANT / maxError;
                 turn = turn * MIN_SPEED_CONSTANT / maxError;
                 strafe = strafe * MIN_SPEED_CONSTANT / maxError;
             }
-            chassis.drive(forward, strafe, -turn);
-            telemetry.addData("X coordinate",-GPS2.location.getX(DistanceUnit.INCH));
+            chassis.drive(forward, -strafe, -turn);
+            telemetry.addData("X coordinate", GPS2.location.getX(DistanceUnit.INCH));
             telemetry.addData("Y coordinate", GPS2.location.getY(DistanceUnit.INCH));
             telemetry.addData("Heading angle", GPS2.location.getHeading(AngleUnit.DEGREES));
             telemetry.update();
