@@ -36,7 +36,9 @@ public class Autonomous_Second_tip extends LinearOpMode {
         waitForStart();
         //shoot();
         myBot.goToSpot(60,131,-90,0.5);
-        myBot.goToSpot(12,116,-90,0.5);
+        myBot.goToSpot(30,125,0,2);
+        myBot.goToSpot(12,120,90,0.5);
+        //How long does it take?________
         //myBot.goToSpot(100,9,90,1);
         /*
         myBot.goToSpot(28, -24,55,1);

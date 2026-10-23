@@ -35,8 +35,10 @@ public class Autonomous_First_tip extends LinearOpMode {
 
         waitForStart();
         //shoot();
-        myBot.goToSpot(36,18,90,0.5);
-        myBot.goToSpot(12,96,90,0.5);
+        myBot.goToSpot(36,24,90,0.5);
+        myBot.goToSpot(64,24,-90,0.5);
+        myBot.goToSpot(12,90,-90,0.5);
+        //How long does it take?________
         //myBot.goToSpot(100,9,90,1);
         /*
         myBot.goToSpot(28, -24,55,1);
