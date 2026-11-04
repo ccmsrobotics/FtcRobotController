@@ -20,7 +20,7 @@ public class Autonomous_Second_tip extends LinearOpMode {
         sleep(500);
 
 
-        myBot.GPS2.currentLocation(60,135,-90);
+        myBot.GPS2.currentLocation(60,135,90);
 
 
         while(!isStarted()) {
@@ -34,9 +34,15 @@ public class Autonomous_Second_tip extends LinearOpMode {
         }
 
         waitForStart();
-        //shoot();
-        myBot.goToSpot(60,131,-90,0.5);
-        myBot.goToSpot(30,125,0,2);
+        myBot.chassis.drive(-1,0,0);
+        sleep(500);
+        myBot.chassis.drive(0,0,0);
+        myBot.goToSpot(60,130,90,0.5);
+
+
+        shoot();
+        myBot.goToSpot(60,131,90,0.5);
+        myBot.goToSpot(30,125,90,2);
         myBot.goToSpot(12,120,90,0.5);
         //How long does it take?________
         //myBot.goToSpot(100,9,90,1);
@@ -76,12 +82,23 @@ public class Autonomous_Second_tip extends LinearOpMode {
         myBot.goToSpot(12,-20,0,2); */
 
     }
-    /*private void shoot()
+    private void shoot()
     {
-        myBot.shooter.intakeBackwards();
+        myBot.shooter.shooterPower=-0.1;
+        myBot.shooter.enableShooter();
         sleep(250);
+        myBot.shooter.shooterPower=-0.2;
+        myBot.shooter.enableShooter();
+        sleep(250);
+        myBot.shooter.shooterPower=-0.3;
+        myBot.shooter.enableShooter();
+        sleep(250);
+        myBot.shooter.shooterPower=-0.4;
+        myBot.shooter.enableShooter();
+        sleep(250);
+        myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
-        myBot.shooter.shooterPower=0.435;
+        myBot.shooter.shooterPower=0.697;
         myBot.shooter.enableShooter();
         sleep(1000);
         myBot.shooter.intakePower=0.7;
@@ -91,6 +108,6 @@ public class Autonomous_Second_tip extends LinearOpMode {
         myBot.shooter.disableShooter();
         myBot.shooter.intakeOff();
 
-    }*/
+    }
 }
 
