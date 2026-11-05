@@ -20,7 +20,7 @@ public class Autonomous_First_tip extends LinearOpMode {
         sleep(500);
 
 
-        myBot.GPS2.currentLocation(60,9,90);
+        myBot.GPS2.currentLocation(60,9,-90);
 
 
         while(!isStarted()) {
@@ -35,8 +35,8 @@ public class Autonomous_First_tip extends LinearOpMode {
 
         waitForStart();
         //shoot();
-        myBot.goToSpot(36,24,90,0.5);
-        myBot.goToSpot(64,24,-90,0.5);
+        myBot.goToSpot(36,24,-90,0.5);
+        myBot.goToSpot(24,24,-90,0.5);
         myBot.goToSpot(12,90,-90,0.5);
         //How long does it take?________
         //myBot.goToSpot(100,9,90,1);
