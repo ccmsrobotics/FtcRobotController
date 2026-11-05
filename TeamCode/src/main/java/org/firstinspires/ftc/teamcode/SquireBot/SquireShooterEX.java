@@ -20,7 +20,7 @@ public class SquireShooterEX {
         intake = myHardwareMap.get(DcMotorEx.class, "intake");
         shooterLeft = myHardwareMap.get(DcMotorEx.class, "shooter_left");
         shooterRight = myHardwareMap.get(DcMotorEx.class, "shooter_right");
-        intake.setDirection(DcMotorEx.Direction.FORWARD);
+        intake.setDirection(DcMotorEx.Direction.REVERSE);
         shooterLeft.setDirection(DcMotorEx.Direction.FORWARD);
         shooterRight.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -35,7 +35,7 @@ public class SquireShooterEX {
         shooterRight.setVelocityPIDFCoefficients(10,1,0,12.6);
         shooterLeft.setVelocityPIDFCoefficients(10,1,0,12.6);
         intakePower = 1.0;
-        shooterPower = .45;
+        shooterPower = .697;
         currentState = 0;
         debounceActive=false;
 
@@ -49,6 +49,10 @@ public class SquireShooterEX {
     public void intakeOff() {
         intake.setPower(0);
 
+    }
+    public void reverseShooter() {
+        shooterLeft.setPower(-.5);
+        shooterRight.setPower(-.5);
     }
     //This calculates shooter motor power based on range from april tag
     public void setShooterPower(float range){
@@ -82,13 +86,13 @@ public class SquireShooterEX {
         }
         else if(currentState==1){
             //what commands should be run
-            intakeBackwards();
+            reverseShooter();
 
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
                 intakeOff();
             }
-            else if((currentTime-stateStart)> 250){
+            else if((currentTime-stateStart)> 1000){
                 currentState=2;
                 stateStart=currentTime;
                 intakeOff();
@@ -111,8 +115,8 @@ public class SquireShooterEX {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=0.6;
-            intakeOn();
+            intakePower=1;
+
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;
                 disableShooter();

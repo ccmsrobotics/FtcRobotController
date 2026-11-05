@@ -119,6 +119,10 @@ public class TeleOp_FC extends LinearOpMode {
             if (gamepad2.dpad_up) {
                 myBot.shooter.enableShooter();
             }
+            if (gamepad2.right_stick_y>.2||gamepad2.right_stick_y<0.2) {
+                myBot.shooter.intakePower=gamepad2.right_stick_y;
+            }
+
 
 
             if (gamepad2.dpad_down)
