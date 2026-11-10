@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class SquireShooterEX {
-    public DcMotorEx intake, shooterLeft, shooterRight;
+    public DcMotorEx intake, transition, shooterLeft, shooterRight;
     private HardwareMap myHardwareMap;
-    public double shooterPower, intakePower;
+    public double shooterPower, intakePower, transitionPower;
 
     private boolean debounceActive;
     private double debounceStart, stateStart;
@@ -18,14 +18,19 @@ public class SquireShooterEX {
     public SquireShooterEX(HardwareMap hm) {
         myHardwareMap = hm;
         intake = myHardwareMap.get(DcMotorEx.class, "intake");
+        transition = myHardwareMap.get(DcMotorEx.class,"transition");
         shooterLeft = myHardwareMap.get(DcMotorEx.class, "shooter_left");
         shooterRight = myHardwareMap.get(DcMotorEx.class, "shooter_right");
         intake.setDirection(DcMotorEx.Direction.REVERSE);
+        transition.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterLeft.setDirection(DcMotorEx.Direction.FORWARD);
         shooterRight.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        transition.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        transition.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        transition.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         shooterLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         shooterLeft.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         shooterLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -35,6 +40,7 @@ public class SquireShooterEX {
         shooterRight.setVelocityPIDFCoefficients(10,1,0,12.6);
         shooterLeft.setVelocityPIDFCoefficients(10,1,0,12.6);
         intakePower = 1.0;
+        transitionPower = 1.0;
         shooterPower = .697;
         currentState = 0;
         debounceActive=false;
@@ -49,6 +55,12 @@ public class SquireShooterEX {
     public void intakeOff() {
         intake.setPower(0);
 
+    }
+    public void transitionOn() {
+        transition.setPower(transitionPower);
+    }
+    public void transitionOff() {
+        transition.setPower(0);
     }
     public void reverseShooter() {
         shooterLeft.setPower(-.5);
