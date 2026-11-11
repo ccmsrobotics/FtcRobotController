@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class SquireShooterEX {
     public DcMotorEx intake, transition, shooterLeft, shooterRight;
+    public Servo stop;
     private HardwareMap myHardwareMap;
     public double shooterPower, intakePower, transitionPower;
 
@@ -21,6 +22,7 @@ public class SquireShooterEX {
         transition = myHardwareMap.get(DcMotorEx.class,"transition");
         shooterLeft = myHardwareMap.get(DcMotorEx.class, "shooter_left");
         shooterRight = myHardwareMap.get(DcMotorEx.class, "shooter_right");
+        stop = myHardwareMap.get(Servo.class,"stop");
         intake.setDirection(DcMotorEx.Direction.REVERSE);
         transition.setDirection(DcMotorSimple.Direction.FORWARD);
         shooterLeft.setDirection(DcMotorEx.Direction.FORWARD);
@@ -74,6 +76,9 @@ public class SquireShooterEX {
         {range = 100;}
 
         shooterPower=0.5+0.5*(range/100);
+    }
+    public void setStopPosition(double position) {
+        stop.setPosition(position);
     }
 
     public void enableShooter(){
