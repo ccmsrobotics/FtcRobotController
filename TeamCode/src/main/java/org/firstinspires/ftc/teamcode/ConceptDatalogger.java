@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.SquireBot.BobShooterEX;
 import org.firstinspires.ftc.teamcode.SquireBot.SquireShooterEX;
 
 @TeleOp(name = "Shooter Datalogging", group = "Datalogging")
@@ -35,7 +36,7 @@ public class ConceptDatalogger extends LinearOpMode
 {
     Datalog datalog;
     VoltageSensor battery;
-    SquireShooterEX shooter;
+    BobShooterEX shooter;
     public static final String TIMES_STARTED_KEY = "Times started";
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -45,7 +46,7 @@ public class ConceptDatalogger extends LinearOpMode
         // Get devices from the hardwareMap.
         // If needed, change "Control Hub" to (e.g.) "Expansion Hub 1".
         battery = hardwareMap.voltageSensor.get("Control Hub");
-        shooter = new SquireShooterEX(hardwareMap);
+        shooter = new BobShooterEX(hardwareMap);
 
         int timesStarted = (int) blackboard.getOrDefault(TIMES_STARTED_KEY, 0);
         blackboard.put(TIMES_STARTED_KEY, timesStarted + 1);
@@ -61,7 +62,7 @@ public class ConceptDatalogger extends LinearOpMode
         //shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
         //shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
 
-        shooter.shooterPower = 0.42;
+        shooter.shooterPower = 0.535;
         shooter.intakePower=0.7;
         telemetry.setMsTransmissionInterval(50);
         PIDFCoefficients pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
