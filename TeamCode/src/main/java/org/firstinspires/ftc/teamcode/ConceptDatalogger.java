@@ -62,8 +62,8 @@ public class ConceptDatalogger extends LinearOpMode
         //shooter.shooterRight.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
         //shooter.shooterLeft.setVelocityPIDFCoefficients(1.26,0.126,0,12.6);
 
-        shooter.shooterPower = 0.535;
-        shooter.intakePower=0.7;
+        shooter.shooterPower = 0.80;
+        shooter.intakePower=1;
         telemetry.setMsTransmissionInterval(50);
         PIDFCoefficients pidfOrig =  shooter.shooterLeft.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
        // motorMode="Not using encoders";

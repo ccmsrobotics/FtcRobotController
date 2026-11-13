@@ -72,7 +72,7 @@ public class BobShooterEX {
         if(currentState ==0){
             //What should be always disabled?
 
-            if(stateDebounce(button,currentTime,250)){
+            if(stateDebounce(button,currentTime,50)){
                 currentState=1;
                 stateStart=currentTime;
             }
@@ -85,7 +85,7 @@ public class BobShooterEX {
                 currentState=0;
                 intakeOff();
             }
-            else if((currentTime-stateStart)> 250){
+            else if((currentTime-stateStart)> 150){
                 currentState=2;
                 stateStart=currentTime;
                 intakeOff();
@@ -95,11 +95,11 @@ public class BobShooterEX {
         else if(currentState==2){
             //what commands should be run
             enableShooter();
-            if(stateDebounce(!button,currentTime,250)){
+            if(stateDebounce(!button,currentTime,150)){
                 currentState=0;
                 disableShooter();
             }
-            else if((currentTime-stateStart)> 1000){
+            else if((currentTime-stateStart)> 100){
                 currentState=3;
                 stateStart=currentTime;
             }
@@ -108,7 +108,7 @@ public class BobShooterEX {
         else if(currentState==3){
             //what commands should be run
             enableShooter();
-            intakePower=.7;
+            intakePower=1;
             intakeOn();
             if(stateDebounce(!button,currentTime,250)){
                 currentState=0;

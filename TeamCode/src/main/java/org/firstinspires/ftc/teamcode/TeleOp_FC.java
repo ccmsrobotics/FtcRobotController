@@ -128,9 +128,9 @@ public class TeleOp_FC extends LinearOpMode {
                 myBot.shooter.transitionOff();
             }
             if (gamepad1.b) {
-                myBot.shooter.setStopPosition(-0.15);
+                myBot.shooter.setStopPosition(0.85);
             } else {
-                myBot.shooter.setStopPosition(-0.30);
+                myBot.shooter.setStopPosition(0.15);
             }
 
 
