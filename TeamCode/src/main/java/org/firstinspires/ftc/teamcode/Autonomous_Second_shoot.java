@@ -45,7 +45,7 @@ public class Autonomous_Second_shoot extends LinearOpMode {
 
         myBot.goToSpot(39,125,115,0.5);
 
-        sleep(500);
+        sleep(5000);
         shoot();
 
         myBot.goToSpot(12,120,90,0.5);
