@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.SquireBot;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class BobShooterEX {
@@ -17,7 +18,7 @@ public class BobShooterEX {
         intake = myHardwareMap.get(DcMotorEx.class, "intake");
         shooterLeft = myHardwareMap.get(DcMotorEx.class, "shooter_left");
         shooterRight = myHardwareMap.get(DcMotorEx.class, "shooter_right");
-        intake.setDirection(DcMotorEx.Direction.FORWARD);
+        intake.setDirection(DcMotorEx.Direction.REVERSE);
         shooterLeft.setDirection(DcMotorEx.Direction.FORWARD);
         shooterRight.setDirection(DcMotorEx.Direction.REVERSE);
         intake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
