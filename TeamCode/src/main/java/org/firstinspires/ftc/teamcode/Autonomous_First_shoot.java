@@ -34,22 +34,29 @@ public class Autonomous_First_shoot extends LinearOpMode {
         }
 
         waitForStart();
-        myBot.chassis.drive(-1,.4,0);
+        myBot.chassis.drive(-1,-.4,0);
         sleep(500);
         myBot.chassis.drive(0,0,0);
-        myBot.goToSpot(40,38,-90,0.5);
+        myBot.goToSpot(29,38,-123,0.5);
         myBot.shooter.intakeOn();
-        myBot.goToSpot(40,20,-90,0.5);
-        sleep(1200);
+        myBot.shooter.shooterPower=0.674;
+        myBot.shooter.enableShooter();
+        myBot.goToSpot(29,20,-123,1.5);
+        myBot.shooter.transitionOn();
+        myBot.goToSpot(29,16,-123,0.5);
+        myBot.chassis.drive(0,-.15,0);
+        sleep(3000);
         myBot.shooter.intakeOff();
+        myBot.shooter.disableShooter();
+        myBot.shooter.transitionOff();
 
-        myBot.goToSpot(39,16,-115,0.5);
-        shoot();
+        //myBot.goToSpot(39,16,-115,0.5);
+        //shoot();
 
 
         myBot.goToSpot(36,24,-90,0.5);
-        myBot.goToSpot(24,24,-90,0.5);
-        myBot.goToSpot(12,90,-90,0.5);
+        myBot.goToSpot(28,24,-90,0.5);
+        myBot.goToSpot(14,90,-90,0.5);
         //How long does it take?________
         //myBot.goToSpot(100,9,90,1);
         /*
