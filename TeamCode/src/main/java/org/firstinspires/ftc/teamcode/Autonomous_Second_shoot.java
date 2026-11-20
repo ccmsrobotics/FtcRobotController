@@ -34,57 +34,32 @@ public class Autonomous_Second_shoot extends LinearOpMode {
         }
 
         waitForStart();
-        myBot.chassis.drive(-1,.4,0);
+        myBot.chassis.drive(-.1, .4,0);
         sleep(500);
+        myBot.chassis.drive(-1,.4,0);
+        sleep(250);
         myBot.chassis.drive(0,0,0);
-        myBot.goToSpot(24,100,90,0.5);
+        myBot.goToSpot(29,116,123,0.5);
+        sleep(8000);
         myBot.shooter.intakeOn();
-        myBot.goToSpot(24,128,90,0.5);
-        sleep(1000);
+        myBot.shooter.shooterPower=0.67;
+        myBot.shooter.enableShooter();
+        myBot.goToSpot(29,123,123,1.5);
+        myBot.shooter.transitionOn();
+        myBot.goToSpot(29,130,123,0.5);
+        myBot.chassis.drive(0,.15,0);
+        sleep(3000);
         myBot.shooter.intakeOff();
+        myBot.shooter.disableShooter();
+        myBot.shooter.transitionOff();
 
-        myBot.goToSpot(39,125,115,0.5);
+        //myBot.goToSpot(39,125,115,0.5);
 
-        sleep(5000);
-        shoot();
+        //sleep(5000);
+        //shoot();
 
         myBot.goToSpot(12,120,90,0.5);
-        //How long does it take?________
-        //myBot.goToSpot(100,9,90,1);
-        /*
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
 
-
-        myBot.goToSpot(50,-10,-90,2);
-        myBot.shooter.intakePower=1;
-        myBot.shooter.intakeOn();
-        myBot.chassis.drive(0.5,0,0);
-        sleep(1400);
-        myBot.chassis.drive(0,0,0);
-        sleep(250);
-        myBot.shooter.intakeOff();
-
-        myBot.goToSpot(58,4,-45,2);
-        myBot.chassis.drive(.5,.5,0);
-        sleep(2000);
-
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
-
-        myBot.goToSpot(74,-10,-90,2);
-        myBot.shooter.intakePower=1;
-        myBot.shooter.intakeOn();
-        myBot.chassis.drive(0.5,0,0);
-        sleep(1400);
-        myBot.chassis.drive(0,0,0);
-        sleep(250);
-        myBot.shooter.intakeOff();
-
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
-
-        myBot.goToSpot(12,-20,0,2); */
 
     }
     private void shoot()

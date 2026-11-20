@@ -84,6 +84,42 @@ public class Squirebot {
         chassis.drive(0, 0, 0);
     }
 
+    public void goToSpotAim(double xTargetLoc, double yTargetLoc, double xTarget,double yTarget, double allowedLocError) {
+        double xError;
+        double yError;
+        double yawError;
+        double forward = 0;        // Desired forward power/speed (-1 to +1)
+        double strafe = 0;        // Desired strafe power/speed (-1 to +1)
+        double turn = 0;        // Desired turning power/speed (-1 to +1)
+        double maxError = allowedLocError + 1;
+        while ((maxError > allowedLocError)&& opMode.opModeIsActive()) {//Missing "opModeIsActive() &&"
+            GPS2.UpdateGPS();
+            yError = yTargetLoc - GPS2.location.getY(DistanceUnit.INCH);
+            xError = xTargetLoc - GPS2.location.getX(DistanceUnit.INCH);
+            maxError = Math.max(Math.abs(xError), Math.abs(yError));
+            double currentYawRadians = GPS2.location.getHeading(AngleUnit.DEGREES) * 3.1415 / 180;
+            double rotDrive = xError * Math.cos(-currentYawRadians) - yError * Math.sin(-currentYawRadians);
+            double rotStrafe = xError * Math.sin(-currentYawRadians) + yError * Math.cos(-currentYawRadians);
+            double targetAngle = Math.toDegrees(Math.atan2((GPS2.location.getY(DistanceUnit.INCH)-yTarget), (GPS2.location.getX(DistanceUnit.INCH)-(xTarget-(GPS2.location.getX(DistanceUnit.INCH)-xTarget)/500))));
+            forward = Range.clip(rotDrive * FORWARD_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn = Range.clip(-(targetAngle - GPS2.location.getHeading(AngleUnit.DEGREES)) * .04, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            strafe = Range.clip(rotStrafe * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            if (maxError < MIN_SPEED_CONSTANT)//limit min speed of robot.  This compensates for friction at low error levels
+            {
+                forward = forward * MIN_SPEED_CONSTANT / maxError;
+                turn = turn * MIN_SPEED_CONSTANT / maxError;
+                strafe = strafe * MIN_SPEED_CONSTANT / maxError;
+            }
+            chassis.drive(forward, -strafe, turn);
+            telemetry.addData("X coordinate", GPS2.location.getX(DistanceUnit.INCH));
+            telemetry.addData("Y coordinate", GPS2.location.getY(DistanceUnit.INCH));
+            telemetry.addData("Heading angle", GPS2.location.getHeading(AngleUnit.DEGREES));
+            telemetry.update();
+        }
+        //stop robot at end of move
+        chassis.drive(0, 0, 0);
+    }
+
 
     public double yawErrorCalc(double yawTarget, double yawCurrent) {
         // Determine the heading current error

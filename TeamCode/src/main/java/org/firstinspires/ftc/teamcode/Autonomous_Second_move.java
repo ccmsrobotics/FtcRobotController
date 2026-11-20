@@ -20,7 +20,7 @@ public class Autonomous_Second_move extends LinearOpMode {
         sleep(500);
 
 
-        myBot.GPS2.currentLocation(60,135,90);
+        myBot.GPS2.currentLocation(31,135,90);
 
 
         while(!isStarted()) {

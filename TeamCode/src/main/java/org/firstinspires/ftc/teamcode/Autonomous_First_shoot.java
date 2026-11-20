@@ -34,16 +34,20 @@ public class Autonomous_First_shoot extends LinearOpMode {
         }
 
         waitForStart();
-        myBot.chassis.drive(-1,-.4,0);
+        myBot.chassis.drive(-.1,-.4,0);
         sleep(500);
+        myBot.chassis.drive(-1,-.4,0);
+        sleep(250);
         myBot.chassis.drive(0,0,0);
-        myBot.goToSpot(29,38,-123,0.5);
+        myBot.goToSpot(30,38,-123,0.5);
         myBot.shooter.intakeOn();
-        myBot.shooter.shooterPower=0.674;
+        myBot.shooter.shooterPower=0.67;
         myBot.shooter.enableShooter();
-        myBot.goToSpot(29,20,-123,1.5);
+        myBot.goToSpot(31,20,-123,1.5);
+        myBot.goToSpotAim(31,20,60,56,1);
         myBot.shooter.transitionOn();
-        myBot.goToSpot(29,16,-123,0.5);
+        //myBot.goToSpot(30,16,-123,0.5);
+        myBot.goToSpotAim(31,15,60,56,.5);
         myBot.chassis.drive(0,-.15,0);
         sleep(3000);
         myBot.shooter.intakeOff();
@@ -57,42 +61,7 @@ public class Autonomous_First_shoot extends LinearOpMode {
         myBot.goToSpot(36,24,-90,0.5);
         myBot.goToSpot(28,24,-90,0.5);
         myBot.goToSpot(14,90,-90,0.5);
-        //How long does it take?________
-        //myBot.goToSpot(100,9,90,1);
-        /*
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
 
-
-        myBot.goToSpot(50,-10,-90,2);
-        myBot.shooter.intakePower=1;
-        myBot.shooter.intakeOn();
-        myBot.chassis.drive(0.5,0,0);
-        sleep(1400);
-        myBot.chassis.drive(0,0,0);
-        sleep(250);
-        myBot.shooter.intakeOff();
-
-        myBot.goToSpot(58,4,-45,2);
-        myBot.chassis.drive(.5,.5,0);
-        sleep(2000);
-
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
-
-        myBot.goToSpot(74,-10,-90,2);
-        myBot.shooter.intakePower=1;
-        myBot.shooter.intakeOn();
-        myBot.chassis.drive(0.5,0,0);
-        sleep(1400);
-        myBot.chassis.drive(0,0,0);
-        sleep(250);
-        myBot.shooter.intakeOff();
-
-        myBot.goToSpot(28, -24,55,1);
-        shoot();
-
-        myBot.goToSpot(12,-20,0,2); */
 
     }
     private void shoot()
